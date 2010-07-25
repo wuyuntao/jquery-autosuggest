@@ -12,7 +12,8 @@ var el, res, sel, val,
         {value: "46", name: "Richard Hatch"},
         {value: "54", name: "Kelly Slater"},
         {value: "55", name: "Rudy Hamilton"},
-        {value: "79", name: "Michael Jordan"}
+        {value: "79", name: "Michael Jordan"},
+        {value: "76", name: "姚明"}
     ],
     keyCode = {
         DEL:    8,
@@ -26,7 +27,6 @@ var el, res, sel, val,
     };
 
 function create() {
-    remove();
     return $('<input type="text" name="autosuggest" value=""></input>')
         .appendTo("#container").autoSuggest(data, options);
 }
@@ -58,6 +58,7 @@ test("Type J and select \"Michael Jordan\"", function() {
     // Type "J"
     // NOTE: Keydown event does not actually change the value of input,
     // You have to do this manually, and trigger the event later.
+    el.focus();
     el.val("J");
     el.simulate("keydown", {"keyCode": keyCode.J});
 
@@ -79,12 +80,14 @@ test("Type J and select \"Michael Jordan\"", function() {
         equals(value().val(), "79,", "Should be 79");
 
         start();
+        remove();
     }, 500);
 });
 
 test("Type \"Yao Ming\" and select it by COMMA", function() {
     el = create();
     // Type "Yap Ming" and ","
+    el.focus();
     el.val("Yao Ming");
     el.simulate("keydown", {"keyCode": keyCode.COMMA});
 
@@ -92,11 +95,13 @@ test("Type \"Yao Ming\" and select it by COMMA", function() {
     equals(sel.length, 1, "Should have one name");
     equals($(sel[0]).text(), "×Yao Ming", "Should be Yao Ming");
     equals(value().val(), "Yao Ming,", "Should be Yao Ming");
+    remove();
 });
 
 test("Type \"Yao Ming\" and select it by TAB", function() {
     el = create();
     // Type "Yap Ming" and "\t"
+    el.focus();
     el.val("Yao Ming");
     el.simulate("keydown", {"keyCode": keyCode.TAB});
 
@@ -104,11 +109,13 @@ test("Type \"Yao Ming\" and select it by TAB", function() {
     equals(sel.length, 1, "Should have one name");
     equals($(sel[0]).text(), "×Yao Ming", "Should be Yao Ming");
     equals(value().val(), "Yao Ming,", "Should be Yao Ming");
+    remove();
 });
 
 test("Press enter to select suggestion", function() {
     el = create();
 
+    el.focus();
     el.val("J");
     el.simulate("keydown", {"keyCode": keyCode.J});
 
@@ -129,12 +136,14 @@ test("Press enter to select suggestion", function() {
         equals(value().val(), "43,", "Should be 43");
 
         start();
+        remove();
     }, 500);
 });
 
 test("Press arrow keys to move the selection up and down", function() {
     el = create();
 
+    el.focus();
     el.val("J");
     el.simulate("keydown", {"keyCode": keyCode.J});
 
@@ -172,12 +181,14 @@ test("Press arrow keys to move the selection up and down", function() {
         ok($(res[2]).hasClass("active"), "Should be highlighted");
 
         start();
+        remove();
     }, 500);
 });
 
 test("Click close button to remove a name", function() {
     el = create();
 
+    el.focus();
     el.val("Yao Ming");
     el.simulate("keydown", {"keyCode": keyCode.TAB});
 
@@ -189,11 +200,13 @@ test("Click close button to remove a name", function() {
 
     sel = selections();
     equals(sel.length, 0, "Should have no name left");
+    remove();
 });
 
 test("Press delete key twice to remove a name", function() {
     el = create();
 
+    el.focus();
     el.val("Yao Ming");
     el.simulate("keydown", {"keyCode": keyCode.COMMA});
 
