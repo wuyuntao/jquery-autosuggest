@@ -77,7 +77,7 @@ test("Type J and select \"Michael Jordan\"", function() {
         sel = selections();
         equals(sel.length, 1, "Should have one name");
         equals($(sel[0]).text(), "×Michael Jordan", "Should be Michael Jordan");
-        equals(value().val(), "79,", "Should be 79");
+        equals(value().val(), ",79,", "Should be 79");
 
         start();
         remove();
@@ -94,7 +94,7 @@ test("Type \"Yao Ming\" and select it by COMMA", function() {
     sel = selections();
     equals(sel.length, 1, "Should have one name");
     equals($(sel[0]).text(), "×Yao Ming", "Should be Yao Ming");
-    equals(value().val(), "Yao Ming,", "Should be Yao Ming");
+    equals(value().val(), ",Yao Ming,", "Should be Yao Ming");
     remove();
 });
 
@@ -108,7 +108,7 @@ test("Type \"Yao Ming\" and select it by TAB", function() {
     sel = selections();
     equals(sel.length, 1, "Should have one name");
     equals($(sel[0]).text(), "×Yao Ming", "Should be Yao Ming");
-    equals(value().val(), "Yao Ming,", "Should be Yao Ming");
+    equals(value().val(), ",Yao Ming,", "Should be Yao Ming");
     remove();
 });
 
@@ -133,7 +133,7 @@ test("Press enter to select suggestion", function() {
         sel = selections();
         equals(sel.length, 1, "Should have one name");
         equals($(sel[0]).text(), "×Johnny Storm", "Should be Johnny Storm");
-        equals(value().val(), "43,", "Should be 43");
+        equals(value().val(), ",43,", "Should be 43");
 
         start();
         remove();
@@ -200,6 +200,7 @@ test("Click close button to remove a name", function() {
 
     sel = selections();
     equals(sel.length, 0, "Should have no name left");
+    equals(value().val(), ",", "Should have no name left");
     remove();
 });
 
@@ -224,7 +225,7 @@ test("Press delete key twice to remove a name", function() {
 
     sel = selections();
     equals(sel.length, 0, "Should have no name left");
-
+    equals(value().val(), ",", "Should have no name left");
 });
 
 });
