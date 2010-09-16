@@ -209,6 +209,8 @@
                                 var lis = $("li", selections_holder).length;
                                 add_selected_item(n_data, "00"+(lis+1));
                                 input.val("");
+                                // Cancel previous request when new tag is added
+                                if (input.data('request')) input.data('request').abort();
                             }
                         case 13: // return
                             tab_press = false;
@@ -249,12 +251,16 @@
                             if(opts.beforeRetrieve){
                                 string = opts.beforeRetrieve.call(this, string);
                             }
-                            $.getJSON(req_string+"?"+opts.queryParam+"="+encodeURIComponent(string)+limit+opts.extraParams, function(data){
+                            // Cancel previous request when input changes
+                            if (input.data('request')) input.data('request').abort();
+
+                            var url = req_string+"?"+opts.queryParam+"="+encodeURIComponent(string)+limit+opts.extraParams;
+                            input.data('request', $.getJSON(url, function(data) {
                                 d_count = 0;
                                 var new_data = opts.retrieveComplete.call(this, data);
                                 for (k in new_data) if (new_data.hasOwnProperty(k)) d_count++;
                                 processData(new_data, string);
-                            });
+                            }));
                         } else {
                             if(opts.beforeRetrieve){
                                 string = opts.beforeRetrieve.call(this, string);
