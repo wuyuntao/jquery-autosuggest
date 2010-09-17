@@ -43,6 +43,7 @@
             neverSubmit: false,
             selectionLimit: false,
             showResultList: true,
+            showResultListWhenNoMatch: false,
             start: function(){},
             selectionClick: function(elem){},
             selectionAdded: function(elem){},
@@ -130,6 +131,7 @@
                 var totalSelections = 0;
                 var tab_press = false;
                 var lastKeyPressCode = null;
+                var request = null;
 
                 // Handle input field events
                 input.focus(function(){
@@ -192,6 +194,7 @@
                             if(input.val().length == 1){
                                 results_holder.hide();
                                 prev = "";
+                                abortRequest();
                             }
                             if($(":visible",results_holder).length > 0){
                                 if (timeout){ clearTimeout(timeout); }
@@ -210,7 +213,7 @@
                                 add_selected_item(n_data, "00"+(lis+1));
                                 input.val("");
                                 // Cancel previous request when new tag is added
-                                if (input.data('request')) input.data('request').abort();
+                                abortRequest();
                             }
                         case 13: // return
                             tab_press = false;
@@ -227,6 +230,7 @@
                         case 27: // escape
                         case 16: // shift
                         case 20: // capslock
+                            abortRequest();
                             results_holder.hide();
                             break;
                     }
@@ -252,15 +256,16 @@
                                 string = opts.beforeRetrieve.call(this, string);
                             }
                             // Cancel previous request when input changes
-                            if (input.data('request')) input.data('request').abort();
+                            abortRequest();
 
                             var url = req_string+"?"+opts.queryParam+"="+encodeURIComponent(string)+limit+opts.extraParams;
-                            input.data('request', $.getJSON(url, function(data) {
+                            // TODO handle aborted response
+                            request = $.getJSON(url, function(data) {
                                 d_count = 0;
                                 var new_data = opts.retrieveComplete.call(this, data);
                                 for (k in new_data) if (new_data.hasOwnProperty(k)) d_count++;
                                 processData(new_data, string);
-                            }));
+                            });
                         } else {
                             if(opts.beforeRetrieve){
                                 string = opts.beforeRetrieve.call(this, string);
@@ -340,7 +345,9 @@
                         results_ul.html('<li class="as-message">'+opts.emptyText+'</li>');
                     }
                     results_ul.css("width", selections_holder.outerWidth());
-                    results_holder.show();
+                    if (matchCount > 0 || !showResultListWhenNoMatch) {
+                        results_holder.show();
+                    }
                     opts.resultsComplete.call(this);
                 }
 
@@ -380,6 +387,13 @@
                         }
                         lis.removeClass("active");
                         start.addClass("active");
+                    }
+                }
+
+                function abortRequest() {
+                    if (request) {
+                        request.abort();
+                        request = null;
                     }
                 }
 
