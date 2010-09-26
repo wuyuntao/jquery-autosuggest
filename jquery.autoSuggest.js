@@ -248,7 +248,7 @@
                     prev = string;
                     if (string.length >= opts.minChars) {
                         selections_holder.addClass("loading");
-                        processRequest(string, opts);
+                        processRequest(string);
                     } else {
                         selections_holder.removeClass("loading");
                         results_holder.hide();
