@@ -156,6 +156,7 @@
                         }
                     }, opts.keyDelay);
                     input_focus = true;
+                    processRequest($(this).val());
                     return true;
                 }).blur(function(){
                     if($(this).val() == "" && values_input.val() == "" && prefill_value == ""){
@@ -247,35 +248,38 @@
                     prev = string;
                     if (string.length >= opts.minChars) {
                         selections_holder.addClass("loading");
-                        if(d_type == "string"){
-                            var limit = "";
-                            if(opts.retrieveLimit){
-                                limit = "&limit="+encodeURIComponent(opts.retrieveLimit);
-                            }
-                            if(opts.beforeRetrieve){
-                                string = opts.beforeRetrieve.call(this, string);
-                            }
-                            // Cancel previous request when input changes
-                            abortRequest();
-
-                            var url = req_string+"?"+opts.queryParam+"="+encodeURIComponent(string)+limit+opts.extraParams;
-                            // TODO handle aborted response
-                            request = $.getJSON(url, function(data) {
-                                d_count = 0;
-                                var new_data = opts.retrieveComplete.call(this, data);
-                                for (k in new_data) if (new_data.hasOwnProperty(k)) d_count++;
-                                processData(new_data, string);
-                            });
-                        } else {
-                            if(opts.beforeRetrieve){
-                                string = opts.beforeRetrieve.call(this, string);
-                            }
-                            processData(org_data, string);
-                        }
+                        processRequest(string, opts);
                     } else {
                         selections_holder.removeClass("loading");
                         results_holder.hide();
                     }
+                }
+                function processRequest(string){
+                  if(d_type == "string"){
+                      var limit = "";
+                      if(opts.retrieveLimit){
+                          limit = "&limit="+encodeURIComponent(opts.retrieveLimit);
+                      }
+                      if(opts.beforeRetrieve){
+                          string = opts.beforeRetrieve.call(this, string);
+                      }
+                      // Cancel previous request when input changes
+                      abortRequest();
+
+                      var url = req_string+"?"+opts.queryParam+"="+encodeURIComponent(string)+limit+opts.extraParams;
+                      // TODO handle aborted response
+                      request = $.getJSON(url, function(data) {
+                          d_count = 0;
+                          var new_data = opts.retrieveComplete.call(this, data);
+                          for (k in new_data) if (new_data.hasOwnProperty(k)) d_count++;
+                          processData(new_data, string);
+                      });
+                  } else {
+                      if(opts.beforeRetrieve){
+                          string = opts.beforeRetrieve.call(this, string);
+                      }
+                      processData(org_data, string);
+                  }
                 }
                 var num_count = 0;
                 function processData(data, query){
@@ -326,7 +330,7 @@
                                 var regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "g");
                             }
 
-                            if(opts.resultsHighlight){
+                            if(opts.resultsHighlight && query.length > 0){
                                 this_data[opts.selectedItemProp] = this_data[opts.selectedItemProp].replace(regx,"<em>$1</em>");
                             }
                             if(!opts.formatList){
