@@ -7,7 +7,7 @@
  * Forked by Wu Yuntao
  * github.com/wuyuntao/jquery-autosuggest
  *
- * Version 1.6
+ * Version 1.6.1
  *
  * This Plug-In will auto-complete or auto-suggest completed search queries
  * for you as you type. You can add multiple selections and remove them on
