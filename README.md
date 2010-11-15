@@ -82,6 +82,8 @@ Below is an example of how to process the data sent via AJAX to your server in P
 
 * **startText**: *string ("Enter Name Here" by default)* - Text to display when the AutoSuggest input field is empty.
 
+* **usePlaceholder**: *true or false (false by default)* - Set HTML5 placeholder attribute to display *startText* when the input field is empty.
+
 * **emptyText**: *string ("No Results" by default)* - Text to display when their are no search results.
 
 * **preFill**: *object or string (empty object by default)* - Enables you to pre-fill the AutoSuggest box with selections when the page is first loaded. You can pass in a comma separated list of values (a string), or an object. When using a string, each value is used as both the display text on the selected item and for it's value. When using an object, the options `selectedItemProp` will define the object property to use for the display text and `selectedValuesProp` will define the object property to use for the value for the selected item. Note: you must setup your preFill object in that format. A preFill object can look just like the example objects laid out above.
@@ -163,3 +165,4 @@ Originally developed by [Drew Wilson](http://drewwilson.com/)
 
 * [Wu Yuntao](http://github.com/wuyuntao)
 * [Fred Wu](http://github.com/fredwu)
+* [Jeremy Mikola](http://github.com/jmikola)
