@@ -213,7 +213,9 @@
                         case 9: case 188:  // tab or comma
                             tab_press = true;
                             var i_input = input.val().replace(/(,)/g, "");
-                            if(i_input != "" && values_input.val().search(","+i_input+",") < 0 && i_input.length >= opts.minChars){
+                            var active = $("li.active:first", results_holder);
+                            // Generate a new bubble with text when no suggestion selected
+                            if(i_input !== "" && values_input.val().search(","+i_input+",") < 0 && i_input.length >= opts.minChars && active.length === 0){
                                 e.preventDefault();
                                 var n_data = {};
                                 n_data[opts.selectedItemProp] = i_input;
@@ -223,6 +225,7 @@
                                 input.val("");
                                 // Cancel previous request when new tag is added
                                 abortRequest();
+                                break;
                             }
                         case 13: // return
                             tab_press = false;
