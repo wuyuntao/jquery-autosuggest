@@ -357,7 +357,7 @@
                         results_ul.html('<li class="as-message">'+opts.emptyText+'</li>');
                     }
                     results_ul.css("width", selections_holder.outerWidth());
-                    if (matchCount > 0 || !showResultListWhenNoMatch) {
+                    if (matchCount > 0 || !opts.showResultListWhenNoMatch) {
                         results_holder.show();
                     }
                     opts.resultsComplete.call(this);
