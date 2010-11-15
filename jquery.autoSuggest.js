@@ -27,6 +27,7 @@
         var defaults = {
             asHtmlID: false,
             startText: "Enter Name Here",
+            usePlaceholder: false,
             emptyText: "No Results Found",
             preFill: {},
             limitText: "No More Selections Are Allowed",
@@ -76,7 +77,12 @@
                 }
                 opts.start.call(this);
                 var input = $(this);
-                input.attr("autocomplete","off").addClass("as-input").attr("id",x_id).val(opts.startText);
+                input.attr("autocomplete","off").addClass("as-input").attr("id",x_id);
+                if (opts.usePlaceholder) {
+                    input.attr('placeholder', opts.startText);
+                } else {
+                    input.val(opts.startText);
+                }
                 var input_focus = false;
 
                 // Setup basic elements and render them to the DOM
@@ -135,7 +141,7 @@
 
                 // Handle input field events
                 input.focus(function(){
-                    if($(this).val() == opts.startText && values_input.val() == ""){
+                    if(!opts.usePlaceholder && $(this).val() == opts.startText && values_input.val() == ""){
                         $(this).val("");
                     } else if(input_focus){
                         $("li.as-selection-item", selections_holder).removeClass("blur");
@@ -161,7 +167,7 @@
                     }
                     return true;
                 }).blur(function(){
-                    if($(this).val() == "" && values_input.val() == "" && prefill_value == ""){
+                    if(!opts.usePlaceholder && $(this).val() == "" && values_input.val() == "" && prefill_value == ""){
                         $(this).val(opts.startText);
                     } else if(input_focus){
                         $("li.as-selection-item", selections_holder).addClass("blur").removeClass("selected");
