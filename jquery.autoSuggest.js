@@ -381,7 +381,7 @@
                             return false;
                         });
                     org_li.before(item.html(data[opts.selectedItemProp]).prepend(close));
-                    opts.selectionAdded.call(this, org_li.prev());
+                    opts.selectionAdded.call(this, org_li.prev(), data[opts.selectedValuesProp]);
                 }
 
                 function moveSelection(direction){
