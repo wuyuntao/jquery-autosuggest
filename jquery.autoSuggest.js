@@ -198,7 +198,7 @@
                     input_focus = true;
                     
                     if ( opts.minChars == 0 ) {
-                      processRequest( $(this).val() );
+                        processRequest( $(this).val() );
                     }
                     
                     return true;
@@ -472,7 +472,8 @@
                         input_focus = false;
                     });
                     
-                    var close = $('<a class="as-close">&times;</a>').click(function () {
+                    var close = $('<a class="as-close" href="#" title="Remove this selection">&times;</a>').click(function (e) {
+                        e.preventDefault();
                         values_input.val(values_input.val().replace(',' + data[opts.selectedValuesProp] + ',', ','));
                         opts.selectionRemoved.call(this, item);
                         input_focus = true;
