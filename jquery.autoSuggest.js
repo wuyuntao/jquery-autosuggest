@@ -1,13 +1,13 @@
  /*
  * AutoSuggest
- * Copyright 2009-2010 Drew Wilson
+ * Copyright 2009-2011 Drew Wilson
  * www.drewwilson.com
  * code.drewwilson.com/entry/autosuggest-jquery-plugin
  *
  * Forked by Wu Yuntao
  * github.com/wuyuntao/jquery-autosuggest
  *
- * Version 1.6.2
+ * Version 1.6.3
  *
  * This Plug-In will auto-complete or auto-suggest completed search queries
  * for you as you type. You can add multiple selections and remove them on
@@ -60,24 +60,26 @@
         var d_type = 'object';
         var d_count = 0;
         
-        if (typeof data == 'string') {
+        if ( typeof data == 'string' ) {
             d_type = 'string';
             var req_string = data;
-        } else {
+        }
+        else {
             var org_data = data;
-            for (k in data) {
-                if (data.hasOwnProperty(k)) {
+            for ( k in data ) {
+                if ( data.hasOwnProperty(k) ) {
                     d_count ++;
                 }
             }
         }
         
-        if ((d_type == 'object' && d_count > 0) || d_type == 'string') {
+        if ( (d_type == 'object' && d_count > 0) || d_type == 'string' ) {
             return this.each(function (x) {
-                if ( ! opts.asHtmlID) {
+                if ( ! opts.asHtmlID ) {
                     x = x + '' + Math.floor(Math.random() * 100); //this ensures there will be unique IDs on the page if autoSuggest() is called multiple times
                     var x_id = 'as-input-' + x;
-                } else {
+                }
+                else {
                     x = opts.asHtmlID;
                     var x_id = x;
                 }
@@ -86,9 +88,10 @@
                 var input = $(this);
                 input.attr('autocomplete', 'off').addClass('as-input').attr('id', x_id);
                 
-                if (opts.usePlaceholder) {
+                if ( opts.usePlaceholder ) {
                     input.attr('placeholder', opts.startText);
-                } else {
+                }
+                else {
                     input.val(opts.startText);
                 }
                 
@@ -103,42 +106,43 @@
                 var values_input = $('<input type="hidden" class="as-values" name="as_values_' + x + '" id="as-values-' + x + '" />');
                 var prefill_value = "";
                 
-                if (typeof opts.preFill == 'string') {
+                if ( typeof opts.preFill == 'string' ) {
                     var vals = opts.preFill.split(',');
-                    for (var i = 0; i < vals.length; i ++) {
+                    for ( var i = 0; i < vals.length; i ++ ) {
                         var v_data = {};
                         v_data[opts.selectedValuesProp] = vals[i];
-                        if (vals[i] != '') {
+                        if ( vals[i] != '' ) {
                             add_selected_item(v_data, '000' + i);
                         }
                     }
                     prefill_value = opts.preFill;
-                } else {
+                }
+                else {
                     prefill_value = '';
                     var prefill_count = 0;
-                    for (k in opts.preFill) {
+                    for ( k in opts.preFill ) {
                         if (opts.preFill.hasOwnProperty(k)) {
                             prefill_count ++;
                         }
                     }
-                    if (prefill_count > 0) {
-                        for (var i = 0; i < prefill_count; i ++) {
+                    if ( prefill_count > 0 ) {
+                        for ( var i = 0; i < prefill_count; i ++ ) {
                             var new_v = opts.preFill[i][opts.selectedValuesProp];
-                            if (new_v == undefined) {
+                            if ( new_v == undefined ) {
                                 new_v = "";
                             }
                             prefill_value = prefill_value + new_v + ',';
-                            if (new_v != '') {
+                            if ( new_v != '' ) {
                                 add_selected_item(opts.preFill[i], '000' + i);
                             }
                         }
                     }
                 }
                 
-                if (prefill_value != '') {
+                if ( prefill_value != '' ) {
                     input.val('');
                     var lastChar = prefill_value.substring(prefill_value.length - 1);
-                    if (lastChar != ',') {
+                    if ( lastChar != ',' ) {
                         prefill_value = prefill_value + ',';
                     }
                     values_input.val(',' + prefill_value);
@@ -166,17 +170,17 @@
 
                 // Handle input field events
                 input.focus(function () {
-                    if ( ! opts.usePlaceholder && $(this).val() == opts.startText && values_input.val() == '') {
+                    if ( ! opts.usePlaceholder && $(this).val() == opts.startText && values_input.val() == '' ) {
                         $(this).val('');
                     }
-                    else if (input_focus) {
+                    else if ( input_focus ) {
                         $('.as-selection-item', selections_holder).removeClass('blur');
                         if ($(this).val() != '') {
                             results_holder.css('width', selections_holder.outerWidth()).show();
                         }
                     }
                     
-                    if (interval) {
+                    if ( interval ) {
                         clearInterval(interval);
                     }
                     
@@ -193,21 +197,22 @@
                     
                     input_focus = true;
                     
-                    if (opts.minChars == 0) {
+                    if ( opts.minChars == 0 ) {
                       processRequest( $(this).val() );
                     }
                     
                     return true;
                 })
                 .blur(function () {
-                    if ( ! opts.usePlaceholder && $(this).val() == '' && values_input.val() == '' && prefill_value == '' && opts.minChars > 0) {
+                    if ( ! opts.usePlaceholder && $(this).val() == '' && values_input.val() == '' && prefill_value == '' && opts.minChars > 0 ) {
                         $(this).val(opts.startText);
-                    } else if (input_focus) {
+                    }
+                    else if ( input_focus ) {
                         $('.as-selection-item', selections_holder).addClass('blur').removeClass('selected');
                         results_holder.hide();
                     }
                     
-                    if (interval) {
+                    if ( interval ) {
                         clearInterval(interval);
                     }
                 })
@@ -215,7 +220,7 @@
                     // track last key pressed
                     lastKeyPressCode = e.keyCode;
                     first_focus = false;
-                    switch (e.keyCode) {
+                    switch ( e.keyCode ) {
                         case 38 : // up
                             e.preventDefault();
                             moveSelection('up');
@@ -227,24 +232,25 @@
                             break;
                             
                         case 8 :  // delete
-                            if (input.val() == '') {
+                            if ( input.val() == '' ) {
                                 var last = values_input.val().split(',');
                                 last = last[last.length - 2];
                                 selections_holder.children().not(org_li.prev()).removeClass('selected');
-                                if (org_li.prev().hasClass('selected')) {
+                                if ( org_li.prev().hasClass('selected') ) {
                                     values_input.val(values_input.val().replace(',' + last + ',', ','));
                                     opts.selectionRemoved.call(this, org_li.prev());
-                                } else {
+                                }
+                                else {
                                     opts.selectionClick.call(this, org_li.prev());
                                     org_li.prev().addClass('selected');
                                 }
                             }
-                            if (input.val().length == 1) {
+                            if ( input.val().length == 1 ) {
                                 results_holder.hide();
                                 prev = '';
                                 abortRequest();
                             }
-                            if ($(':visible', results_holder).length > 0) {
+                            if ( $(':visible', results_holder).length > 0 ) {
                                 if (timeout) {
                                     clearTimeout(timeout);
                                 }
@@ -260,7 +266,7 @@
                             var i_input = input.val().replace(/(,)/g, '');
                             var active = $('.active:first', results_holder);
                             // Generate a new bubble with text when no suggestion selected
-                            if (i_input !== '' && values_input.val().search(',' + i_input + ",") < 0 && i_input.length >= opts.minChars && active.length === 0) {
+                            if ( i_input !== '' && values_input.val().search(',' + i_input + ",") < 0 && i_input.length >= opts.minChars && active.length === 0 ) {
                                 e.preventDefault();
                                 var n_data = {};
                                 n_data[opts.selectedItemProp] = i_input;
@@ -276,11 +282,11 @@
                         case 13 : // return
                             tab_press = false;
                             var active = $('.active:first', results_holder);
-                            if (active.length > 0) {
+                            if ( active.length > 0 ) {
                                 active.click();
                                 results_holder.hide();
                             }
-                            if (opts.neverSubmit || active.length > 0) {
+                            if ( opts.neverSubmit || active.length > 0 ) {
                                 e.preventDefault();
                             }
                             break;
@@ -302,24 +308,27 @@
                     // ignore if the following keys are pressed: [del] [shift] [capslock]
                     // if( lastKeyPressCode == 46 || (lastKeyPressCode > 8 && lastKeyPressCode < 32) ){ return results_holder.hide(); }
                     var string = input.val().replace(/[\\]+|[\/]+/g, '');
-                    if (string == prev) return;
+                    if ( string == prev ) {
+                        return;
+                    }
                     prev = string;
-                    if (string.length >= opts.minChars) {
+                    if ( string.length >= opts.minChars ) {
                         selections_holder.addClass('loading');
                         processRequest(string);
-                    } else {
+                    }
+                    else {
                         selections_holder.removeClass('loading');
                         results_holder.hide();
                     }
                 };
                 
                 function processRequest(string) {
-                    if (d_type == 'string') {
+                    if ( d_type == 'string' ) {
                         var limit = '';
-                        if (opts.retrieveLimit) {
+                        if ( opts.retrieveLimit ) {
                             limit = "&limit="+encodeURIComponent(opts.retrieveLimit);
                         }
-                        if(opts.beforeRetrieve){
+                        if( opts.beforeRetrieve ) {
                             string = opts.beforeRetrieve.call(this, string);
                         }
                         // Cancel previous request when input changes
@@ -330,15 +339,16 @@
                         request = $.getJSON(url, function (data) {
                             d_count = 0;
                             var new_data = opts.retrieveComplete.call(this, data);
-                            for (k in new_data) {
-                                if (new_data.hasOwnProperty(k)) {
+                            for ( k in new_data ) {
+                                if ( new_data.hasOwnProperty(k) ) {
                                     d_count ++;
                                 }
                             }
                             processData(new_data, string);
                         });
-                    } else {
-                        if(opts.beforeRetrieve) {
+                    }
+                    else {
+                        if( opts.beforeRetrieve ) {
                             string = opts.beforeRetrieve.call(this, string);
                         }
                         processData(org_data, string);
@@ -348,42 +358,43 @@
                 var num_count = 0;
                 
                 function processData(data, query) {
-                    if ( ! opts.matchCase) {
+                    if ( ! opts.matchCase ) {
                         query = query.toLowerCase();
                     }
                     
                     var matchCount = 0;
                     results_holder.html(results_ul.html('')).hide();
                     
-                    for (var i = 0; i < d_count; i ++) {
+                    for ( var i = 0; i < d_count; i ++ ) {
                         var num = i;
                         num_count ++;
                         var forward = false;
-                        if (opts.searchObjProps == 'value') {
+                        if ( opts.searchObjProps == 'value' ) {
                             var str = data[num].value;
-                        } else {
+                        }
+                        else {
                             var str = '';
                             var names = opts.searchObjProps.split(',');
-                            for (var y = 0; y < names.length; y ++) {
+                            for ( var y = 0; y < names.length; y ++ ) {
                                 var name = $.trim(names[y]);
                                 str = str + data[num][name] + ' ';
                             }
                         }
                         
-                        if (str){
-                            if ( ! opts.matchCase) {
+                        if ( str ) {
+                            if ( ! opts.matchCase ) {
                                 str = str.toLowerCase();
                             }
-                            if (str.search(query) != -1 && values_input.val().search(',' + data[num][opts.selectedValuesProp] + ',') == -1) {
+                            if ( str.search(query) != -1 && values_input.val().search(',' + data[num][opts.selectedValuesProp] + ',') == -1 ) {
                                 forward = true;
                             }
                         }
                         
-                        if (forward) {
+                        if ( forward ) {
                             var formatted = $('<li class="as-result-item" id="as-result-item-' + num + '"></li>').click(function () {
                                 var raw_data = $(this).data('data');
                                 var number = raw_data.num;
-                                if ($('#as-selection-' + number, selections_holder).length <= 0 && ! tab_press) {
+                                if ( $('#as-selection-' + number, selections_holder).length <= 0 && ! tab_press ) {
                                     var data = raw_data.attributes;
                                     input.val('').focus();
                                     prev = '';
@@ -407,26 +418,28 @@
                             
                             var this_data = $.extend({}, data[num]);
                             
-                            if ( ! opts.matchCase) {
+                            if ( ! opts.matchCase ) {
                                 var regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "gi");
-                            } else {
+                            }
+                            else {
                                 var regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "g");
                             }
                             
-                            if (opts.resultsHighlight && query.length > 0) {
+                            if ( opts.resultsHighlight && query.length > 0 ) {
                                 this_data[opts.selectedItemProp] = this_data[opts.selectedItemProp].replace(regx, "<em>$1</em>");
                             }
                             
-                            if( ! opts.formatList) {
+                            if ( ! opts.formatList ) {
                                 formatted = formatted.html(this_data[opts.selectedItemProp]);
-                            } else {
+                            }
+                            else {
                                 formatted = opts.formatList.call(this, this_data, formatted);
                             }
                             
                             results_ul.append(formatted);
                             delete this_data;
                             matchCount ++;
-                            if (opts.retrieveLimit && opts.retrieveLimit == matchCount ) {
+                            if ( opts.retrieveLimit && opts.retrieveLimit == matchCount ) {
                                 break;
                             }
                         }
@@ -434,13 +447,13 @@
                     
                     selections_holder.removeClass('loading');
                     
-                    if (matchCount <= 0) {
+                    if ( matchCount <= 0 ) {
                         results_ul.html('<li class="as-message">' + opts.emptyText + '</li>');
                     }
                     
                     results_holder.css('width', selections_holder.outerWidth());
                     
-                    if (matchCount > 0 || ! opts.showResultListWhenNoMatch) {
+                    if ( matchCount > 0 || ! opts.showResultListWhenNoMatch ) {
                         results_holder.show();
                     }
                     
@@ -472,19 +485,21 @@
                 };
 
                 function moveSelection(direction){
-                    if ($(':visible', results_holder).length > 0) {
+                    if ( $(':visible', results_holder).length > 0 ) {
                         var lis = $('li', results_holder);
-                        if (direction == 'down') {
+                        if ( direction == 'down' ) {
                             var start = lis.eq(0);
-                        } else {
+                        }
+                        else {
                             var start = lis.filter(':last');
                         }
                         
                         var active = $('.active:first', results_holder);
-                        if (active.length > 0) {
+                        if ( active.length > 0 ) {
                             if (direction == 'down') {
-                            start = active.next();
-                            } else {
+                                start = active.next();
+                            }
+                            else {
                                 start = active.prev();
                             }
                         }
@@ -495,7 +510,7 @@
                 };
 
                 function abortRequest() {
-                    if (request) {
+                    if ( request ) {
                         request.abort();
                         request = null;
                     }
