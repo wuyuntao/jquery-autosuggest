@@ -41,11 +41,11 @@
 /* ------------------------------------------------------------------------------------------------------------- DISPLAYED ITEMS */
 
 .as-selections .as-selection-item {
-	padding: 2px 7px 2px 10px;
+	padding: 4px 7px 4px 10px;
 	border: 1px solid #acc3ec;
 	border-top-color: #c0d9e9;
 	font-size: 13px;
-	font-family: "Lucida Grande", arial, sans-serif;
+    line-height: 13px;
 	color: #2b3840;
 	text-shadow: 0 1px 1px #fff;
 	background-color: #ddeefe;
@@ -138,9 +138,8 @@
 .as-list {
 	list-style: none;
 	padding: 0;
+    border: 1px solid #ccc;
 	margin: 2px 0 0 0;
-	font-size: 14px;
-	font-family: "Lucida Grande", arial, sans-serif;
 	color: #000;
 	background-color: #fff;
 	background-color: rgba(255,255,255,0.95);
@@ -160,6 +159,8 @@
 	border: 1px solid #fff;
 	border-bottom-color: #ddd;
 	margin: 0 0 0 0;
+	font-size: 14px;
+    line-height: 1.2em;
 	cursor: pointer;
 	background-color: transparent;
 	-webkit-border-radius: 5px;
