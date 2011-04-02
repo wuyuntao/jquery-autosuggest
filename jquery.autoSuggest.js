@@ -172,8 +172,7 @@
                     else if (input_focus) {
                         $('.as-selection-item', selections_holder).removeClass('blur');
                         if ($(this).val() != '') {
-                            results_ul.css('width', selections_holder.outerWidth());
-                            results_holder.show();
+                            results_holder.css('width', selections_holder.outerWidth()).show();
                         }
                     }
                     
@@ -439,7 +438,7 @@
                         results_ul.html('<li class="as-message">' + opts.emptyText + '</li>');
                     }
                     
-                    results_ul.css('width', selections_holder.outerWidth());
+                    results_holder.css('width', selections_holder.outerWidth());
                     
                     if (matchCount > 0 || ! opts.showResultListWhenNoMatch) {
                         results_holder.show();
