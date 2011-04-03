@@ -44,7 +44,7 @@
             neverSubmit : false,
             selectionLimit : false,
             showResultList : true,
-            showResultListWhenNoMatch : false,
+            showResultListWhenNoMatch : true,
             start : function () {},
             selectionClick : function (elem) {},
             selectionAdded : function (elem) {},
@@ -469,7 +469,7 @@
                     
                     results_holder.css('width', selections_holder.outerWidth());
                     
-                    if ( matchCount > 0 || ! opts.showResultListWhenNoMatch ) {
+                    if ( matchCount > 0 || opts.showResultListWhenNoMatch ) {
                         results_holder.show();
                     }
                     
