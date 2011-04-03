@@ -41,7 +41,9 @@
 /* ------------------------------------------------------------------------------------------------------------- DISPLAYED ITEMS */
 
 .as-selections .as-selection-item {
-	padding: 4px 7px 4px 10px;
+    position: relative; 
+    min-height: 13px;
+	padding: 4px 25px 4px 10px;
 	border: 1px solid #acc3ec;
 	border-top-color: #c0d9e9;
 	font-size: 13px;
@@ -98,13 +100,15 @@
 /* ............................................................................................................. Close button */
 
 .as-selections .as-selection-item .as-close {
-	float: right;
-	padding: 0 2px;
-	margin: 1px 0 0 7px;
-	font-family: sans-serif;
-	font-size: 14px;
-	font-weight: bold;
+	position: absolute;
+    top: 50%;
+    right: 5px;
+    width: 16px;
+    height: 16px;
+	margin: -8px 0 0;
+	font: bold 18px/16px sans-serif;
 	text-shadow: 0 1px 1px #fff;
+    text-align: center;
     text-decoration: none;
 	color: #5491be;
 	cursor: pointer;
