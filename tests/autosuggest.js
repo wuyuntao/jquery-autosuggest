@@ -226,6 +226,28 @@ test("Press delete key twice to remove a name", function() {
     sel = selections();
     equals(sel.length, 0, "Should have no name left");
     equals(value().val(), ",", "Should have no name left");
+    remove();
+});
+
+test("Use function for data source", function() {
+    var wasCalled = false;
+    function get_data(query, next) {
+        wasCalled = true;
+        next([{value: '123', name: 'zzzfffgg'}], query);
+    }
+
+    el = $('<input type="text" name="autosuggest" value=""></input>')
+        .appendTo("#container").autoSuggest(get_data, options);
+
+    el.focus();
+    el.val("Y")
+    el.simulate("keydown", {"keyCode": keyCode.Y});
+    stop();
+    setTimeout(function() {
+      equals(wasCalled, true, "Was the callback called?");
+      start();
+      remove();
+    }, 500);
 });
 
 });
