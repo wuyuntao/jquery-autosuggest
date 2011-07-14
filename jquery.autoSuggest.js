@@ -360,7 +360,7 @@
 
                 function add_selected_item(data, num){
                     values_input.val((values_input.val()||",")+data[opts.selectedValuesProp]+",");
-                    var item = $('<li class="as-selection-item" id="as-selection-'+num+'"></li>').click(function(){
+                    var item = $('<li class="as-selection-item" id="as-selection-'+num+'" data-value="' + data[opts.selectedValuesProp] + '"></li>').click(function(){
                             opts.selectionClick.call(this, $(this));
                             selections_holder.children().removeClass("selected");
                             $(this).addClass("selected");

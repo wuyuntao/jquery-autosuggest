@@ -77,6 +77,7 @@ test("Type J and select \"Michael Jordan\"", function() {
         sel = selections();
         equals(sel.length, 1, "Should have one name");
         equals($(sel[0]).text(), "×Michael Jordan", "Should be Michael Jordan");
+        equals($(sel[0]).attr('data-value'), "79", "Should set data-value on selection");
         equals(value().val(), ",79,", "Should be 79");
 
         start();
