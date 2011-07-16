@@ -251,4 +251,22 @@ test("Use function for data source", function() {
     }, 500);
 });
 
+test("Add and remove from code", function() {
+    var callbacks;
+    el = create($.extend(options, {
+        start: function(_callbacks) {
+                   callbacks = _callbacks;
+               }
+    }));
+
+    callbacks.add(data[0]);
+    equals(selections().length, 1, "Should select using a callback.");
+
+    callbacks.remove(data[1].value);
+    equals(selections().length, 1, "Should not remove anything when unselected value is removed.");
+
+    callbacks.remove(data[0].value);
+    equals(selections().length, 0, "Should remove using a callback.");
+});
+
 });

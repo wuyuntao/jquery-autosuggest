@@ -135,7 +135,7 @@ The function will be passed two arguments:
 
 * **showResultList**: *true or false (true by default)* - If set to `false`, the Results Dropdown List will never be shown at any time.
 
-* **start**: *callback function* - Custom function that is run only once on each AutoSuggest field when the code is first applied.
+* **start**: *callback function* - Custom function that is run only once on each AutoSuggest field when the code is first applied. A set of callbacks are passed. The callbacks are `add` (for selecting a data item from code -- pass the whole item to select) and `remove` (for removing a selected item from code -- pass the value).
 
 * **selectionClick**: *callback function* - Custom function that is run when a previously chosen item is clicked. The item that is clicked is passed into this callback function as 'elem'.
 `Example: selectionClick: function(elem){ elem.fadeTo("slow", 0.33); }`
