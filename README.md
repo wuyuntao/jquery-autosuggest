@@ -76,6 +76,25 @@ Below is an example of how to process the data sent via AJAX to your server in P
         echo json_encode($data);
     ?>
 
+If the available data will change (e.g. if you progressively or asynchronously load more data for autosuggesting),
+you can pass a function to autosuggest as the data source.
+
+    $(function() {
+        var slowly_loaded_data = {items: []};
+
+        // Obviously, you'd do something more interesting here.
+        setTimeout(function() { slowly_loaded_data = {items: [{value: '11', name: 'A name'}]}; }, 2000);
+
+        function get_data(query, next) {
+            next(slowly_loaded_data, query);
+        };
+        $("input[type=text]").autoSuggest(get_data);
+    });
+
+The function will be passed two arguments:
+* `query` - the string typed in the autosuggest box.
+* `next`  - the `function(data,query)` you should call when you have the data available.
+
 ## Options
 
 * **asHtmlID**: *string (false by default)* - Enables you to specify your own custom ID that will be appended to the top level AutoSuggest UL element's ID name. Otherwise it will default to using a random ID. Example: id="CUSTOM_ID". This is also applies to the hidden input filed that holds all of the selected values. Example: id="as-values-CUSTOM_ID"
@@ -116,7 +135,7 @@ Below is an example of how to process the data sent via AJAX to your server in P
 
 * **showResultList**: *true or false (true by default)* - If set to `false`, the Results Dropdown List will never be shown at any time.
 
-* **start**: *callback function* - Custom function that is run only once on each AutoSuggest field when the code is first applied.
+* **start**: *callback function* - Custom function that is run only once on each AutoSuggest field when the code is first applied. A set of callbacks are passed. The callbacks are `add` (for selecting a data item from code -- pass the whole item to select) and `remove` (for removing a selected item from code -- pass the value).
 
 * **selectionClick**: *callback function* - Custom function that is run when a previously chosen item is clicked. The item that is clicked is passed into this callback function as 'elem'.
 `Example: selectionClick: function(elem){ elem.fadeTo("slow", 0.33); }`

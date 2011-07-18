@@ -77,6 +77,7 @@ test("Type J and select \"Michael Jordan\"", function() {
         sel = selections();
         equals(sel.length, 1, "Should have one name");
         equals($(sel[0]).text(), "×Michael Jordan", "Should be Michael Jordan");
+        equals($(sel[0]).attr('data-value'), "79", "Should set data-value on selection");
         equals(value().val(), ",79,", "Should be 79");
 
         start();
@@ -226,6 +227,46 @@ test("Press delete key twice to remove a name", function() {
     sel = selections();
     equals(sel.length, 0, "Should have no name left");
     equals(value().val(), ",", "Should have no name left");
+    remove();
+});
+
+test("Use function for data source", function() {
+    var wasCalled = false;
+    function get_data(query, next) {
+        wasCalled = true;
+        next([{value: '123', name: 'zzzfffgg'}], query);
+    }
+
+    el = $('<input type="text" name="autosuggest" value=""></input>')
+        .appendTo("#container").autoSuggest(get_data, options);
+
+    el.focus();
+    el.val("Y")
+    el.simulate("keydown", {"keyCode": keyCode.Y});
+    stop();
+    setTimeout(function() {
+      equals(wasCalled, true, "Was the callback called?");
+      start();
+      remove();
+    }, 500);
+});
+
+test("Add and remove from code", function() {
+    var callbacks;
+    el = create($.extend(options, {
+        start: function(_callbacks) {
+                   callbacks = _callbacks;
+               }
+    }));
+
+    callbacks.add(data[0]);
+    equals(selections().length, 1, "Should select using a callback.");
+
+    callbacks.remove(data[1].value);
+    equals(selections().length, 1, "Should not remove anything when unselected value is removed.");
+
+    callbacks.remove(data[0].value);
+    equals(selections().length, 0, "Should remove using a callback.");
 });
 
 });
