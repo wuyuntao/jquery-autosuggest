@@ -57,16 +57,27 @@
         };
         var opts = $.extend(defaults, options);
 
-        var d_type = "object";
-        var d_count = 0;
-        if(typeof data == "string") {
-            d_type = "string";
-            var req_string = data;
-        } else {
-            var org_data = data;
-            for (k in data) if (data.hasOwnProperty(k)) d_count++;
+        function countValidItems(data) { var n = 0; for (k in data) if (data.hasOwnProperty(k)) n++; return n; }
+
+        var d_fetcher;
+        if(typeof data == "function") {
+            d_fetcher = data;
+        } else if(typeof data == "string") {
+            d_fetcher = function(query, next) {
+                var limit = "";
+                if(opts.retrieveLimit){
+                    limit = "&limit="+encodeURIComponent(opts.retrieveLimit);
+                }
+                $.getJSON(data+"?"+opts.queryParam+"="+encodeURIComponent(query)+limit+opts.extraParams, function(data){
+                    var new_data = opts.retrieveComplete.call(this, data);
+                    next(new_data, query);
+                });
+            };
+        } else if(typeof data == "object" && countValidItems(data) > 0) {
+            d_fetcher = function(query, next) { next(data, query); };
         }
-        if((d_type == "object" && d_count > 0) || d_type == "string"){
+
+        if(d_fetcher) {
             return this.each(function(x){
                 if(!opts.asHtmlID){
                     x = x+""+Math.floor(Math.random()*100); //this ensures there will be unique IDs on the page if autoSuggest() is called multiple times
@@ -75,7 +86,15 @@
                     x = opts.asHtmlID;
                     var x_id = x;
                 }
-                opts.start.call(this);
+                opts.start.call(this, {
+                    add: function(data) {
+                             add_selected_item(data, 'u' + $('li', selections_holder).length).addClass('blur');
+                         },
+                    remove: function(value) {
+                                values_input.val(values_input.val().replace(","+value+",",","));
+                                selections_holder.find('li[data-value = "' + value + '"]').remove();
+                            },
+                });
                 var input = $(this);
                 input.attr("autocomplete","off").addClass("as-input").attr("id",x_id);
                 if (opts.usePlaceholder) {
@@ -266,37 +285,18 @@
                     }
                 }
                 function processRequest(string){
-                  if(d_type == "string"){
-                      var limit = "";
-                      if(opts.retrieveLimit){
-                          limit = "&limit="+encodeURIComponent(opts.retrieveLimit);
-                      }
-                      if(opts.beforeRetrieve){
-                          string = opts.beforeRetrieve.call(this, string);
-                      }
-                      // Cancel previous request when input changes
-                      abortRequest();
-
-                      var url = req_string+"?"+opts.queryParam+"="+encodeURIComponent(string)+limit+opts.extraParams;
-                      // TODO handle aborted response
-                      request = $.getJSON(url, function(data) {
-                          d_count = 0;
-                          var new_data = opts.retrieveComplete.call(this, data);
-                          for (k in new_data) if (new_data.hasOwnProperty(k)) d_count++;
-                          processData(new_data, string);
-                      });
-                  } else {
-                      if(opts.beforeRetrieve){
-                          string = opts.beforeRetrieve.call(this, string);
-                      }
-                      processData(org_data, string);
+                  if(opts.beforeRetrieve){
+                      string = opts.beforeRetrieve.call(this, string);
                   }
+                  abortRequest();
+                  d_fetcher(string, processData);
                 }
                 var num_count = 0;
                 function processData(data, query){
                     if (!opts.matchCase){ query = query.toLowerCase(); }
                     var matchCount = 0;
                     results_holder.html(results_ul.html("")).hide();
+                    var d_count = countValidItems(data);
                     for(var i=0;i<d_count;i++){
                         var num = i;
                         num_count++;
@@ -368,7 +368,7 @@
 
                 function add_selected_item(data, num){
                     values_input.val((values_input.val()||",")+data[opts.selectedValuesProp]+",");
-                    var item = $('<li class="as-selection-item" id="as-selection-'+num+'"></li>').click(function(){
+                    var item = $('<li class="as-selection-item" id="as-selection-'+num+'" data-value="' + data[opts.selectedValuesProp] + '"></li>').click(function(){
                             opts.selectionClick.call(this, $(this));
                             selections_holder.children().removeClass("selected");
                             $(this).addClass("selected");
@@ -382,6 +382,7 @@
                         });
                     org_li.before(item.html(data[opts.selectedItemProp]).prepend(close));
                     opts.selectionAdded.call(this, org_li.prev(), data[opts.selectedValuesProp]);
+                    return org_li.prev();
                 }
 
                 function moveSelection(direction){
