@@ -87,7 +87,7 @@
                 }
                 else {
                     x = opts.asHtmlID;
-                    x_id = x;
+                    x_id = 'as-input-' + x;
                 }
                 
                 input.attr('autocomplete', 'off').addClass('as-input').attr('id', x_id);
