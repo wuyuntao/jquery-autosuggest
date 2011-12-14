@@ -61,6 +61,7 @@
         function countValidItems(data) { var n = 0; for (k in data) if (data.hasOwnProperty(k)) n++; return n; }
 
         var d_fetcher;
+        var request = null;
         if(typeof data == "function") {
             d_fetcher = data;
         } else if(typeof data == "string") {
@@ -69,7 +70,7 @@
                 if(opts.retrieveLimit){
                     limit = "&limit="+encodeURIComponent(opts.retrieveLimit);
                 }
-                $.getJSON(data+"?"+opts.queryParam+"="+encodeURIComponent(query)+limit+opts.extraParams, function(data){
+                request = $.getJSON(data+"?"+opts.queryParam+"="+encodeURIComponent(query)+limit+opts.extraParams, function(data){
                     var new_data = opts.retrieveComplete.call(this, data);
                     next(new_data, query);
                 });
@@ -157,7 +158,6 @@
                 var totalSelections = 0;
                 var tab_press = false;
                 var lastKeyPressCode = null;
-                var request = null;
 
                 // Handle input field events
                 input.focus(function(){
