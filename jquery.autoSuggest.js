@@ -297,6 +297,7 @@
                 var num_count = 0;
                 function processData(data, query){
                     if (!opts.matchCase){ query = query.toLowerCase(); }
+                    query = query.replace("(", "\\(", "g").replace(")", "\\)", "g");
                     var matchCount = 0;
                     results_holder.html(results_ul.html("")).hide();
                     var d_count = countValidItems(data);
