@@ -273,7 +273,7 @@ test("Add and remove from code", function() {
     equals(selections().length, 0, "Should remove using a callback.");
 });
 
-test("Add extraParams with function (instead of string)", function() {
+test("Add extraParams with function (instead of ONLY a string)", function() {
 
 
     $('#container').append('<input type="checkbox" id="test-as-location" value="1" checked="checked" />');
@@ -302,6 +302,7 @@ test("Add extraParams with function (instead of string)", function() {
         // Cleanup
         remove();
         $('#test-as-location').remove();
+        $(document).unbind('ajaxStop.extraParams');
     });
 
     el = create('data.html', opts);
