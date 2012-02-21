@@ -26,7 +26,10 @@ var el, res, sel, val,
         COMMA:  188
     };
 
-function create() {
+function create(d, opts) {
+    data = d || data;
+    options = opts || options;
+
     return $('<input type="text" name="autosuggest" value=""></input>')
         .appendTo("#container").autoSuggest(data, options);
 }
@@ -253,11 +256,12 @@ test("Use function for data source", function() {
 
 test("Add and remove from code", function() {
     var callbacks;
-    el = create($.extend(options, {
+    var opts = $.extend({}, options, {
         start: function(_callbacks) {
-                   callbacks = _callbacks;
-               }
-    }));
+            callbacks = _callbacks;
+        }
+    });
+    el = create('', opts);
 
     callbacks.add(data[0]);
     equals(selections().length, 1, "Should select using a callback.");
@@ -267,6 +271,50 @@ test("Add and remove from code", function() {
 
     callbacks.remove(data[0].value);
     equals(selections().length, 0, "Should remove using a callback.");
+});
+
+test("Add extraParams with function (instead of ONLY a string)", function() {
+
+
+    $('#container').append('<input type="checkbox" id="test-as-location" value="1" checked="checked" />');
+
+    var opts = $.extend({}, options, {
+        extraParams: function()
+        {
+            var checked = $('#test-as-location').is(':checked') ? 1 : 0;
+            return '&specific_location=' + checked;
+        }
+    });
+
+    var old_getJSON = $.getJSON;
+
+    $.getJSON = function(url){
+        equals(url, "data.html?q=J&specific_location=1");
+        return old_getJSON.apply(this, arguments);
+    }
+
+    stop();
+
+    $(document).bind('ajaxStop.extraParams', function(){
+        start();
+        // Restore it for later tests.
+        $.getJSON = old_getJSON
+        // Cleanup
+        remove();
+        $('#test-as-location').remove();
+        $(document).unbind('ajaxStop.extraParams');
+    });
+
+    el = create('data.html', opts);
+
+    el.focus();
+    el.val("J");
+    el.simulate("keydown", {"keyCode": keyCode.J});
+
+
+
+
+
 });
 
 });
