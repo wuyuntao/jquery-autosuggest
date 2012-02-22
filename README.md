@@ -119,7 +119,7 @@ The function will be passed two arguments:
 
 * **retrieveLimit**: *number (false by default)* - If set to a number, it will add a '&limit=' param to the AJAX request. It also limits the number of search results allowed to be displayed in the results dropdown box.
 
-* **extraParams**: *string ("" by default)* - This will be added onto the end of the AJAX request URL. Make sure you add an '&' before each param.
+* **extraParams**: *callback function* OR *string ("" by default)* - This will be added onto the end of the AJAX request URL. Make sure you add an '&' before each param. If used as a callback function, it must return a string of query params starting with '&'. The callback function is fired before each search is performed.
 
 * **matchCase**: *true or false (false by default)* - Make the search case sensitive when set to true.
 
