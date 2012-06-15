@@ -157,6 +157,8 @@ The function will be passed two arguments:
 
 * **resultsComplete**: *callback function* - Custom function that is run when the suggestion results dropdown list is made visible. Will run after every search query.
 
+* **preventPropagationOnEscape**: *true or false (false by default)* - If set to `true` this option will prevent a bubbling event when Esc was key pressed.
+
 The **formatList** option will hand you 2 objects: 
 
 * **data**: This is the data you originally passed into AutoSuggest (or retrieved via an AJAX request)

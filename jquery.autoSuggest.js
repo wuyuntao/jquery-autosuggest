@@ -54,7 +54,8 @@
             beforeRetrieve: function(string){ return string; },
             retrieveComplete: function(data){ return data; },
             resultClick: function(data){},
-            resultsComplete: function(){}
+            resultsComplete: function(){},
+            preventPropagationOnEscape : false
         };
         var opts = $.extend(defaults, options);
 
@@ -270,6 +271,10 @@
                             break;
                         // ignore if the following keys are pressed: [escape] [shift] [capslock]
                         case 27: // escape
+                            // Prevent event bubbling when pressing escape (e.g. when used in dialogs).
+                            if (opts.preventPropagationOnEscape && $(':visible', results_holder).length > 0) {
+                                e.stopPropagation();
+                            }
                         case 16: // shift
                         case 20: // capslock
                             abortRequest();
