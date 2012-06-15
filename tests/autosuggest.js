@@ -317,4 +317,16 @@ test("Add extraParams with function (instead of ONLY a string)", function() {
 
 });
 
+test("Type \"Yao Ming\" but press ESC. No value should be selected.", function() {
+    el = create();
+    // Type "Yap Ming" and ","
+    el.focus();
+    el.val("Yao Ming");
+    el.simulate("keydown", {"keyCode": keyCode.ESC});
+
+    sel = selections();
+    equals(sel.length, 0, "Should have no name");
+    remove();
+});
+
 });
