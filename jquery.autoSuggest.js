@@ -69,6 +69,17 @@
             return params;
         }
 
+        // Internal helper escaping html correctly.
+        function escapeHtml(text) {
+            return jQuery('<span/>').text(text).html();
+        }
+        // Internal helper escaping quotes correctly (when used in inline html templates).
+        function escapeQuotes(text) {
+            if (text) {
+                return text.replace(/"/g, '\\"');
+            }
+        }
+
         var d_fetcher;
         var request = null;
         if(typeof data == "function") {
@@ -102,8 +113,8 @@
                              add_selected_item(data, 'u' + $('li', selections_holder).length).addClass('blur');
                          },
                     remove: function(value) {
-                                values_input.val(values_input.val().replace(","+value+",",","));
-                                selections_holder.find('li[data-value = "' + value + '"]').remove();
+                                Selections.remove(value);
+                                selections_holder.find('li[data-value = "' + escapeHtml(value) + '"]').remove();
                             }
                 });
                 var input = $(this);
@@ -122,6 +133,48 @@
                 var results_holder = $('<div class="as-results" id="as-results-'+x+'"></div>').hide();
                 var results_ul =  $('<ul class="as-list"></ul>');
                 var values_input = $('<input type="hidden" class="as-values" name="as_values_'+x+'" id="as-values-'+x+'" />');
+                // Setup a selections object maintaining the current selections.
+                var Selections = (function(){
+                   var items = [], syncToHiddenfield = function() {
+                       var value = '', i = 0, c = items.length;
+                       for (; i < c; i++) {
+                           value = value + ',' + items[i];
+                       }
+                       if (value) {
+                           value = value + ',';
+                       }
+                       // whenever the field was synced, there have to be an empty comma (legacy mode)
+                       values_input.val(value || ',');
+                   }
+                   return {
+                       add : function(item) {
+                           if (!this.exist(item)) {
+                               items.push(item);
+                           }
+                           syncToHiddenfield();
+                       },
+                       remove : function(item) {
+                           items = jQuery.grep(items, function(value) {
+                               return value !== item;
+                           });
+                           syncToHiddenfield();
+                       },
+                       isEmpty : function() {
+                           return items.length === 0;
+                       },
+                       exist : function(item) {
+                           return jQuery.inArray(item, items) !== -1;
+                       },
+                       getAll : function(){
+                           // return cloned one
+                           return items.slice(0);
+                       },
+                       clear : function() {
+                           items = [];
+                           syncToHiddenfield();
+                       }
+                   };
+                })();
                 var prefill_value = "";
                 if(typeof opts.preFill == "string"){
                     var vals = opts.preFill.split(",");
@@ -150,9 +203,6 @@
                 }
                 if(prefill_value != ""){
                     input.val("");
-                    var lastChar = prefill_value.substring(prefill_value.length-1);
-                    if(lastChar != ","){ prefill_value = prefill_value+","; }
-                    values_input.val(","+prefill_value);
                     $("li.as-selection-item", selections_holder).addClass("blur").removeClass("selected");
                 }
                 input.after(values_input);
@@ -170,7 +220,7 @@
 
                 // Handle input field events
                 input.focus(function(){
-                    if(!opts.usePlaceholder && $(this).val() == opts.startText && values_input.val() == ""){
+                    if (!opts.usePlaceholder && $(this).val() == opts.startText && Selections.isEmpty()) {
                         $(this).val("");
                     } else if(input_focus){
                         $("li.as-selection-item", selections_holder).removeClass("blur");
@@ -196,7 +246,7 @@
                     }
                     return true;
                 }).blur(function(){
-                    if (!opts.usePlaceholder && $(this).val() == "" && values_input.val() == "" && prefill_value == "" && opts.minChars > 0) {
+                    if (!opts.usePlaceholder && $(this).val() == "" && Selections.isEmpty() && prefill_value == "" && opts.minChars > 0) {
                         $(this).val(opts.startText);
                     } else if(input_focus){
                         $("li.as-selection-item", selections_holder).addClass("blur").removeClass("selected");
@@ -218,11 +268,15 @@
                             break;
                         case 8:  // delete
                             if(input.val() == ""){
-                                var last = values_input.val().split(",");
-                                last = last[last.length - 2];
+                                var last = Selections.getAll();
+                                if (last.length > 0) {
+                                    last = last[last.length - 1];
+                                } else {
+                                    last = null;
+                                }
                                 selections_holder.children().not(org_li.prev()).removeClass("selected");
                                 if(org_li.prev().hasClass("selected")){
-                                    values_input.val(values_input.val().replace(","+last+",",","));
+                                    Selections.remove(last);
                                     opts.selectionRemoved.call(this, org_li.prev());
                                 } else {
                                     opts.selectionClick.call(this, org_li.prev());
@@ -245,7 +299,7 @@
                                 var i_input = input.val().replace(/(,)/g, "");
                                 var active = $("li.active:first", results_holder);
                                 // Generate a new bubble with text when no suggestion selected
-                                if(i_input !== "" && values_input.val().search(","+i_input+",") < 0 && i_input.length >= opts.minChars && active.length === 0){
+                                if (i_input !== "" && !Selections.exist(i_input) && i_input.length >= opts.minChars && active.length === 0) {
                                     e.preventDefault();
                                     var n_data = {};
                                     n_data[opts.selectedItemProp] = i_input;
@@ -330,7 +384,7 @@
                         }
                         if(str){
                             if (!opts.matchCase){ str = str.toLowerCase(); }
-                            if(str.search(query) != -1 && values_input.val().search(","+data[num][opts.selectedValuesProp]+",") == -1){
+                            if (str.search(query) != -1 && !Selections.exist(data[num][opts.selectedValuesProp])) {
                                 forward = true;
                             }
                         }
@@ -352,16 +406,23 @@
                                     $(this).addClass("active");
                                 }).data("data",{attributes: data[num], num: num_count});
                             var this_data = $.extend({},data[num]);
+                            query = query.replace(/"/g, '\\"');
                             if (!opts.matchCase){
-                                var regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "gi");
+                                var regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "gi");
                             } else {
-                                var regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "g");
+                                var regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g");
                             }
-
-                            if(opts.resultsHighlight && query.length > 0){
-                                this_data[opts.selectedItemProp] = this_data[opts.selectedItemProp].replace(regx,"<em>$1</em>");
+                            // When this is a string, escape the value and process a regular replacement for highlighting.
+                            if (typeof this_data[opts.selectedItemProp] === 'string') {
+                                this_data[opts.selectedItemProp] = escapeHtml(this_data[opts.selectedItemProp]);
+                                if (opts.resultsHighlight && query.length > 0){
+                                    this_data[opts.selectedItemProp] = this_data[opts.selectedItemProp].replace(regx,"<em>$1</em>");
+                                }
+                            } else {
+                                // jQuery Object.
+                                this_data[opts.selectedItemProp].html(this_data[opts.selectedItemProp].html().replace(regx,"<em>$1</em>"));
                             }
-                            if(!opts.formatList){
+                            if (!opts.formatList){
                                 formatted = formatted.html(this_data[opts.selectedItemProp]);
                             } else {
                                 formatted = opts.formatList.call(this, this_data, formatted);
@@ -384,20 +445,24 @@
                 }
 
                 function add_selected_item(data, num){
-                    values_input.val((values_input.val()||",")+data[opts.selectedValuesProp]+",");
-                    var item = $('<li class="as-selection-item" id="as-selection-'+num+'" data-value="' + data[opts.selectedValuesProp] + '"></li>').click(function(){
+                    Selections.add(data[opts.selectedValuesProp]);
+                    var item = $('<li class="as-selection-item" id="as-selection-' + num + '" data-value="' + escapeQuotes(escapeHtml(data[opts.selectedValuesProp])) + '"></li>').click(function() {
                             opts.selectionClick.call(this, $(this));
                             selections_holder.children().removeClass("selected");
                             $(this).addClass("selected");
                         }).mousedown(function(){ input_focus = false; });
                     var close = $('<a class="as-close">&times;</a>').click(function(){
-                            values_input.val(values_input.val().replace(","+data[opts.selectedValuesProp]+",",","));
+                            Selections.remove(data[opts.selectedValuesProp]);
                             opts.selectionRemoved.call(this, item);
                             input_focus = true;
                             input.focus();
                             return false;
                         });
-                    org_li.before(item.html(data[opts.selectedItemProp]).prepend(close));
+                    if (typeof data[opts.selectedItemProp] !== 'string') {
+                        org_li.before(item.append(data[opts.selectedItemProp]).prepend(close));
+                    } else {
+                        org_li.before(item.text(data[opts.selectedItemProp]).prepend(close));
+                    }
                     opts.selectionAdded.call(this, org_li.prev(), data[opts.selectedValuesProp]);
                     return org_li.prev();
                 }

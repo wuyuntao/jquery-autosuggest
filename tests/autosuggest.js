@@ -329,4 +329,343 @@ test("Type \"Yao Ming\" but press ESC. No value should be selected.", function()
     remove();
 });
 
+/**
+ * XSS Check
+ * 
+ * This checks if the plugin works correctly with values which contains special 
+ * html chairs like ", <, > or &.
+ * Both situations (unescaped content from the server and unescaped content 
+ * from the user) have to be handled the right way.
+ * 
+ * The injected code itself will store an single unique information right 
+ * into the element's dataset under the key name "test". 
+ */
+test("XSS: Type a complete injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.", function() {
+    var xssString = "\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works :('})</script>";
+    el = create();
+
+    el.data('test', 'No injection :)');
+    equals($('#autosuggest').data('test'), 'No injection :)', "Element's injection marker should be initial.");
+
+    el.focus();
+    el.val(xssString);
+    el.simulate("keydown", {"keyCode": keyCode.COMMA});
+
+    var sel = selections();
+    equals(sel.length, 1, "Should have one value");
+    equals(el.data('test'), 'No injection :)', "The injected should not be executed. It must NEVER happen.");
+    equals($(sel[0]).text(), "×"+xssString, "Should be the string with special chars");
+    equals(value().val(), ","+xssString+",", "Should be the correct id.");
+    remove();
+});
+
+/**
+ * XSS
+ *
+ * This checks if the plugin works correctly with values which contains special 
+ * html chairs like ", <, > or &.
+ * Both situations (unescaped content from the server and unescaped content 
+ * from the user) have to be handled the right way.
+ * 
+ * The injected code itself will store an single unique information right 
+ * into the element's dataset under the key name "test". 
+ */
+test("XSS: Type \"script\" to match an injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.", function() {
+    var xssString = "\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works :('})</script>";
+    var xssId = "4711"
+    var el = create([{value : xssId, name : xssString}]);
+
+    el.data('test', 'No injection :)');
+    equals($('#autosuggest').data('test'), 'No injection :)', "Element's injection marker should be initial.");
+
+    el.focus();
+    el.val("script");
+
+    // Wait for building results
+    stop();
+
+    setTimeout(function(){
+        var res = results();
+        equals(res.length, 1, "Should suggest one value.");
+        equals($(res[0]).text(), xssString, "Should be the injectable code.");
+
+        el.simulate("keydown", {"keyCode": keyCode.DOWN});
+        el.simulate("keydown", {"keyCode": keyCode.ENTER});
+
+        var sel = selections();
+        equals(sel.length, 1, "Should have one value");
+        equals(el.data('test'), 'No injection :)', "The injected should not be executed. It must NEVER happen.");
+        equals($(sel[0]).text(), "×"+xssString, "Should be the string with special chars");
+        equals(value().val(), ","+xssId+",", "Should be the correct id.");
+        start();
+        remove();
+    }, 500);
+});
+
+
+/**
+ * XSS
+ *
+ * This checks if the plugin works correctly with values which contains special 
+ * html chairs like ", <, > or &.
+ * Both situations (unescaped content from the server and unescaped content 
+ * from the user) have to be handled the right way.
+ * 
+ * The injected code itself will store an single unique information right 
+ * into the element's dataset under the key name "test". 
+ */
+test("XSS: Type \"\\\">\" to match an injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.", function() {
+    var xssString = "\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works :('})</script>";
+    var xssSelectionEscaped = '<em>\"&gt;&lt;</em>script type=\"text/javascript\"&gt;$(\'#autosuggest\').data({test:\'Injection works :(\'})&lt;/script&gt;';
+    var xssId = "4711";
+    var query = "\"><";
+    var queryEscaped = $('<span/>').text(query).html();
+    var el = create([{value : xssId, name : xssString}]);
+
+    el.data('test', 'No injection :)');
+    equals($('#autosuggest').data('test'), 'No injection :)', "Element's injection marker should be initial.");
+
+    el.focus();
+    el.val(query);
+
+    // Wait for building results
+    stop();
+
+    setTimeout(function(){
+        var res = results();
+        equals(res.length, 1, "Should suggest one value.");
+        equals($(res[0]).html(), xssSelectionEscaped, "Should be the injectable code.");
+
+        el.simulate("keydown", {"keyCode": keyCode.DOWN});
+        el.simulate("keydown", {"keyCode": keyCode.ENTER});
+
+        var sel = selections();
+        equals(sel.length, 1, "Should have one value");
+        equals(el.data('test'), 'No injection :)', "The injected should not be executed. It must NEVER happen.");
+        equals($(sel[0]).text(), "×"+xssString, "Should be the string with special chars");
+        equals(value().val(), ","+xssId+",", "Should be the correct id.");
+        start();
+        remove();
+    }, 500);
+});
+
+/**
+ * Extended test case with a custom html renderer.
+ */
+test("Extended example", function() {
+    var data = [{
+        value : '4711', 
+        img : 'john.png',
+        name : 'John Doe'
+    }];
+    var opts = {
+        asHtmlID: 'autosuggest', 
+        selectedItemProp: "name", 
+        searchObjProps: "name",
+        formatList : function(data, elem) {
+            return elem.append('<div><img src="'+data.img+'"/><span>'+data.name+'</span></div>');
+        }
+    };
+    var query = 'Doe';
+    el = create(data, opts);
+
+    el.focus();
+    el.val(query);
+
+    // Wait for building results
+    stop();
+
+    setTimeout(function(){
+        var res = results();
+        equals(res.length, 1, "Should suggest one value.");
+        equals($(res[0]).html(), '<div><img src="john.png"><span>John <em>Doe</em></span></div>', "Should be rendered output.");
+
+        el.simulate("keydown", {"keyCode": keyCode.DOWN});
+        el.simulate("keydown", {"keyCode": keyCode.ENTER});
+
+        var sel = selections();
+        equals(sel.length, 1, "Should have one value");
+        equals($(sel[0]).text(), '×John Doe', "Should be John Doe.");
+        equals(value().val(), ",4711,", "Should be 4711.");
+        start();
+        remove();
+    }, 500);
+});
+
+
+/**
+ * Extended test case with a custom html renderer and a prefilled entry.
+ */
+test("Extended example with Prefill", function() {
+    var data = [{
+        value : '4711', 
+        img : 'john.png',
+        name : 'John Doe'
+    }];
+    var opts = {
+        asHtmlID: 'autosuggest', 
+        selectedItemProp: "name", 
+        searchObjProps: "name",
+        formatList : function(data, elem) {
+            return elem.append('<div><img src="'+data.img+'"/><span>'+data.name+'</span></div>');
+        },
+        preFill : [{
+            value : '123',
+            img : 'donald.png',
+            name : 'Donald Duck'
+        }]
+    };
+    var query = 'Doe';
+    el = create(data, opts);
+
+	var sel = selections();
+    equals(sel.length, 1, "Prefill: The number of selections should be exactly one.");
+    equals(value().val(), ",123,", "Prefill: Value should be 123.");
+
+    el.focus();
+    el.val(query);
+
+    // Wait for building results
+    stop();
+
+    setTimeout(function(){
+        var res = results();
+        equals(res.length, 1, "Should suggest one value.");
+        equals($(res[0]).html(), '<div><img src="john.png"><span>John <em>Doe</em></span></div>', "Should be rendered output.");
+
+        el.simulate("keydown", {"keyCode": keyCode.DOWN});
+        el.simulate("keydown", {"keyCode": keyCode.ENTER});
+
+        sel = selections();
+        equals(sel.length, 2, "Should have two values");
+        equals($(sel[0]).text(), '×Donald Duck', "#1 should be Donald Duck.");
+        equals($(sel[1]).text(), '×John Doe', "#2 should be John Doe.");
+        equals(value().val(), ",123,4711,", "Should be 123,4711.");
+        start();
+        remove();
+    }, 500);
+});
+
+
+/**
+ * Extended test case with a custom html renderer and a prefilled entry.
+ * Additionally, this customize the selection tokens w/ an additional image.
+ */
+test("Extended example with Prefill, with image in selection tokens.", function() {
+    var renderer = function(data) {
+        return $('<div><img src="'+data.img+'" height=16 width=16 style="float:left"/><span>'+data.name+'</span></div>');
+    }, applyRenderer = function(data){
+        data.item = renderer(data);
+        return data;
+    };
+    var data = [applyRenderer({
+        value : '4711', 
+        img : 'john.png',
+        name : 'John Doe'
+    })];
+    var opts = {
+        asHtmlID: 'autosuggest', 
+        selectedItemProp: "item", 
+        searchObjProps: "name",
+        formatList : function(data, elem) {
+            return elem.append(data.item);
+        },
+        preFill : [applyRenderer({
+            value : '123',
+            img : 'donald.png',
+            name : 'Donald Duck'
+        })]
+    };
+    var query = 'Doe';
+    el = create(data, opts);
+
+    var sel = selections();
+    equals(sel.length, 1, "Prefill: The number of selections should be exactly one.");
+    equals($(sel[0]).html(), '<a class="as-close">×</a><div><img src="donald.png" height="16" width="16" style="float:left"><span>Donald Duck</span></div>', "#1 should be Donald Duck.");
+    equals(value().val(), ",123,", "Prefill: Value should be 123.");
+
+    el.focus();
+    el.val(query);
+
+    // Wait for building results
+    stop();
+
+    setTimeout(function(){
+        var res = results();
+        equals(res.length, 1, "Should suggest one value.");
+        equals($(res[0]).html(), '<div><img src="john.png" height="16" width="16" style="float:left"><span>John <em>Doe</em></span></div>', "Should be rendered output.");
+
+        el.simulate("keydown", {"keyCode": keyCode.DOWN});
+        el.simulate("keydown", {"keyCode": keyCode.ENTER});
+
+        sel = selections();
+        equals(sel.length, 2, "Should have two values");
+        equals($(sel[0]).text(), '×Donald Duck', "#1 should be Donald Duck.");
+        equals($(sel[1]).text(), '×John Doe', "#2 should be John Doe.");
+        equals(value().val(), ",123,4711,", "Should be 123,4711.");
+        start();
+        remove();
+    }, 500);
+});
+
+test("XSS: Extended example with Prefill, with image in selection tokens.", function() {
+    var renderer = function(data) {
+        var escaped = $('<span/>').text(data.name).html();
+        return $('<div><img src="'+data.img+'" height=16 width=16 style="float:left"/><span>'+escaped+'</span></div>');
+    }, applyRenderer = function(data){
+        data.item = renderer(data);
+        return data;
+    };
+    var data = [applyRenderer({
+        value : '4711', 
+        img : 'john.png',
+        name : "Bad John\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works (John) :('})</script>"
+    })];
+    var opts = {
+        asHtmlID: 'autosuggest', 
+        selectedItemProp: "item", 
+        searchObjProps: "name",
+        formatList : function(data, elem) {
+            return elem.append(data.item);
+        },
+        preFill : [applyRenderer({
+            value : '123',
+            img : 'donald.png',
+            name : "Bad Donald\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works (Donald) :('})</script>"
+        })]
+    };
+    var query = 'john';
+    el = create(data, opts);
+    el.data('test', 'No injection :)');
+
+    var sel = selections();
+    equals(sel.length, 1, "Prefill: The number of selections should be exactly one.");
+    equals($(sel[0]).html(), '<a class="as-close">×</a><div><img src="donald.png" height="16" width="16" style="float:left"><span>Bad Donald\"&gt;&lt;script type=\"text/javascript\"&gt;$(\'#autosuggest\').data({test:\'Injection works (Donald) :(\'})&lt;/script&gt;</span></div>', "#1 should be Donald Duck.");
+    equals(value().val(), ",123,", "Prefill: Value should be 123.");
+
+    el.focus();
+    el.val(query);
+
+    // Wait for building results
+    stop();
+
+    setTimeout(function(){
+        var res = results();
+        equals(res.length, 1, "Should suggest one value.");
+        equals($(res[0]).html(), '<div><img src="john.png" height="16" width="16" style="float:left"><span>Bad <em>John</em>\"&gt;&lt;script type=\"text/javascript\"&gt;$(\'#autosuggest\').data({test:\'Injection works (<em>John</em>) :(\'})&lt;/script&gt;</span></div>', "Should be rendered output.");
+
+        el.simulate("keydown", {"keyCode": keyCode.DOWN});
+        el.simulate("keydown", {"keyCode": keyCode.ENTER});
+
+        sel = selections();
+        equals(el.data('test'), 'No injection :)', "The injected should not be executed. It must NEVER happen.");
+        equals(sel.length, 2, "Should have two values");
+        equals($(sel[0]).text(), '×Bad Donald\"><script type=\"text/javascript\">$(\'#autosuggest\').data({test:\'Injection works (Donald) :(\'})</script>', "#1 should be Donald Duck.");
+        equals($(sel[1]).text(), '×Bad John\"><script type=\"text/javascript\">$(\'#autosuggest\').data({test:\'Injection works (John) :(\'})</script>', "#2 should be John Doe.");
+        equals(value().val(), ",123,4711,", "Should be 123,4711.");
+        start();
+        remove();
+    }, 500);
+});
+
 });
