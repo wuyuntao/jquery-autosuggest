@@ -356,6 +356,15 @@ test("XSS: Type a complete injectable fragment. The selection have to be selecte
     equals(el.data('test'), 'No injection :)', "The injected should not be executed. It must NEVER happen.");
     equals($(sel[0]).text(), "×"+xssString, "Should be the string with special chars");
     equals(value().val(), ","+xssString+",", "Should be the correct id.");
+
+    // Checks that removing will work, too!
+    el.simulate("keydown", {"keyCode": keyCode.DEL});
+    el.simulate("keydown", {"keyCode": keyCode.DEL});
+
+    sel = selections();
+    equals(sel.length, 0, "Should have no value");
+    equals(value().val(), ",", "Should be empty.");
+
     remove();
 });
 
@@ -397,6 +406,15 @@ test("XSS: Type \"script\" to match an injectable fragment. The selection have t
         equals(el.data('test'), 'No injection :)', "The injected should not be executed. It must NEVER happen.");
         equals($(sel[0]).text(), "×"+xssString, "Should be the string with special chars");
         equals(value().val(), ","+xssId+",", "Should be the correct id.");
+
+        // Checks that removing will work, too!
+        el.simulate("keydown", {"keyCode": keyCode.DEL});
+        el.simulate("keydown", {"keyCode": keyCode.DEL});
+
+        sel = selections();
+        equals(sel.length, 0, "Should have no value");
+        equals(value().val(), ",", "Should be empty.");
+
         start();
         remove();
     }, 500);
@@ -444,6 +462,15 @@ test("XSS: Type \"\\\">\" to match an injectable fragment. The selection have to
         equals(el.data('test'), 'No injection :)', "The injected should not be executed. It must NEVER happen.");
         equals($(sel[0]).text(), "×"+xssString, "Should be the string with special chars");
         equals(value().val(), ","+xssId+",", "Should be the correct id.");
+
+        // Checks that removing will work, too!
+        el.simulate("keydown", {"keyCode": keyCode.DEL});
+        el.simulate("keydown", {"keyCode": keyCode.DEL});
+
+        sel = selections();
+        equals(sel.length, 0, "Should have no value");
+        equals(value().val(), ",", "Should be empty.");
+
         start();
         remove();
     }, 500);
@@ -487,6 +514,15 @@ test("Custom result list formatter", function() {
         equals(sel.length, 1, "Should have one value");
         equals($(sel[0]).text(), '×John Doe', "Should be John Doe.");
         equals(value().val(), ",4711,", "Should be 4711.");
+
+        // Checks that removing will work, too!
+        el.simulate("keydown", {"keyCode": keyCode.DEL});
+        el.simulate("keydown", {"keyCode": keyCode.DEL});
+
+        sel = selections();
+        equals(sel.length, 0, "Should have no value");
+        equals(value().val(), ",", "Should be empty.");
+
         start();
         remove();
     }, 500);
@@ -541,6 +577,22 @@ test("Custom result list formatter + prefilling", function() {
         equals($(sel[0]).text(), '×Donald Duck', "#1 should be Donald Duck.");
         equals($(sel[1]).text(), '×John Doe', "#2 should be John Doe.");
         equals(value().val(), ",123,4711,", "Should be 123,4711.");
+
+        // Checks that removing will work, too!
+        el.simulate("keydown", {"keyCode": keyCode.DEL});
+        el.simulate("keydown", {"keyCode": keyCode.DEL});
+
+        sel = selections();
+        equals(sel.length, 1, "Should have one value");
+        equals(value().val(), ",123,", "Should be 123.");
+
+        el.simulate("keydown", {"keyCode": keyCode.DEL});
+        el.simulate("keydown", {"keyCode": keyCode.DEL});
+
+        sel = selections();
+        equals(sel.length, 0, "Should have no value");
+        equals(value().val(), ",", "Should be empty.");
+
         start();
         remove();
     }, 500);
