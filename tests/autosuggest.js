@@ -450,9 +450,9 @@ test("XSS: Type \"\\\">\" to match an injectable fragment. The selection have to
 });
 
 /**
- * Extended test case with a custom html renderer.
+ * Extended test case with a custom format list renderer.
  */
-test("Extended example", function() {
+test("Custom result list formatter", function() {
     var data = [{
         value : '4711', 
         img : 'john.png',
@@ -494,9 +494,9 @@ test("Extended example", function() {
 
 
 /**
- * Extended test case with a custom html renderer and a prefilled entry.
+ * Extended test case with a custom format list renderer and prefilling content.
  */
-test("Extended example with Prefill", function() {
+test("Custom result list formatter + prefilling", function() {
     var data = [{
         value : '4711', 
         img : 'john.png',
@@ -551,7 +551,7 @@ test("Extended example with Prefill", function() {
  * Extended test case with a custom html renderer and a prefilled entry.
  * Additionally, this customize the selection tokens w/ an additional image.
  */
-test("Extended example with Prefill, with image in selection tokens.", function() {
+test("Custom result list formatter, prefilling and with image in selection tokens.", function() {
     var renderer = function(data) {
         return $('<div><img src="'+data.img+'" height=16 width=16 style="float:left"/><span>'+data.name+'</span></div>');
     }, applyRenderer = function(data){
@@ -608,7 +608,7 @@ test("Extended example with Prefill, with image in selection tokens.", function(
     }, 500);
 });
 
-test("XSS: Extended example with Prefill, with image in selection tokens.", function() {
+test("XSS: Custom result list formatter, prefilling and with image in selection tokens.", function() {
     var renderer = function(data) {
         var escaped = $('<span/>').text(data.name).html();
         return $('<div><img src="'+data.img+'" height=16 width=16 style="float:left"/><span>'+escaped+'</span></div>');
