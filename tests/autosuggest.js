@@ -463,7 +463,7 @@ test("XSS: Type \"\\\">\" to match an injectable fragment. The selection have to
         equals($(sel[0]).text(), "×"+xssString, "Should be the string with special chars");
         equals(value().val(), ","+xssId+",", "Should be the correct id.");
 
-        // Checks that removing will work, too!
+        // Checks that removing will work.
         el.simulate("keydown", {"keyCode": keyCode.DEL});
         el.simulate("keydown", {"keyCode": keyCode.DEL});
 
@@ -471,8 +471,31 @@ test("XSS: Type \"\\\">\" to match an injectable fragment. The selection have to
         equals(sel.length, 0, "Should have no value");
         equals(value().val(), ",", "Should be empty.");
 
-        start();
-        remove();
+        // Checks that retyping will work.
+        el.focus();
+        el.val(query);
+
+        setTimeout(function(){
+            res = results();
+            equals(res.length, 1, "Should suggest one value.");
+            equals($(res[0]).html(), xssSelectionEscaped, "Should be the injectable code.");
+
+            el.simulate("keydown", {"keyCode": keyCode.DOWN});
+            el.simulate("keydown", {"keyCode": keyCode.ENTER});
+
+            sel = selections();
+            equals(sel.length, 1, "Should have one value");
+            equals(el.data('test'), 'No injection :)', "The injected should not be executed. It must NEVER happen.");
+            equals($(sel[0]).text(), "×"+xssString, "Should be the string with special chars");
+            equals(value().val(), ","+xssId+",", "Should be the correct id.");
+
+            // Checks that removing will work.
+            el.simulate("keydown", {"keyCode": keyCode.DEL});
+            el.simulate("keydown", {"keyCode": keyCode.DEL});
+
+            start();
+            remove();
+        }, 500);
     }, 500);
 });
 
