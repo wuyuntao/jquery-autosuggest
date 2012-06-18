@@ -553,9 +553,9 @@ test("Custom result list formatter", function() {
 
 
 /**
- * Extended test case with a custom format list renderer and prefilling content.
+ * Extended test case with a custom format list renderer and prefilling content. After that, delete #2 and then #1.
  */
-test("Custom result list formatter + prefilling", function() {
+test("Custom result list formatter + prefilling, delete them all.", function() {
     var data = [{
         value : '4711', 
         img : 'john.png',
@@ -611,6 +611,74 @@ test("Custom result list formatter + prefilling", function() {
 
         el.simulate("keydown", {"keyCode": keyCode.DEL});
         el.simulate("keydown", {"keyCode": keyCode.DEL});
+
+        sel = selections();
+        equals(sel.length, 0, "Should have no value");
+        equals(value().val(), ",", "Should be empty.");
+
+        start();
+        remove();
+    }, 500);
+});
+
+
+/**
+ * Extended test case with a custom format list renderer and prefilling content. After that, delete #1 and then #2
+ */
+test("Custom result list formatter + prefilling, delete them all (w/ mouse).", function() {
+    var data = [{
+        value : '4711', 
+        img : 'john.png',
+        name : 'John Doe'
+    }];
+    var opts = {
+        asHtmlID: 'autosuggest', 
+        selectedItemProp: "name", 
+        searchObjProps: "name",
+        formatList : function(data, elem) {
+            return elem.append('<div><img src="'+data.img+'"/><span>'+data.name+'</span></div>');
+        },
+        preFill : [{
+            value : '123',
+            img : 'donald.png',
+            name : 'Donald Duck'
+        }]
+    };
+    var query = 'Doe';
+    el = create(data, opts);
+
+	var sel = selections();
+    equals(sel.length, 1, "Prefill: The number of selections should be exactly one.");
+    equals(value().val(), ",123,", "Prefill: Value should be 123.");
+
+    el.focus();
+    el.val(query);
+
+    // Wait for building results
+    stop();
+
+    setTimeout(function(){
+        var res = results();
+        equals(res.length, 1, "Should suggest one value.");
+        equals($(res[0]).html(), '<div><img src="john.png"><span>John <em>Doe</em></span></div>', "Should be rendered output.");
+
+        el.simulate("keydown", {"keyCode": keyCode.DOWN});
+        el.simulate("keydown", {"keyCode": keyCode.ENTER});
+
+        sel = selections();
+        equals(sel.length, 2, "Should have two values");
+        equals($(sel[0]).text(), '×Donald Duck', "#1 should be Donald Duck.");
+        equals($(sel[1]).text(), '×John Doe', "#2 should be John Doe.");
+        equals(value().val(), ",123,4711,", "Should be 123,4711.");
+
+        // Checks that removing will work, too!
+        selections().eq(0).find('a.as-close').click()
+
+        sel = selections();
+        equals(sel.length, 1, "Should have one value");
+        equals(value().val(), ",4711,", "Should be 4711.");
+
+        selections().eq(0).find('a.as-close').click()
 
         sel = selections();
         equals(sel.length, 0, "Should have no value");
