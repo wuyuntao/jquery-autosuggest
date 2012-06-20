@@ -325,7 +325,7 @@
                         }
                         if(str){
                             if (!opts.matchCase){ str = str.toLowerCase(); }
-                            if(str.search(query) != -1 && values_input.val().search(","+data[num][opts.selectedValuesProp]+",") == -1){
+                            if(str.indexOf(query) != -1 && values_input.val().search(","+data[num][opts.selectedValuesProp]+",") == -1){
                                 forward = true;
                             }
                         }
