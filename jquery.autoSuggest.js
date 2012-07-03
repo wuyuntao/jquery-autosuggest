@@ -4,10 +4,13 @@
  * www.drewwilson.com
  * code.drewwilson.com/entry/autosuggest-jquery-plugin
  *
- * Forked by Wu Yuntao
+ * Originally gorked by Wu Yuntao
  * github.com/wuyuntao/jquery-autosuggest
  *
- * Version 1.6.2
+ * Forked by Jan Philipp (HL Solutions)
+ * github.com/hlsolutions/jquery-autosuggest
+ *
+ * Version 1.7.0
  *
  * This Plug-In will auto-complete or auto-suggest completed search queries
  * for you as you type. You can add multiple selections and remove them on

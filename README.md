@@ -1,8 +1,10 @@
 # jQuery AutoSuggest Plugin
 
-A fork of AutoSuggest jQuery plugin writtern by Drew Wilson.
-
+A fork of AutoSuggest jQuery plugin written by Drew Wilson.
 <http://code.drewwilson.com/entry/autosuggest-jquery-plugin>
+
+This fork based on the fork of Wu Yuntao.
+<https://github.com/wuyuntao/jquery-autosuggest>
 
 ## How It Works
 
@@ -23,7 +25,21 @@ When an AJAX request is made the search string is sent over in a param named "q"
 
 As of AutoSuggest version 1.4 you can now create selections by using the **tab** or **comma** keys. To do this simply type something into the box and hit the tab or comma keys. The selection is added to AutoSuggest in the exact same manner as if it were chosen from the Results dropdown.
 
-AutoSuggest has been tested (and works) in: IE7 & IE8, Firefox, Safari, Opera, and Chrome.
+AutoSuggest has been tested (and works) in:
+
+* IE6, IE7, IE8, IE9
+* Firefox (all)
+* Safari (all)
+* Opera (all?)
+* Chrome (all)
+
+## Security ##
+
+Since 1.7 this plugin prevents injecting JavaScript into the web page with techniques known as cross-site scripting (XSS). Both original version of Drew Wilson and the fork of Wu Yuntao are affected by this vulnerability.
+
+The solution is part of a bigger one: At first all foreign input or content have to be escaped correctly before inserting it as html into the web page. In addition to this, the selections state have be changed internally from a comma separated string into a more comfortable and at least reliable selections holder domain object.
+
+To prove this statement, special test cases could be found at `tests/autosuggest.js`. Feel free to contribute patches. We will like it!
 
 ## How To Use It
 
@@ -182,8 +198,11 @@ You MUST return the HTML object. **formatList** will run on each 'result' item.
 
 Originally developed by [Drew Wilson](http://drewwilson.com/)
 
+Forked by by [Wu Yuntao](https://github.com/wuyuntao)
+
 ### Contributors
 
 * [Wu Yuntao](http://github.com/wuyuntao)
 * [Fred Wu](http://github.com/fredwu)
 * [Jeremy Mikola](http://github.com/jmikola)
+* [Jan Philipp](http://github.com/knalli)
