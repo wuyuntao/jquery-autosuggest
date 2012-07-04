@@ -1,0 +1,24 @@
+{
+  "name": "jquery-autosuggest",
+  "version": "1.7.0",
+  "description": "An AutoSuggtest Plugin for jQuery written in Javascript",
+  "homepage": "http://hlsolutions.github.com/jquery-autosuggest/",
+  "author": "Jan Philipp <jan.philipp@hl-services.de>",
+  "main": "./jquery.autoSuggest.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hlsolutions/jquery-autosuggest.git"
+  },
+  "dependencies": {
+    "jquery": ">= 1.7"
+  },
+#  "devDependencies": {
+#    "coffee-script": "> 1.1.0"
+#  },
+  "bugs": {
+    "url": "https://github.com/hlsolutions/jquery-autosuggest/issues"
+#  },
+#  "scripts": {
+#    "test": "cake test"
+  }
+}
