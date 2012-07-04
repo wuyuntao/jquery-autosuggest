@@ -5,7 +5,7 @@
 ### 2012-07-03 Version 1.7.0
 
 * Fixes handling with comma containing values
-* Fixes handling with HTML special characters like ", >, <. This characters will be encoded.
+* Fixes handling with HTML special characters like ", >, <. These characters will be encoded.
 * Adds support of HTML renderers in addition to the XSS issues.
 
 ### Any ealier releases
