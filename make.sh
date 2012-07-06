@@ -1,14 +1,14 @@
 #!/bin/sh
 
 COFFEE=`which coffee`
-ACTION="$1"
-if [ "$ACTION" != "compile" ]; then
-	ACTION="watch"
-fi
-
 if [ $? != "0" ]; then
 	echo "No CoffeeScript found."
 	exit 1
+fi
+
+ACTION="$1"
+if [ "$ACTION" != "compile" ]; then
+	ACTION="watch"
 fi
 
 if [ "$ACTION" = "compile" ]; then
