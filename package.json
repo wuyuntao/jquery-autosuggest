@@ -1,24 +1,33 @@
 {
-  "name": "jquery-autosuggest",
-  "version": "1.7.0",
-  "description": "An AutoSuggtest Plugin for jQuery written in Javascript",
-  "homepage": "http://hlsolutions.github.com/jquery-autosuggest/",
-  "author": "Jan Philipp <jan.philipp@hl-services.de>",
-  "main": "./jquery.autoSuggest.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/hlsolutions/jquery-autosuggest.git"
-  },
-  "dependencies": {
-    "jquery": ">= 1.7"
-  },
-#  "devDependencies": {
-#    "coffee-script": "> 1.1.0"
-#  },
-  "bugs": {
-    "url": "https://github.com/hlsolutions/jquery-autosuggest/issues"
-#  },
-#  "scripts": {
-#    "test": "cake test"
-  }
+    "name" : "jquery.autoSuggest",
+    "title" : "jQuery AutoSuggest",
+    "description" : "An autosuggest and autocomplete plugin for jQuery. With CoffeeScript and SASS flavour.",
+    "version" : "2.0.0",
+    "homepage" : "http://hlsolutions.github.com/jquery-autosuggest",
+    "author" : {
+        "name" : "Jan Philipp",
+        "email" : "knallisworld@googlemail.com",
+        "url" : "https://github.com/knalli"
+    },
+    "repository" : {
+        "type" : "git",
+        "url" : "https://github.com/hlsolutions/jquery-autosuggest.git"
+    },
+    "bugs" : {
+        "url" : "https://github.com/hlsolutions/jquery-autosuggest/issues"
+    },
+    "licenses" : [
+        {
+            "type" : "MIT",
+            "url" : "https://github.com/hlsolutions/jquery-autosuggest/blob/master/LICENSE-MIT"
+        },
+        {
+            "type" : "GPL",
+            "url" : "https://github.com/hlsolutions/jquery-autosuggest/blob/master/LICENSE-GPL"
+        }
+    ],
+    "dependencies" : {
+        "jquery" : ">= 1.6"
+    },
+    "keywords" : []
 }

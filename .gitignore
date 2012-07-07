@@ -9,3 +9,4 @@
 .todo*
 .idea
 *.iml
+.sass-cache

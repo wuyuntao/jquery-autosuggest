@@ -1,35 +1,24 @@
 ###
-
-AutoSuggest 2 (with CoffeeScript flavour)
-Copyright 2012 by Jan Philipp
-http://github.com/hlsolutions/jquery-autosuggest
-
 This is a rewritten version of Drew Wilsons "AutoSuggest" plugin from 2009/2010.
 www.drewwilson.com / code.drewwilson.com/entry/autosuggest-jquery-plugin
 
 Originally forked by Wu Yuntao (on GitHub)
 http://github.com/wuyuntao/jquery-autosuggest
 Based on the 1.6er release dated in July, 2012
-
-
-
-This Plug-In will auto-complete or auto-suggest completed search queries
-for you as you type. You can add multiple selections and remove them on
-the fly. It supports keybord navigation (UP + DOWN + RETURN), as well
-as multiple AutoSuggest fields on the same page.
-
-Inspired by the Autocomplete plugin by: Joern Zaefferer
-and the Facelist plugin by: Ian Tearle (iantearle.com)
-
-This AutoSuggest jQuery plug-in is dual licensed under the MIT and GPL licenses:
-
-* http://www.opensource.org/licenses/mit-license.php
-* http://www.gnu.org/licenses/gpl.html
-
 ###
 
+###
+Initial setup: Override any existing $
+###
+$ = jQuery
 
-# Helper
+###
+Special helper classes
+###
+
+###
+The SelectionControl maintains and manage any selections.
+###
 class SelectionControl
 
   hiddenField : null
@@ -45,66 +34,70 @@ class SelectionControl
       value += ','
     # whenever the field was synced, there have to be an empty comma (legacy mode)
     @hiddenField.val value || ','
+    return
 
   add : (item) ->
     unless @exist item
-      items.push item
+      @items.push item
     @syncToHiddenField()
+    return
 
   remove : (item) ->
     # Exclude only item.
-    @items = jQuery.grep @items, (value) -> value isnt item
-    @syncToHiddenfield()
+    @items = $.grep @items, (value) -> value isnt item
+    @syncToHiddenField()
+    return
 
   isEmpty : -> @items.length is 0
 
-  exist : (item) -> jQuery.inArray(item, @items) isnt -1
+  exist : (item) -> $.inArray(item, @items) isnt -1
 
   getAll : -> @items.slice 0 # clone
 
   clear : ->
     @items = []
     @syncToHiddenField()
+    return
 
 
-
-jQuery.fn.autoSuggest = (data, options) ->
+$.fn.autoSuggest = (data, options) ->
 
   ###*
    * default settings
   ###
   defaults =
 
-    asHtmlID:false
+    asHtmlID : false
 
-    startText: 'Enter Name Here'
+    startText : 'Enter Name Here'
 
-    usePlaceholder: false
+    usePlaceholder : false
 
-    emptyText: 'No Results Found'
+    emptyText : 'No Results Found'
 
-    preFill: {}
+    preFill :
+      {}
 
-    limitText: 'No More Selections Are Allowed'
-
-    ###*
-     * name of object property
-     * @type string
-    ###
-    selectedItemProp: 'value'
+    limitText : 'No More Selections Are Allowed'
 
     ###*
      * name of object property
      * @type string
     ###
-    selectedValuesProp: 'value'
+    selectedItemProp : 'value'
+
+    ###*
+     * name of object property
+     * @type string
+    ###
+    selectedValuesProp : 'value'
 
     ###*
      * comma separated list of object property names
     ###
-    searchObjProps: 'value'
+    searchObjProps : 'value'
 
-    queryParam: 'q'
+    queryParam : 'q'
 
     limitParam : 'limit'
 
@@ -112,62 +105,63 @@ jQuery.fn.autoSuggest = (data, options) ->
      * number for 'limit' param on ajax request
      * @type number
     ###
-    retrieveLimit: null
+    retrieveLimit : null
 
-    extraParams: null
+    extraParams : null
 
-    matchCase: false
+    matchCase : false
 
-    minChars: 1
+    minChars : 1
 
-    keyDelay: 400
+    keyDelay : 400
 
-    resultsHighlight: true
+    resultsHighlight : true
 
-    neverSubmit: false
+    neverSubmit : false
 
-    selectionLimit: false
+    selectionLimit : false
 
-    showResultList: true
+    showResultList : true
 
-    showResultListWhenNoMatch: false
+    showResultListWhenNoMatch : false
 
-    canGenerateNewSelections: true
+    canGenerateNewSelections : true
 
-    start: ->
+    start : ->
 
-    selectionClick: (elem) ->
+    selectionClick : (elem) ->
 
-    selectionAdded: (elem) ->
+    selectionAdded : (elem) ->
 
-    selectionRemoved: (elem) -> elem.remove()
+    selectionRemoved : (elem) -> elem.remove()
 
     ###*
      * callback function formatting a list
      * @type Function
     ###
-    formatList:null
+    formatList : null
 
     ###*
      * interceptor
     ###
-    beforeRetrieve: (string) -> string
+    beforeRetrieve : (string) -> string
 
     ###*
      * interceptor
     ###
-    retrieveComplete: (data) -> data
+    retrieveComplete : (data) -> data
 
-    resultClick: (data) ->
+    resultClick : (data) ->
 
-    resultsComplete: ->
+    resultsComplete : ->
 
     preventPropagationOnEscape : false
 
-    ajaxOptions : type : 'get', dataType : 'json'
+    ajaxOptions :
+      type : 'get', dataType : 'json'
 
   # build settings merging configuration with options
-  options = jQuery.extend {}, defaults, options
+  options = $.extend {}, defaults, options
 
   ### TODO ###
   countObjectProperties = (object) -> (x for own x of object).length
@@ -177,17 +171,16 @@ jQuery.fn.autoSuggest = (data, options) ->
   ###
   getExtraParams = ->
     result = options.extraParams
-
-    if jQuery.isFunction result
+    if $.isFunction result
       result = result(@)
 
     ###*
      * AutoSuggest <= 1.7 supported only a string of params. Since 2, the extra params will be used as a standard
      * $.fn.Ajax "data" parameter. The next lines will ensure that the result is such an object.
     ###
-    if jQuery.type(result) is 'string'
+    if $.type(result) is 'string'
       obj = {}
-      for pair in result.split '&'
+      for pair in result.split '&' when pair isnt ''
         parts = pair.split '=', 2
         obj[parts[0]] = parts[1] if parts.length
       result = obj
@@ -199,7 +192,7 @@ jQuery.fn.autoSuggest = (data, options) ->
   Internal helper escaping HTML correctly.
   ###
   escapeHtml = (text) ->
-    jQuery('<span/>').text(text).html
+    $('<span/>').text(text).html()
 
   ###
   TODO: Utility
@@ -209,12 +202,12 @@ jQuery.fn.autoSuggest = (data, options) ->
     if text then text.replace /"/g, '\\"'
 
   request = null
-  fetcher = switch jQuery.type data
+  fetcher = switch $.type data
     when 'function'
-      # Callback
+    # Callback
       data
     when 'string'
-      # URL
+    # URL
       (query, next) ->
         params = {}
         ### ensures query is encoded ###
@@ -224,14 +217,14 @@ jQuery.fn.autoSuggest = (data, options) ->
           params[options.limitParam] = encodeURIComponent options.retrieveLimit
 
         extraParams = getExtraParams()
-        if jQuery.type(extraParams) is 'object'
-          jQuery.extend params, extraParams
+        if $.type(extraParams) is 'object'
+          $.extend params, extraParams
 
-        ajaxCfg = jQuery.extend {}, options.ajaxOptions,
+        ajaxCfg = $.extend {}, options.ajaxOptions,
           url : data
           data : params
-        request = jQuery.ajax(ajaxCfg).done (data) -> next(options.retrieveComplete.call(@, data), query)
-    when 'object'
+        request = $.ajax(ajaxCfg).done (data) -> next(options.retrieveComplete.call(@, data), query)
+    when 'array', 'object'
       (query, next) -> next(data, query)
 
   return unless fetcher
@@ -242,7 +235,7 @@ jQuery.fn.autoSuggest = (data, options) ->
     # Configure local IDs.
     unless options.asHtmlID
       # ensures there will be unique IDs on the page if autoSuggest() is called multiple times
-      x = "#{x}#{Math.floor(Math.random()*100)}"
+      x = "#{x}#{Math.floor(Math.random() * 100)}"
       x_id = "as-input-#{x}"
     else
       x = options.asHtmlID
@@ -251,28 +244,54 @@ jQuery.fn.autoSuggest = (data, options) ->
     # Setup instance properties.
 
     input = $ @
-    input.attr autocomplete: 'off', id : x_id
+    input.attr autocomplete : 'off', id : x_id
     input.addClass 'as-input'
     if options.usePlaceholder
-      input.attr placeholder: options.startText
+      input.attr placeholder : options.startText
     else
       input.val options.startText
 
+    add_selected_item = (data, num) ->
+      Selections.add data[options.selectedValuesProp]
+      item = $ "<li class=\"as-selection-item\" id=\"as-selection-#{num}\" data-value=\"#{escapeQuotes(escapeHtml(data[options.selectedValuesProp]))}\"></li>"
+      item.click ->
+        element = $ @
+        options.selectionClick.call @, element
+        selections_holder.children().removeClass 'selected'
+        element.addClass 'selected'
+        return
+      item.mousedown ->
+        input_focus = false
+        return
+      close = $ "<a class=\"as-close\">&times;</a>"
+      close.click ->
+        Selections.remove data[options.selectedValuesProp]
+        options.selectionRemoved.call @, item
+        input_focus = true
+        input.focus()
+        return false
+      if typeof data[options.selectedItemProp] isnt 'string'
+        org_li.before item.append(data[options.selectedItemProp]).prepend(close)
+      else
+        org_li.before item.text(data[options.selectedItemProp]).prepend(close)
+      options.selectionAdded.call @, org_li.prev(), data[options.selectedValuesProp]
+      return org_li.prev()
+
     input_focus = false
     # Setup basic elements and render them to the DOM
-    input.wrap("<ul class=\"as-selections\" id=\"as-selections-#{x}\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-#{x}\"></li>");
-    selections_holder = jQuery "#as-selections-#{x}"
-    org_li = jQuery "#as-original-#{x}"
-    results_holder = jQuery "<div class=\"as-results\" id=\"as-results-#{x}\"></div>"
-    results_ul =  jQuery "<ul class=\"as-list\"></ul>"
-    values_input = jQuery "<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{x}\" id=\"as-values-#{x}\" />"
+    input.wrap("<ul class=\"as-selections\" id=\"as-selections-#{x}\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-#{x}\"></li>")
+    selections_holder = $ "#as-selections-#{x}"
+    org_li = $ "#as-original-#{x}"
+    results_holder = $ "<div class=\"as-results\" id=\"as-results-#{x}\"></div>"
+    results_ul =  $ "<ul class=\"as-list\"></ul>"
+    values_input = $ "<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{x}\" id=\"as-values-#{x}\" />"
 
     ###
       DO START
     ###
     options.start.call @,
       add : (data) ->
-        counted = jQuery(selections_holder).find('li').length
+        counted = $(selections_holder).find('li').length
         item = add_selected_item data, "u#{counted}"
         item?.addClass 'blur'
       remove : (value) ->
@@ -282,7 +301,7 @@ jQuery.fn.autoSuggest = (data, options) ->
     Selections = new SelectionControl(values_input)
     prefill_value = ''
 
-    switch jQuery.type options.preFill
+    switch $.type options.preFill
       when 'string'
         for value in options.preFill.split ','
           item = {}
@@ -293,7 +312,7 @@ jQuery.fn.autoSuggest = (data, options) ->
       when 'array'
         prefill_value = ''
         if options.preFill.length
-          for item in options.preFill
+          for item, i in options.preFill
             new_value = item[options.selectedValuesProp]
             if typeof new_value is 'undefined'
               new_value = ''
@@ -309,8 +328,8 @@ jQuery.fn.autoSuggest = (data, options) ->
     selections_holder.click ->
       input_focus = true
       input.focus()
-      #return
-    .mousedown ->
+      return
+    selections_holder.mousedown ->
       input_focus = false
       return
     # Append selections_holder to DOM.
@@ -319,7 +338,8 @@ jQuery.fn.autoSuggest = (data, options) ->
     interval = null
     timeout = null
     prev = ''
-    totalSelections = 0 # FIXME unused
+    totalSelections = 0
+    # FIXME unused
     tab_press = false
     lastKeyPressCode = null
     num_count = 0
@@ -345,7 +365,7 @@ jQuery.fn.autoSuggest = (data, options) ->
         results_holder.hide()
 
     processRequest = (string) ->
-      if jQuery.isFunction options.beforeRetrieve
+      if $.isFunction options.beforeRetrieve
         string = options.beforeRetrieve.call @, string
         abortRequest()
         fetcher string, processData
@@ -365,16 +385,16 @@ jQuery.fn.autoSuggest = (data, options) ->
         else
           str = ''
           for name in options.searchObjProps.split ','
-            str += "#{item[jQuery.trim(name)]} "
+            str += "#{item[$.trim(name)]} "
         if str
           unless options.matchCase
             str = str.toLowerCase()
-          if str.search(query) isnt -1 && Selections.exist(item[options.selectedValuesProp])
+          if str.search(query) isnt -1 && !Selections.exist(item[options.selectedValuesProp])
             forward = true
         if forward
-          formatted = jQuery "<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>"
+          formatted = $ "<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>"
           formatted.click ->
-            element = jQuery @
+            element = $ @
             raw_data = element.data 'data'
             number = raw_data.num
             if selections_holder.find("#as-selection-#{number}").length <= 0 && !tab_press
@@ -390,32 +410,33 @@ jQuery.fn.autoSuggest = (data, options) ->
             input_focus = false
             return
           formatted.mouseover ->
-            element = jQuery @
+            element = $ @
             results_ul.find('li').removeClass 'active'
             element.addClass 'active'
             return
           formatted.data 'data',
             attributes : data[num]
             num : num_count
-          this_data = jQuery.extend {}, data[num]
+          this_data = $.extend {}, data[num]
           query = query.replace /"/g, '\\"'
           unless options.matchCase
             regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "gi")
           else
-            regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g");
+            regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g")
           ### When this is a string, escape the value and process a regular replacement for highlighting.###
           if typeof this_data[options.selectedItemProp] is 'string'
             this_data[options.selectedItemProp] = escapeHtml(this_data[options.selectedItemProp])
             if options.resultsHighlight && query.length > 0
               this_data[options.selectedItemProp] = this_data[options.selectedItemProp].replace regx, '<em>$1</em>'
           else
-            # jQuery object
-            this_data[opts.selectedItemProp].html this_data[opts.selectedItemProp].html().replace(regx,'<em>$1</em>')
+            # $ object
+            this_data[options.selectedItemProp].html this_data[options.selectedItemProp].html().replace(regx, '<em>$1</em>')
           unless options.formatList
             formatted = formatted.html(this_data[options.selectedItemProp])
           else
             formatted = options.formatList.call @, this_data, formatted
-          # GC: free
+          results_ul.append formatted
+          # GC: free memory
           this_data = null
           matchCound++
           if options.retrieveLimit && options.retrieveLimit is matchCound
@@ -424,36 +445,10 @@ jQuery.fn.autoSuggest = (data, options) ->
       selections_holder.removeClass 'loading'
       if matchCound <= 0
         results_ul.html "<li class=\"as-message\">#{options.emptyText}</li>"
-      results_ul.css width: selections_holder.outerWidth()
+      results_ul.css width : selections_holder.outerWidth()
       if matchCound > 0 || !options.showResultListWhenNoMatch
         results_holder.show()
       options.resultsComplete.call @
-
-    add_selected_item = (data, num) ->
-      Selections.add data[options.selectedValuesProp]
-      item = jQuery "<li class=\"as-selection-item\" id=\"as-selection-#{num}\" data-value=\"#{escapeQuotes(escapeHtml(data[options.selectedValuesProp]))}\"></li>"
-      item.click ->
-        element = jQuery @
-        options.selectionClick.call @, element
-        selections_holder.children().removeClass 'selected'
-        element.addClass 'selected'
-        return
-      item.mousedown ->
-        input_focus = false
-        return
-      close = jQuery "<a class=\"as-close\">&times;</a>"
-      close.click ->
-        Selections.remove data[options.selectedValuesProp]
-        options.selectionRemoved.call @, item
-        input_focus = true
-        input.focus()
-        return false
-      if typeof data[options.selectedItemProp] isnt 'string'
-        org_li.before item.append(data[options.selectedItemProp]).prepend(close)
-      else
-        org_li.before item.text(data[options.selectedItemProp]).prepend(close)
-      options.selectionAdded.call @, org_li.prev(), data[options.selectedValuesProp]
-      return org_li.prev()
 
     moveSelection = (direction) ->
       if results_holder.find(':visible').length
@@ -479,7 +474,7 @@ jQuery.fn.autoSuggest = (data, options) ->
       request = null
 
     input.focus ->
-      element = jQuery @
+      element = $ @
       if !options.usePlaceholder && element.val() is options.startText && Selections.isEmpty()
         element.val ''
       else if input_focus
@@ -488,21 +483,22 @@ jQuery.fn.autoSuggest = (data, options) ->
           results_ul.css width : selections_holder.outerWidth()
           results_holder.show()
       if interval then clearInterval interval
-      interval = setInterval ->
+      interval = setInterval (->
         if options.showResultList
           if options.selectionLimit && selections_holder.find('li.as-selection-item').length >= options.selectionLimit
             results_ul.html "<li class=\"as-message\">#{options.limitText}</li>"
             results_holder.show()
           else
             keyChange()
-      , options.keyDelay
+        return
+      ), options.keyDelay
       input_focus = true
       if options.minChars is 0
         processRequest element.val()
       return true
 
     input.blur ->
-      element = jQuery @
+      element = $ @
       if !options.usePlaceholder && element.val() is '' && Selections.isEmpty() && prefill_value is '' && options.minChars > 0
         element.val options.startText
       else if input_focus
@@ -514,14 +510,14 @@ jQuery.fn.autoSuggest = (data, options) ->
       ### track the last key pressed ###
       lastKeyPressCode = event.keyCode
       first_focus = false
-      switch e.keyCode
-        when 38 # up
+      switch event.keyCode
+        when 38 # up key
           event.preventDefault()
           moveSelection 'up'
-        when 40 # down
+        when 40 # down key
           event.preventDefault()
           moveSelection 'down'
-        when 8 # delete
+        when 8 # delete key
           if input.val() is ''
             last = Selections.getAll()
             if last.length
@@ -541,13 +537,15 @@ jQuery.fn.autoSuggest = (data, options) ->
             abortRequest()
           if results_holder.find(':visible').length
             if timeout then clearTimeout timeout
-            timeout = setTimeout ->
+            timeout = setTimeout (->
               keyChange()
-            , options.keyDelay
+              return
+            ), options.keyDelay
         when 9, 188 # tab, comma
           if options.canGenerateNewSelections
             tab_press = true
-            i_input = input.val().replace /(,)/g, '' # remove all comma
+            i_input = input.val().replace /(,)/g, ''
+            # remove all comma
             active = results_holder.find('li.active:first')
             ### Generate a new bubble with text when no suggestion selected ###
             if i_input isnt '' && !Selections.exist(i_input) && i_input.length >= options.minChars && active.length is 0
@@ -573,3 +571,4 @@ jQuery.fn.autoSuggest = (data, options) ->
         when 16, 20 # shift, capslock
           abortRequest()
           results_holder.hide()
+      return
