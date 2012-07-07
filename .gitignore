@@ -10,3 +10,5 @@
 .idea
 *.iml
 .sass-cache
+src/jquery.autoSuggest.js
+src/jquery.autoSuggest.css
