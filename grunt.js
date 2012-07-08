@@ -104,4 +104,7 @@ module.exports = function (grunt) {
   // Test task: Only testing the code (linting and unit tests).
   grunt.registerTask('test', 'sass lint coffee server qunit');
 
+  // Travis: CI Server
+  grunt.registerTask('travis', 'sass lint coffee concat cssmin server qunit concat min');
+
 };
