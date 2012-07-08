@@ -2,6 +2,8 @@
 
 The *jQuery plugin* **AutoSuggest** will turn any regular text `input` box into a awesome auto-complete and auto-suggest box. It will dynamically create all the HTML elements that it needs to function. You *don't need to add any extra HTML* to work with AutoSuggest. Also, AutoSuggest uses **ZERO images**! All styling is done 100% in the included CSS file. This means it is super easy to customize the look of everything! You only need to edit the included CSS file. You can even use images if you want, just add the appropriate lines of code into the CSS file.
 
+[![Example](http://github.com/downloads/hlsolutions/jquery-autosuggest/jquery-autosuggest-example01.png)]
+
 ## Getting Started
 Download the [production version][min-js] or the [development version][max-js]. Don't forget the CSS [production version][min-css] or the [development version][max-css].
 
