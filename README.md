@@ -39,7 +39,7 @@ When you type into the `input` box and the "suggestion" dropdown list appears, a
 * As you hover over each suggested option in the list a `class` of "selected" is added to that item, and then removed when you `mouseout`.
 * When you make a selection the item is added to the `input` box. Also there is a hidden `input` field generated for each AutoSuggest box that stores the values (comma separated) of each item you have selected. This input box will have a unique ID as well as a class name of "as-values".
 
-The plugin expects the data passed into it (or gathered from the URL) to be formatted in [JSON](http://json.org/). JSON is an extremely easy format to work with, and if you don't already... you should :) To learn more about JSON, check out my post/video, [An Introduction to JSON](http://code.drewwilson.com/entry/an-introduction-to-json).
+The plugin expects the data passed into it (or gathered from the URL) to be formatted in [JSON](http://json.org/). JSON is an extremely easy format to work with, and if you don't already... you should :) To learn more about JSON, check out Drew Wilson's post/video, [An Introduction to JSON](http://code.drewwilson.com/entry/an-introduction-to-json).
 
 When an AJAX request is made the search string is sent over in a param named "q" by default. However you can change that name with the **queryParam** option. Here is a default example AJAX request: **http://www.example.com/your/script/?q=mick**
 "mick" would be the search query that was typed into the `input` box. Be sure to setup your server-side code to grab that param and send back some results.
