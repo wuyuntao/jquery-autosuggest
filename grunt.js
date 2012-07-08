@@ -105,6 +105,6 @@ module.exports = function (grunt) {
   grunt.registerTask('test', 'sass lint coffee server qunit');
 
   // Travis: CI Server
-  grunt.registerTask('travis', 'server qunit');
+  grunt.registerTask('travis', 'sass lint coffee concat cssmin server qunit concat min');
 
 };
