@@ -234,6 +234,9 @@ $.fn.autoSuggest = (data, options) ->
   ###
   return @each (element) ->
 
+    input_focus = false
+    input = $ @
+
     # Configure local IDs.
     unless options.asHtmlID
       # ensures there will be unique IDs on the page if autoSuggest() is called multiple times
@@ -245,7 +248,6 @@ $.fn.autoSuggest = (data, options) ->
 
     # Setup instance properties.
 
-    input = $ @
     input.attr autocomplete : 'off', id : elementId
     input.addClass 'as-input'
     if options.usePlaceholder
@@ -279,7 +281,6 @@ $.fn.autoSuggest = (data, options) ->
       options.selectionAdded.call @, org_li.prev(), data[options.selectedValuesProp]
       return org_li.prev()
 
-    input_focus = false
     # Setup basic elements and render them to the DOM
     input.wrap("<ul class=\"as-selections\" id=\"as-selections-#{element}\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-#{element}\"></li>")
     selections_holder = $ "#as-selections-#{element}"

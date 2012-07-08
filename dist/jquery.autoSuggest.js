@@ -287,6 +287,8 @@ Initial setup: Override any existing $
 
     return this.each(function(element) {
       var Selections, abortRequest, add_selected_item, elementId, i, input, input_focus, interval, item, keyChange, lastKeyPressCode, moveSelection, new_value, num_count, org_li, prefill_value, prev, processData, processRequest, results_holder, results_ul, selections_holder, tab_press, timeout, totalSelections, value, values_input, _i, _j, _len, _len1, _ref, _ref1;
+      input_focus = false;
+      input = $(this);
       if (!options.asHtmlID) {
         element = "" + element + (Math.floor(Math.random() * 100));
         elementId = "as-input-" + element;
@@ -294,7 +296,6 @@ Initial setup: Override any existing $
         element = options.asHtmlID;
         elementId = element;
       }
-      input = $(this);
       input.attr({
         autocomplete: 'off',
         id: elementId
@@ -318,12 +319,10 @@ Initial setup: Override any existing $
           element.addClass('selected');
         });
         item.mousedown(function() {
-          var input_focus;
           input_focus = false;
         });
         close = $("<a class=\"as-close\">&times;</a>");
         close.click(function() {
-          var input_focus;
           Selections.remove(data[options.selectedValuesProp]);
           options.selectionRemoved.call(this, item);
           input_focus = true;
@@ -338,7 +337,6 @@ Initial setup: Override any existing $
         options.selectionAdded.call(this, org_li.prev(), data[options.selectedValuesProp]);
         return org_li.prev();
       };
-      input_focus = false;
       input.wrap("<ul class=\"as-selections\" id=\"as-selections-" + element + "\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-" + element + "\"></li>");
       selections_holder = $("#as-selections-" + element);
       org_li = $("#as-original-" + element);
