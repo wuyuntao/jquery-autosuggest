@@ -57,7 +57,7 @@
 
     module('Basic UI Tests: type and select');
 
-    asyncTest('Type J and select "Michael Jordan"', function () {
+    asyncTest('Type J and select "Michael Jordan"', 8, function () {
       el = create();
       $.simulate2.triggerKeyEventsForString(el, 'J', 0, true);
 
@@ -82,7 +82,7 @@
       }, 500);
     });
 
-    test('Type "Yao Ming" and select it by COMMA', function () {
+    test('Type "Yao Ming" and select it by COMMA', 3, function () {
       el = create();
       // Type "Yap Ming" and ","
       el.focus();
@@ -96,7 +96,7 @@
       remove();
     });
 
-    test('Type "Yao Ming" and select it by TAB', function () {
+    test('Type "Yao Ming" and select it by TAB', 3, function () {
       el = create();
       // Type "Yap Ming" and "\t"
       el.focus();
@@ -112,7 +112,7 @@
 
     module('Basic UI Tests: type, let suggest and select one');
 
-    asyncTest('Press enter to select suggestion', function () {
+    asyncTest('Press enter to select suggestion', 4, function () {
       el = create();
 
       el.focus();
@@ -139,7 +139,7 @@
       }, 500);
     });
 
-    asyncTest('Press arrow keys to move the selection up and down', function () {
+    asyncTest('Press arrow keys to move the selection up and down', 10, function () {
       el = create();
 
       el.focus();
@@ -185,7 +185,7 @@
 
     module('Basic UI Tests: remove a selected item');
 
-    test('Click close button to remove a name', function () {
+    test('Click close button to remove a name', 3, function () {
       el = create();
 
       el.focus();
@@ -204,7 +204,7 @@
       remove();
     });
 
-    test('Press delete key twice to remove a name', function () {
+    test('Press delete key twice to remove a name', 4, function () {
       el = create();
 
       el.focus();
@@ -231,7 +231,7 @@
 
     module('Basic UI Tests: close suggestions');
 
-    test('Type "Yao Ming" but press than ESC. No value should be selected.', function () {
+    test('Type "Yao Ming" but press than ESC. No value should be selected.', 1, function () {
       el = create();
       // Type "Yap Ming" and ","
       el.focus();
@@ -247,7 +247,7 @@
     module('Basic UI Tests (Regressions)');
 
     // https://github.com/jsloane/jquery-autosuggest/commit/623f2426f0f225884dedbb2b0e3efdce6c983951
-    asyncTest('Check for regression: Type "*". should not fail.', function () {
+    asyncTest('Check for regression: Type "*". should not fail.', 2, function () {
       el = create();
       $.simulate2.triggerKeyEventsForString(el, '*', 0, true);
 
@@ -262,7 +262,7 @@
     });
 
     // https://github.com/jsloane/jquery-autosuggest/commit/623f2426f0f225884dedbb2b0e3efdce6c983951
-    asyncTest('Check for regression: Type "[". should not fail.', function () {
+    asyncTest('Check for regression: Type "[". should not fail.', 2, function () {
       el = create();
       $.simulate2.triggerKeyEventsForString(el, '[', 0, true);
 
@@ -277,7 +277,7 @@
     });
 
     // https://github.com/jsloane/jquery-autosuggest/commit/623f2426f0f225884dedbb2b0e3efdce6c983951
-    asyncTest('Check for regression: Type "(". should not fail.', function () {
+    asyncTest('Check for regression: Type "(". should not fail.', 2, function () {
       el = create();
       $.simulate2.triggerKeyEventsForString(el, '(', 0, true);
 
@@ -293,7 +293,7 @@
 
     module('Configuration: "data"');
 
-    asyncTest('Use function for data source', function () {
+    asyncTest('Use function for data source', 1, function () {
       var wasCalled = false;
 
       function get_data(query, next) {
@@ -319,7 +319,7 @@
 
     module('Configuration: "options.start"');
 
-    test('Add and remove from code', function () {
+    test('Add and remove from code', 4, function () {
       var callbacks;
       var opts = $.extend({}, options, {
         start : function (_callbacks) {
@@ -353,7 +353,7 @@
       }
     });
 
-    asyncTest('Add extraParams with function (instead of ONLY a string)', function () {
+    asyncTest('Add extraParams with function (instead of ONLY a string)', 2, function () {
       var opts = $.extend({}, options, {
 
         extraParams : function () {
@@ -393,7 +393,7 @@
      * The injected code itself will store an single unique information right
      * into the element's dataset under the key name "test".
      */
-    test('Type a complete injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.', function () {
+    test('Type a complete injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.', 7, function () {
       var xssString = "\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works :('})</script>";
       el = create();
 
@@ -432,7 +432,7 @@
      * The injected code itself will store an single unique information right
      * into the element's dataset under the key name "test".
      */
-    asyncTest('Type "script" to match an injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.', function () {
+    asyncTest('Type "script" to match an injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.', 9, function () {
       var xssString = "\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works :('})</script>";
       var xssId = "4711";
       var el = create([
@@ -484,7 +484,7 @@
      * The injected code itself will store an single unique information right
      * into the element's dataset under the key name "test".
      */
-    asyncTest('Type "\\">" to match an injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.', function () {
+    asyncTest('Type "\\">" to match an injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.', 15, function () {
       var xssString = "\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works :('})</script>";
       var xssSelectionEscaped = '<em>\"&gt;&lt;</em>script type=\"text/javascript\"&gt;$(\'#autosuggest\').data({test:\'Injection works :(\'})&lt;/script&gt;';
       var xssId = "4711";
@@ -549,10 +549,12 @@
       }, 500);
     });
 
+    module('Advanced HTML-Renderer');
+
     /**
      * Extended test case with a custom format list renderer.
      */
-    asyncTest('Custom result list formatter', function () {
+    asyncTest('Custom result list formatter', 7, function () {
       var data = [
         {
           value : '4711',
@@ -604,7 +606,7 @@
     /**
      * Extended test case with a custom format list renderer and prefilling content. After that, delete #2 and then #1.
      */
-    asyncTest('Custom result list formatter + prefilling, delete them all.', function () {
+    asyncTest('Custom result list formatter + prefilling, delete them all.', 12, function () {
       var data = [
         {
           value : '4711',
@@ -675,7 +677,7 @@
     /**
      * Extended test case with a custom format list renderer and prefilling content. After that, delete #1 and then #2
      */
-    asyncTest('Custom result list formatter + prefilling, delete them all (w/ mouse).', function () {
+    asyncTest('Custom result list formatter + prefilling, delete them all (w/ mouse).', 12, function () {
       var data = [
         {
           value : '4711',
@@ -745,7 +747,7 @@
      * Extended test case with a custom html renderer and a prefilled entry.
      * Additionally, this customize the selection tokens w/ an additional image.
      */
-    asyncTest('Custom result list formatter, prefilling and with image in selection tokens.', function () {
+    asyncTest('Custom result list formatter, prefilling and with image in selection tokens.', 9, function () {
       var renderer = function (data) {
         return $('<div><img src="' + data.img + '" height=16 width=16 style="float:left"/><span>' + data.name + '</span></div>');
       }, applyRenderer = function (data) {
@@ -799,7 +801,7 @@
       }, 500);
     });
 
-    asyncTest('Custom result list formatter, prefilling and with image in selection tokens.', function () {
+    asyncTest('Custom result list formatter, prefilling and with image in selection tokens.', 10, function () {
       var renderer = function (data) {
         var escaped = $('<span/>').text(data.name).html();
         return $('<div><img src="' + data.img + '" height=16 width=16 style="float:left"/><span>' + escaped + '</span></div>');
