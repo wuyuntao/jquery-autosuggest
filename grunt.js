@@ -84,11 +84,15 @@ module.exports = function (grunt) {
       coffee : {
         files : '<config:coffee.dist1.files>',
         //tasks : 'coffeelint:dist1 coffee:dist1 ok'
-        tasks : 'coffee:dist1 ok'
+        tasks : 'coffee:dist1 qunit ok'
       },
       sass : {
         files : '<config:sass.dist1.src>',
         tasks : 'sass:dist1 cssmin ok'
+      },
+      lint : {
+        files : '<config:lint.files>',
+        tasks : 'lint qunit'
       }
     }
   });
