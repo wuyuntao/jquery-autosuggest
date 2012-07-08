@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>jQuery AutoSuggest Demo</title>
+    <link rel="stylesheet" href="../dist/jquery.autoSuggest.css">
+    <script src="../libs/jquery-loader.js"></script>
+    <script src="../dist/jquery.autoSuggest.js"></script>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        form fieldset {
+            width: 500px;
+            margin: auto;
+            margin-top: 60px;
+        }
+
+        form fieldset input {
+            width: 300px;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            var data = [
+                {value : "21", name : "Mick Jagger"},
+                {value : "43", name : "Johnny Storm"},
+                {value : "46", name : "Richard Hatch"},
+                {value : "54", name : "Kelly Slater"},
+                {value : "55", name : "Rudy Hamilton"},
+                {value : "79", name : "Michael Jordan"}
+            ];
+            var options = {selectedItemProp : "name", searchObjProps : "name"};
+            $('#person').autoSuggest(data, options);
+
+            $('form').submit(function (event) {
+                event.preventDefault();
+                $('form pre').text('Selected: ' + $('person').val());
+            });
+        });
+    </script>
+</head>
+<body>
+<form>
+    <fieldset>
+        <legend>Form</legend>
+        <p>
+            <label for="person">Person:</label>
+            <input id="person" name="person">
+        </p>
+    </fieldset>
+    <fieldset>
+        <legend>Output</legend>
+        <pre></pre>
+    </fieldset>
+</form>
+</body>
+</html>
