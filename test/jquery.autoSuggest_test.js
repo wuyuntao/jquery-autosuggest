@@ -55,9 +55,9 @@
       $("#as-results-autosuggest, #as-selections-autosuggest").remove();
     }
 
-    module("AutoSuggest TestCases");
+    module('Basic UI Tests: type and select');
 
-    test("Type J and select \"Michael Jordan\"", function () {
+    test('Type J and select "Michael Jordan"', function () {
       el = create();
       $.simulate2.triggerKeyEventsForString(el, 'J', 0, true);
 
@@ -84,7 +84,7 @@
       }, 500);
     });
 
-    test("Type \"Yao Ming\" and select it by COMMA", function () {
+    test('Type "Yao Ming" and select it by COMMA', function () {
       el = create();
       // Type "Yap Ming" and ","
       el.focus();
@@ -98,58 +98,7 @@
       remove();
     });
 
-    // https://github.com/jsloane/jquery-autosuggest/commit/623f2426f0f225884dedbb2b0e3efdce6c983951
-    test("Type \"*\".", function () {
-      el = create();
-      $.simulate2.triggerKeyEventsForString(el, '*', 0, true);
-
-      stop();
-
-      setTimeout(function(){
-        sel = selections();
-        equal(sel.length, 0, "Should have no result.");
-        equal(value().val(), "", "Should be empty.");
-
-        start();
-        remove();
-      }, 500);
-    });
-
-    // https://github.com/jsloane/jquery-autosuggest/commit/623f2426f0f225884dedbb2b0e3efdce6c983951
-    test("Type \"[\".", function () {
-      el = create();
-      $.simulate2.triggerKeyEventsForString(el, '[', 0, true);
-
-      stop();
-
-      setTimeout(function(){
-        sel = selections();
-        equal(sel.length, 0, "Should have no result.");
-        equal(value().val(), "", "Should be empty.");
-
-        start();
-        remove();
-      }, 500);
-    });
-
-    // https://github.com/jsloane/jquery-autosuggest/commit/623f2426f0f225884dedbb2b0e3efdce6c983951
-    test("Type \"(\".", function () {
-      el = create();
-      $.simulate2.triggerKeyEventsForString(el, '(', 0, true);
-
-      stop();
-
-      setTimeout(function(){
-        sel = selections();
-        equal(sel.length, 0, "Should have no result.");
-        equal(value().val(), "", "Should be empty.");
-
-        start();
-        remove();
-      }, 500);
-    });
-
-    test("Type \"Yao Ming\" and select it by TAB", function () {
+    test('Type "Yao Ming" and select it by TAB', function () {
       el = create();
       // Type "Yap Ming" and "\t"
       el.focus();
@@ -163,7 +112,9 @@
       remove();
     });
 
-    test("Press enter to select suggestion", function () {
+    module('Basic UI Tests: type, let suggest and select one');
+
+    test('Press enter to select suggestion', function () {
       el = create();
 
       el.focus();
@@ -191,7 +142,7 @@
       }, 500);
     });
 
-    test("Press arrow keys to move the selection up and down", function () {
+    test('Press arrow keys to move the selection up and down', function () {
       el = create();
 
       el.focus();
@@ -236,7 +187,9 @@
       }, 500);
     });
 
-    test("Click close button to remove a name", function () {
+    module('Basic UI Tests: remove a selected item');
+
+    test('Click close button to remove a name', function () {
       el = create();
 
       el.focus();
@@ -255,7 +208,7 @@
       remove();
     });
 
-    test("Press delete key twice to remove a name", function () {
+    test('Press delete key twice to remove a name', function () {
       el = create();
 
       el.focus();
@@ -280,7 +233,77 @@
       remove();
     });
 
-    test("Use function for data source", function () {
+    module('Basic UI Tests: close suggestions');
+
+    test('Type "Yao Ming" but press than ESC. No value should be selected.', function () {
+      el = create();
+      // Type "Yap Ming" and ","
+      el.focus();
+      el.val("Yao Ming");
+      el.simulate("keydown", {"keyCode" : keyCode.ESC});
+
+      sel = selections();
+      equal(sel.length, 0, "Should have no name");
+      remove();
+    });
+
+
+    module('Basic UI Tests (Regressions)');
+
+    // https://github.com/jsloane/jquery-autosuggest/commit/623f2426f0f225884dedbb2b0e3efdce6c983951
+    test('Check for regression: Type "*". should not fail.', function () {
+      el = create();
+      $.simulate2.triggerKeyEventsForString(el, '*', 0, true);
+
+      stop();
+
+      setTimeout(function () {
+        sel = selections();
+        equal(sel.length, 0, "Should have no result.");
+        equal(value().val(), "", "Should be empty.");
+
+        start();
+        remove();
+      }, 500);
+    });
+
+    // https://github.com/jsloane/jquery-autosuggest/commit/623f2426f0f225884dedbb2b0e3efdce6c983951
+    test('Check for regression: Type "[". should not fail.', function () {
+      el = create();
+      $.simulate2.triggerKeyEventsForString(el, '[', 0, true);
+
+      stop();
+
+      setTimeout(function () {
+        sel = selections();
+        equal(sel.length, 0, "Should have no result.");
+        equal(value().val(), "", "Should be empty.");
+
+        start();
+        remove();
+      }, 500);
+    });
+
+    // https://github.com/jsloane/jquery-autosuggest/commit/623f2426f0f225884dedbb2b0e3efdce6c983951
+    test('Check for regression: Type "(". should not fail.', function () {
+      el = create();
+      $.simulate2.triggerKeyEventsForString(el, '(', 0, true);
+
+      stop();
+
+      setTimeout(function () {
+        sel = selections();
+        equal(sel.length, 0, "Should have no result.");
+        equal(value().val(), "", "Should be empty.");
+
+        start();
+        remove();
+      }, 500);
+    });
+
+    module('Configuration: "data"');
+
+    test('Use function for data source', function () {
       var wasCalled = false;
 
       function get_data(query, next) {
@@ -304,7 +327,9 @@
       }, 500);
     });
 
-    test("Add and remove from code", function () {
+    module('Configuration: "options.start"');
+
+    test('Add and remove from code', function () {
       var callbacks;
       var opts = $.extend({}, options, {
         start : function (_callbacks) {
@@ -313,7 +338,7 @@
       });
       el = create('', opts);
 
-      ok(callbacks,  'A callback object must be defined.');
+      ok(callbacks, 'A callback object must be defined.');
       callbacks.add(data[0]);
       equal(selections().length, 1, "Should select using a callback.");
 
@@ -324,7 +349,9 @@
       equal(selections().length, 0, "Should remove using a callback.");
     });
 
-    test("Add extraParams with function (instead of ONLY a string)", function () {
+    module('Configuration: "options.extraParams"');
+
+    test('Add extraParams with function (instead of ONLY a string)', function () {
       $('#container').append('<input type="checkbox" id="test-as-location" value="1" checked="checked" />');
 
       var opts = $.extend({}, options, {
@@ -362,17 +389,7 @@
       el.simulate("keydown", {"keyCode" : keyCode.J});
     });
 
-    test("Type \"Yao Ming\" but press ESC. No value should be selected.", function () {
-      el = create();
-      // Type "Yap Ming" and ","
-      el.focus();
-      el.val("Yao Ming");
-      el.simulate("keydown", {"keyCode" : keyCode.ESC});
-
-      sel = selections();
-      equal(sel.length, 0, "Should have no name");
-      remove();
-    });
+    module('XSS Tests');
 
     /**
      * XSS Check
@@ -385,7 +402,7 @@
      * The injected code itself will store an single unique information right
      * into the element's dataset under the key name "test".
      */
-    test("XSS: Type a complete injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.", function () {
+    test("Type a complete injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.", function () {
       var xssString = "\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works :('})</script>";
       el = create();
 
@@ -424,7 +441,7 @@
      * The injected code itself will store an single unique information right
      * into the element's dataset under the key name "test".
      */
-    test("XSS: Type \"script\" to match an injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.", function () {
+    test("Type \"script\" to match an injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.", function () {
       var xssString = "\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works :('})</script>";
       var xssId = "4711";
       var el = create([
@@ -479,7 +496,7 @@
      * The injected code itself will store an single unique information right
      * into the element's dataset under the key name "test".
      */
-    test("XSS: Type \"\\\">\" to match an injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.", function () {
+    test("Type \"\\\">\" to match an injectable fragment. The selection have to be selected, but no execution is allowed due XSS problems.", function () {
       var xssString = "\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works :('})</script>";
       var xssSelectionEscaped = '<em>\"&gt;&lt;</em>script type=\"text/javascript\"&gt;$(\'#autosuggest\').data({test:\'Injection works :(\'})&lt;/script&gt;';
       var xssId = "4711";
@@ -809,7 +826,7 @@
       }, 500);
     });
 
-    test("XSS: Custom result list formatter, prefilling and with image in selection tokens.", function () {
+    test("Custom result list formatter, prefilling and with image in selection tokens.", function () {
       var renderer = function (data) {
         var escaped = $('<span/>').text(data.name).html();
         return $('<div><img src="' + data.img + '" height=16 width=16 style="float:left"/><span>' + escaped + '</span></div>');
