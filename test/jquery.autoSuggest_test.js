@@ -262,6 +262,7 @@
       });
       el = create('', opts);
 
+      ok(callbacks,  'A callback object must be defined.');
       callbacks.add(data[0]);
       equal(selections().length, 1, "Should select using a callback.");
 
