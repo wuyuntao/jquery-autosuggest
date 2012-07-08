@@ -7,11 +7,11 @@ The *jQuery plugin* **AutoSuggest** will turn any regular text `input` box into 
 ## Getting Started
 Download the [production version][min-js] or the [development version][max-js]. Don't forget the CSS [production version][min-css] or the [development version][max-css].
 
-[min-js]: https://raw.github.com/hlsolutions/jquery.autoSuggest/master/dist/jquery.autoSuggest.min.js
-[max-js]: https://raw.github.com/hlsolutions/jquery.autoSuggest/master/dist/jquery.autoSuggest.js
+[min-js]: https://raw.github.com/hlsolutions/jquery-autoSuggest/master/dist/jquery.autoSuggest.min.js
+[max-js]: https://raw.github.com/hlsolutions/jquery-autoSuggest/master/dist/jquery.autoSuggest.js
 
-[min-css]: https://raw.github.com/hlsolutions/jquery.autoSuggest/master/dist/jquery.autoSuggest.min.css
-[max-css]: https://raw.github.com/hlsolutions/jquery.autoSuggest/master/dist/jquery.autoSuggest.css
+[min-css]: https://raw.github.com/hlsolutions/jquery-autoSuggest/master/dist/jquery.autoSuggest.min.css
+[max-css]: https://raw.github.com/hlsolutions/jquery-autoSuggest/master/dist/jquery.autoSuggest.css
 
 In your web page:
 
