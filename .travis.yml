@@ -1,11 +1,6 @@
 +language: node_js
- 	 2
 +node_js:
- 	 3
 +  - 0.6
- 	 4
 +before_script:
- 	 5
 +  - "export DISPLAY=:99.0"
- 	 6
 +  - "sh -e /etc/init.d/xvfb start"
