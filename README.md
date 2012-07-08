@@ -315,6 +315,6 @@ Following modules are required:
 
 # Note on the original version
 
-This project was a fork of the `plugin version` by [Wu Yuntao](https://github.com/wuyuntao) at [https://github.com/wuyuntao/jquery-autosuggest](https://github.com/wuyuntao/jquery-autosuggest).
+This project was a fork of **jQuery AutoSuggest** (1.6) by [Wu Yuntao](https://github.com/wuyuntao) at [https://github.com/wuyuntao/jquery-autosuggest](https://github.com/wuyuntao/jquery-autosuggest).
 
-Originally developed by [Drew Wilson](http://drewwilson.com/).
+Originally, **jQuery AutoSuggest** (1.4) was developed by [Drew Wilson](http://drewwilson.com/).
