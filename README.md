@@ -68,6 +68,17 @@ AutoSuggest has been tested (and works) in:
 
 ## Documentation
 
+### `data`
+
+Use an `array` if you want to define a static list of items. Each item must be an object with properties which will match your `options` keys `selectedItemProp`, `selectedValuesProp` and `searchObjProps`.
+
+Use a `function` returning an `array` if you want to define dynamic builder of a list of items. The structure of this list must be the same as described for an `array`.
+
+Use a `string` if you want to load the data asynchronously via AJAX. Eventually, in that case you want to override the option `retrieveComplete` to match the specification of a data array.
+
+
+### `options`
+
 * **ajaxOptions**: *object (type : 'get', dataType : 'json' by default)* - Defines the configuration options which will be applied to **$.ajax** when using Ajax on search.
 
 * **asHtmlID**: *string (false by default)* - Enables you to specify your own custom ID that will be appended to the top level AutoSuggest UL element's ID name. Otherwise it will default to using a random ID. Example: id="CUSTOM_ID". This is also applies to the hidden input filed that holds all of the selected values. Example: id="as-values-CUSTOM_ID"
