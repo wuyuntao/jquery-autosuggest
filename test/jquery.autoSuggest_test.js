@@ -98,6 +98,57 @@
       remove();
     });
 
+    // https://github.com/jsloane/jquery-autosuggest/commit/623f2426f0f225884dedbb2b0e3efdce6c983951
+    test("Type \"*\".", function () {
+      el = create();
+      $.simulate2.triggerKeyEventsForString(el, '*', 0, true);
+
+      stop();
+
+      setTimeout(function(){
+        sel = selections();
+        equal(sel.length, 0, "Should have no result.");
+        equal(value().val(), "", "Should be empty.");
+
+        start();
+        remove();
+      }, 500);
+    });
+
+    // https://github.com/jsloane/jquery-autosuggest/commit/623f2426f0f225884dedbb2b0e3efdce6c983951
+    test("Type \"[\".", function () {
+      el = create();
+      $.simulate2.triggerKeyEventsForString(el, '[', 0, true);
+
+      stop();
+
+      setTimeout(function(){
+        sel = selections();
+        equal(sel.length, 0, "Should have no result.");
+        equal(value().val(), "", "Should be empty.");
+
+        start();
+        remove();
+      }, 500);
+    });
+
+    // https://github.com/jsloane/jquery-autosuggest/commit/623f2426f0f225884dedbb2b0e3efdce6c983951
+    test("Type \"(\".", function () {
+      el = create();
+      $.simulate2.triggerKeyEventsForString(el, '(', 0, true);
+
+      stop();
+
+      setTimeout(function(){
+        sel = selections();
+        equal(sel.length, 0, "Should have no result.");
+        equal(value().val(), "", "Should be empty.");
+
+        start();
+        remove();
+      }, 500);
+    });
+
     test("Type \"Yao Ming\" and select it by TAB", function () {
       el = create();
       // Type "Yap Ming" and "\t"

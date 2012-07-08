@@ -392,7 +392,7 @@ $.fn.autoSuggest = (data, options) ->
         if str
           unless options.matchCase
             str = str.toLowerCase()
-          if str.search(query) isnt -1 && !Selections.exist(item[options.selectedValuesProp])
+          if str.indexOf(query) isnt -1 && !Selections.exist(item[options.selectedValuesProp])
             forward = true
         if forward
           formatted = $ "<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>"

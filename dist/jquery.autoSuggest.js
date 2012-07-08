@@ -467,7 +467,7 @@ Initial setup: Override any existing $
             if (!options.matchCase) {
               str = str.toLowerCase();
             }
-            if (str.search(query) !== -1 && !Selections.exist(item[options.selectedValuesProp])) {
+            if (str.indexOf(query) !== -1 && !Selections.exist(item[options.selectedValuesProp])) {
               forward = true;
             }
           }
