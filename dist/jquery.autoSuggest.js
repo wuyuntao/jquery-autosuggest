@@ -14,8 +14,7 @@ Based on the 1.6er release dated in July, 2012
 */
 
 
-/*
-Initial setup: Override any existing $
+/* Override any existing $
 */
 
 
@@ -25,13 +24,7 @@ Initial setup: Override any existing $
 
   $ = jQuery;
 
-  /*
-  Special helper classes
-  */
-
-
-  /*
-  The SelectionControl maintains and manage any selections.
+  /* The SelectionControl maintains and manage any selections.
   */
 
 
@@ -95,37 +88,78 @@ Initial setup: Override any existing $
 
   })();
 
+  /*
+  Defines the actual jQuery plugin
+  */
+
+
   $.fn.autoSuggest = function(data, options) {
     /**
-     * default settings
+     * plugin's default options
     */
 
     var countObjectProperties, defaults, escapeHtml, escapeQuotes, fetcher, getExtraParams, request;
     defaults = {
       asHtmlID: false,
-      startText: 'Enter Name Here',
+      /**
+       * Defines whether the HTML5 placeholder attribute should used.
+      */
+
       usePlaceholder: false,
+      /**
+       * Defines predefined values which will be selected.
+       * @type string a comma seperated list of name/id values OR array of object items
+      */
+
+      preFill: null,
+      /**
+       * Defines text shown as a placeholder.
+       * This text will be displayed when nothing is selected and the field isn't focused.
+       * @type string
+      */
+
+      startText: 'Enter Name Here',
+      /**
+       * Defines text shown in the suggestion resultbox when there isn't a match.
+       * @type string
+      */
+
       emptyText: 'No Results Found',
-      preFill: {},
+      /**
+       * Defines text shown when the limit of selections was exceeded.
+       * @type string
+      */
+
       limitText: 'No More Selections Are Allowed',
       /**
-       * name of object property
-       * @type string
+       * Defines the property of an item which will be used for display.
+       * @type string default 'value'
       */
 
       selectedItemProp: 'value',
       /**
-       * name of object property
-       * @type string
+       * Defines the property of an item which will be used for identification (id).
+       * @type string default 'value'
       */
 
       selectedValuesProp: 'value',
       /**
-       * comma separated list of object property names
+       * Defines the property of an item which will be used for searching.
+       * @type string default 'value'
       */
 
       searchObjProps: 'value',
+      /**
+       * Defines the query parameter. Used for sending the search query.
+       * @type string default 'q'
+      */
+
       queryParam: 'q',
+      /**
+       * Defines the limit parameter. Used for limiting the results.
+       * @type string default 'limit'
+      */
+
       limitParam: 'limit',
       /**
        * number for 'limit' param on ajax request
@@ -133,25 +167,96 @@ Initial setup: Override any existing $
       */
 
       retrieveLimit: null,
+      /**
+       * Defines additional extraParams which will be appended to the Ajax request.
+       * The recommended way is defining an object or a function returning such a object.
+       *
+       * If this is a string or a function returning a string, the string must be a valid query url. Internally,
+       * the string will be split by '&' and '=' and built to an object. This is only available due backwards
+       * compatibility.
+       *
+       * @type string, function or object
+      */
+
       extraParams: null,
+      /**
+       * Defines whether the user input is case sensitive or not. Default is case insensitive.
+       * @type boolean default false
+      */
+
       matchCase: false,
+      /**
+       * Defines the minimum of characters before the input will be a query against the defined fetcher (i.e. Ajax).
+       * @type number default 1
+      */
+
       minChars: 1,
+      /**
+       * Defines the key delay. This is a recommended way when using an asynchronous fetcher (Ajax).
+       * @type number default 400
+      */
+
       keyDelay: 400,
+      /**
+       * Defines whether the result list's search/suggestion results should be highlight with the user query.
+       * @type boolean default true
+      */
+
       resultsHighlight: true,
-      neverSubmit: false,
+      /**
+       * Defines the limit of search/suggestion results.
+       * @type number default none
+      */
+
       selectionLimit: false,
+      /**
+       * Defines whether the result list should be displayed.
+       * @type boolean default true
+      */
+
       showResultList: true,
+      /**
+       * Defines whether the result list should be displayed even when there are no results.
+       * @type boolean default false
+      */
+
       showResultListWhenNoMatch: false,
+      /**
+       * Defines whether the input field can create new selections which aren't part of the suggestion.
+       * @type boolean default true
+      */
+
       canGenerateNewSelections: true,
-      start: function() {},
-      selectionClick: function(elem) {},
-      selectionAdded: function(elem) {},
+      /**
+       * FIXME needs doc
+       * @type function
+      */
+
+      start: null,
+      /**
+       * Defines a trigger when clicking on a selection element.
+       * @type function with arguments: element
+      */
+
+      selectionClick: null,
+      /**
+       * Defines a trigger after adding a selection element.
+       * @type function with arguments: elementBefore, id
+      */
+
+      selectionAdded: null,
+      /**
+       * Defines a callback for removing a selection item.
+       * Note: Overriding this options means that the plugin itself won't destroy the element anymore.
+       * @type function with arguments: element
+      */
+
       selectionRemoved: function(elem) {
         return elem.remove();
       },
       /**
-       * callback function formatting a list
-       * @type Function
+       * Defines a callback called for every item that will be rendered.
+       * @type function with arguments: element
       */
 
       formatList: null,
@@ -169,9 +274,34 @@ Initial setup: Override any existing $
       retrieveComplete: function(data) {
         return data;
       },
-      resultClick: function(data) {},
-      resultsComplete: function() {},
+      /**
+       * Defines a trigger after clicking on a search result element.
+       * @type function with arguments: data
+      */
+
+      resultClick: null,
+      /**
+       * Defines a trigger called after processData.
+       * @type function
+      */
+
+      resultsComplete: null,
+      /**
+       * Defines whether an "event.preventDefault()" should be executed on an ENTER key.
+       * @type boolean default false
+      */
+
+      neverSubmit: false,
+      /**
+       * Defines whether an "event.stopPropagation()" should be executed on an ESC key.
+       * @type boolean default false
+      */
+
       preventPropagationOnEscape: false,
+      /**
+       * Defines the base options used for the Ajax request.
+      */
+
       ajaxOptions: {
         type: 'get',
         dataType: 'json'
@@ -314,7 +444,9 @@ Initial setup: Override any existing $
         item = $("<li class=\"as-selection-item\" id=\"as-selection-" + num + "\" data-value=\"" + (escapeQuotes(escapeHtml(data[options.selectedValuesProp]))) + "\"></li>");
         item.click(function() {
           element = $(this);
-          options.selectionClick.call(this, element);
+          if ($.isFunction(options.selectionClick)) {
+            options.selectionClick.call(this, element);
+          }
           selections_holder.children().removeClass('selected');
           element.addClass('selected');
         });
@@ -324,7 +456,9 @@ Initial setup: Override any existing $
         close = $("<a class=\"as-close\">&times;</a>");
         close.click(function() {
           Selections.remove(data[options.selectedValuesProp]);
-          options.selectionRemoved.call(this, item);
+          if ($.isFunction(options.selectionRemoved)) {
+            options.selectionRemoved.call(this, item);
+          }
           input_focus = true;
           input.focus();
           return false;
@@ -334,7 +468,9 @@ Initial setup: Override any existing $
         } else {
           org_li.before(item.text(data[options.selectedItemProp]).prepend(close));
         }
-        options.selectionAdded.call(this, org_li.prev(), data[options.selectedValuesProp]);
+        if ($.isFunction(options.selectionAdded)) {
+          options.selectionAdded.call(this, org_li.prev(), data[options.selectedValuesProp]);
+        }
         return org_li.prev();
       };
       input.wrap("<ul class=\"as-selections\" id=\"as-selections-" + element + "\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-" + element + "\"></li>");
@@ -347,18 +483,20 @@ Initial setup: Override any existing $
             DO START
       */
 
-      options.start.call(this, {
-        add: function(data) {
-          var counted, item;
-          counted = $(selections_holder).find('li').length;
-          item = add_selected_item(data, "u" + counted);
-          return item != null ? item.addClass('blur') : void 0;
-        },
-        remove: function(value) {
-          Selections.remove(value);
-          return selections_holder.find("li[data-value=\"" + (escapeHtml(value)) + "\"]").remove();
-        }
-      });
+      if ($.isFunction(options.start)) {
+        options.start.call(this, {
+          add: function(data) {
+            var counted, item;
+            counted = $(selections_holder).find('li').length;
+            item = add_selected_item(data, "u" + counted);
+            return item != null ? item.addClass('blur') : void 0;
+          },
+          remove: function(value) {
+            Selections.remove(value);
+            return selections_holder.find("li[data-value=\"" + (escapeHtml(value)) + "\"]").remove();
+          }
+        });
+      }
       Selections = new SelectionControl(values_input);
       prefill_value = '';
       switch ($.type(options.preFill)) {
@@ -483,7 +621,9 @@ Initial setup: Override any existing $
                 input.val('').focus();
                 prev = '';
                 add_selected_item(data, number);
-                options.resultClick.call(this, raw_data);
+                if ($.isFunction(options.resultClick)) {
+                  options.resultClick.call(this, raw_data);
+                }
                 results_holder.hide();
               }
               tab_press = false;
@@ -538,7 +678,9 @@ Initial setup: Override any existing $
         if (matchCound > 0 || !options.showResultListWhenNoMatch) {
           results_holder.show();
         }
-        return options.resultsComplete.call(this);
+        if ($.isFunction(options.resultsComplete)) {
+          options.resultsComplete.call(this);
+        }
       };
       moveSelection = function(direction) {
         var active, lis, start;
@@ -643,9 +785,13 @@ Initial setup: Override any existing $
               selections_holder.children().not(org_li.prev()).removeClass('selected');
               if (org_li.prev().hasClass('selected')) {
                 Selections.remove(last);
-                options.selectionRemoved.call(this, org_li.prev());
+                if ($.isFunction(options.selectionRemoved)) {
+                  options.selectionRemoved.call(this, org_li.prev());
+                }
               } else {
-                options.selectionClick.call(this, org_li.prev());
+                if ($.isFunction(options.selectionClick)) {
+                  options.selectionClick.call(this, org_li.prev());
+                }
                 org_li.prev().addClass('selected');
               }
             }
