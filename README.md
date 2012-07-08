@@ -1,4 +1,4 @@
-# jQuery Autosuggest
+# jQuery Autosuggest [![Build Status](https://secure.travis-ci.org/hlsolutions/jquery-autosuggest.png?branch=v2-coffeescript)](http://travis-ci.org/hlsolutions/jquery-autosuggest)
 
 The best jQuery plugin ever.
 
