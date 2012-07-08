@@ -182,13 +182,13 @@ Initial setup: Override any existing $
     */
 
     countObjectProperties = function(object) {
-      var x;
+      var item;
       return ((function() {
         var _results;
         _results = [];
-        for (x in object) {
-          if (!__hasProp.call(object, x)) continue;
-          _results.push(x);
+        for (item in object) {
+          if (!__hasProp.call(object, item)) continue;
+          _results.push(item);
         }
         return _results;
       })()).length;
@@ -281,19 +281,23 @@ Initial setup: Override any existing $
     if (!fetcher) {
       return;
     }
-    return this.each(function(x) {
-      var Selections, abortRequest, add_selected_item, i, input, input_focus, interval, item, keyChange, lastKeyPressCode, moveSelection, new_value, num_count, org_li, prefill_value, prev, processData, processRequest, results_holder, results_ul, selections_holder, tab_press, timeout, totalSelections, value, values_input, x_id, _i, _j, _len, _len1, _ref, _ref1;
+    /*
+      For each selected item, we will create an own scope.
+    */
+
+    return this.each(function(element) {
+      var Selections, abortRequest, add_selected_item, elementId, i, input, input_focus, interval, item, keyChange, lastKeyPressCode, moveSelection, new_value, num_count, org_li, prefill_value, prev, processData, processRequest, results_holder, results_ul, selections_holder, tab_press, timeout, totalSelections, value, values_input, _i, _j, _len, _len1, _ref, _ref1;
       if (!options.asHtmlID) {
-        x = "" + x + (Math.floor(Math.random() * 100));
-        x_id = "as-input-" + x;
+        element = "" + element + (Math.floor(Math.random() * 100));
+        elementId = "as-input-" + element;
       } else {
-        x = options.asHtmlID;
-        x_id = x;
+        element = options.asHtmlID;
+        elementId = element;
       }
       input = $(this);
       input.attr({
         autocomplete: 'off',
-        id: x_id
+        id: elementId
       });
       input.addClass('as-input');
       if (options.usePlaceholder) {
@@ -308,7 +312,6 @@ Initial setup: Override any existing $
         Selections.add(data[options.selectedValuesProp]);
         item = $("<li class=\"as-selection-item\" id=\"as-selection-" + num + "\" data-value=\"" + (escapeQuotes(escapeHtml(data[options.selectedValuesProp]))) + "\"></li>");
         item.click(function() {
-          var element;
           element = $(this);
           options.selectionClick.call(this, element);
           selections_holder.children().removeClass('selected');
@@ -336,12 +339,12 @@ Initial setup: Override any existing $
         return org_li.prev();
       };
       input_focus = false;
-      input.wrap("<ul class=\"as-selections\" id=\"as-selections-" + x + "\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-" + x + "\"></li>");
-      selections_holder = $("#as-selections-" + x);
-      org_li = $("#as-original-" + x);
-      results_holder = $("<div class=\"as-results\" id=\"as-results-" + x + "\"></div>");
+      input.wrap("<ul class=\"as-selections\" id=\"as-selections-" + element + "\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-" + element + "\"></li>");
+      selections_holder = $("#as-selections-" + element);
+      org_li = $("#as-original-" + element);
+      results_holder = $("<div class=\"as-results\" id=\"as-results-" + element + "\"></div>");
       results_ul = $("<ul class=\"as-list\"></ul>");
-      values_input = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_" + x + "\" id=\"as-values-" + x + "\" />");
+      values_input = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_" + element + "\" id=\"as-values-" + element + "\" />");
       /*
             DO START
       */
@@ -473,7 +476,7 @@ Initial setup: Override any existing $
           if (forward) {
             formatted = $("<li class=\"as-result-item\" id=\"as-result-item-" + num + "\"></li>");
             formatted.click(function() {
-              var element, number, raw_data;
+              var number, raw_data;
               element = $(this);
               raw_data = element.data('data');
               number = raw_data.num;
@@ -491,7 +494,6 @@ Initial setup: Override any existing $
               input_focus = false;
             });
             formatted.mouseover(function() {
-              var element;
               element = $(this);
               results_ul.find('li').removeClass('active');
               element.addClass('active');
@@ -502,11 +504,7 @@ Initial setup: Override any existing $
             });
             this_data = $.extend({}, data[num]);
             query = query.replace(/"/g, '\\"');
-            if (!options.matchCase) {
-              regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "gi");
-            } else {
-              regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g");
-            }
+            regx = !options.matchCase ? new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "gi") : new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g");
             /* When this is a string, escape the value and process a regular replacement for highlighting.
             */
 
@@ -577,7 +575,6 @@ Initial setup: Override any existing $
         return request = null;
       };
       input.focus(function() {
-        var element;
         element = $(this);
         if (!options.usePlaceholder && element.val() === options.startText && Selections.isEmpty()) {
           element.val('');
@@ -610,7 +607,6 @@ Initial setup: Override any existing $
         return true;
       });
       input.blur(function() {
-        var element;
         element = $(this);
         if (!options.usePlaceholder && element.val() === '' && Selections.isEmpty() && prefill_value === '' && options.minChars > 0) {
           element.val(options.startText);

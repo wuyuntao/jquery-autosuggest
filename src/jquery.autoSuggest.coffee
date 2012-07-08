@@ -164,7 +164,7 @@ $.fn.autoSuggest = (data, options) ->
   options = $.extend {}, defaults, options
 
   ### TODO ###
-  countObjectProperties = (object) -> (x for own x of object).length
+  countObjectProperties = (object) -> (item for own item of object).length
 
   ###
   TODO: Utility
@@ -229,22 +229,24 @@ $.fn.autoSuggest = (data, options) ->
 
   return unless fetcher
 
-
-  return @each (x) ->
+  ###
+  For each selected item, we will create an own scope.
+  ###
+  return @each (element) ->
 
     # Configure local IDs.
     unless options.asHtmlID
       # ensures there will be unique IDs on the page if autoSuggest() is called multiple times
-      x = "#{x}#{Math.floor(Math.random() * 100)}"
-      x_id = "as-input-#{x}"
+      element = "#{element}#{Math.floor(Math.random() * 100)}"
+      elementId = "as-input-#{element}"
     else
-      x = options.asHtmlID
-      x_id = x
+      element = options.asHtmlID
+      elementId = element
 
     # Setup instance properties.
 
     input = $ @
-    input.attr autocomplete : 'off', id : x_id
+    input.attr autocomplete : 'off', id : elementId
     input.addClass 'as-input'
     if options.usePlaceholder
       input.attr placeholder : options.startText
@@ -279,12 +281,12 @@ $.fn.autoSuggest = (data, options) ->
 
     input_focus = false
     # Setup basic elements and render them to the DOM
-    input.wrap("<ul class=\"as-selections\" id=\"as-selections-#{x}\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-#{x}\"></li>")
-    selections_holder = $ "#as-selections-#{x}"
-    org_li = $ "#as-original-#{x}"
-    results_holder = $ "<div class=\"as-results\" id=\"as-results-#{x}\"></div>"
+    input.wrap("<ul class=\"as-selections\" id=\"as-selections-#{element}\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-#{element}\"></li>")
+    selections_holder = $ "#as-selections-#{element}"
+    org_li = $ "#as-original-#{element}"
+    results_holder = $ "<div class=\"as-results\" id=\"as-results-#{element}\"></div>"
     results_ul =  $ "<ul class=\"as-list\"></ul>"
-    values_input = $ "<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{x}\" id=\"as-values-#{x}\" />"
+    values_input = $ "<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{element}\" id=\"as-values-#{element}\" />"
 
     ###
       DO START
@@ -419,10 +421,10 @@ $.fn.autoSuggest = (data, options) ->
             num : num_count
           this_data = $.extend {}, data[num]
           query = query.replace /"/g, '\\"'
-          unless options.matchCase
-            regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "gi")
-          else
-            regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g")
+          regx =  unless options.matchCase
+                    new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "gi")
+                  else
+                    new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g")
           ### When this is a string, escape the value and process a regular replacement for highlighting.###
           if typeof this_data[options.selectedItemProp] is 'string'
             this_data[options.selectedItemProp] = escapeHtml(this_data[options.selectedItemProp])
