@@ -354,14 +354,10 @@
     });
 
     asyncTest('Add extraParams with function (instead of ONLY a string)', function () {
-      $('#container').append('<input type="checkbox" id="test-as-location" value="1" checked="checked" />');
-
       var opts = $.extend({}, options, {
 
-        // Returns a string based on the checked state of the checkbox.
         extraParams : function () {
-          var checked = $('#test-as-location').is(':checked') ? 1 : 0;
-          return '&specific_location=' + checked;
+          return '&specific_location=1';
         },
 
         // Should returns the inner result of the wrapped response. Internally, this checks the wrapped state.
