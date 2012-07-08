@@ -4,6 +4,8 @@ The *jQuery plugin* **AutoSuggest** will turn any regular text `input` box into 
 
 ![Example](http://github.com/downloads/hlsolutions/jquery-autosuggest/jquery-autosuggest-example01.png)
 
+_Please note: This is a fork of the [original versions by Drew Wilson and Wu Yuntao](#note-on-the-original-version)._
+
 ## Getting Started
 Download the [production version][min-js] or the [development version][max-js]. Don't forget the CSS [production version][min-css] or the [development version][max-css].
 
