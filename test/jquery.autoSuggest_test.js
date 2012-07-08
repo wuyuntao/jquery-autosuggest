@@ -341,40 +341,47 @@
 
     module('Configuration: "options.extraParams"');
 
+    $.mockAjax('json', {
+      "data.html.*" : function (matches) {
+        return {
+          origin : matches.input,
+          result : [
+            {"value" : "Test"},
+            {"value" : "Data"}
+          ]
+        };
+      }
+    });
+
     asyncTest('Add extraParams with function (instead of ONLY a string)', function () {
       $('#container').append('<input type="checkbox" id="test-as-location" value="1" checked="checked" />');
 
       var opts = $.extend({}, options, {
+
+        // Returns a string based on the checked state of the checkbox.
         extraParams : function () {
           var checked = $('#test-as-location').is(':checked') ? 1 : 0;
           return '&specific_location=' + checked;
+        },
+
+        // Should returns the inner result of the wrapped response. Internally, this checks the wrapped state.
+        retrieveComplete : function (data) {
+
+          // Because of the mocked ajax, the data here is wrapped.
+          equal("data.html?q=J&specific_location=1", data.origin, 'The mocked ajax response should provide a correct origin.');
+          notEqual(null, data.result, 'The mocked ajax response should have a data result.');
+
+          setTimeout(function () {
+            start();
+            remove();
+          }, 500);
+
+          return data.result;
         }
       });
 
-      var old_getAjax = $.ajax;
-
-      $.ajax = function (cfg) {
-        equal(cfg.url, "data.html");
-        deepEqual(cfg.data, {
-          q : 'J', specific_location : '1'});
-        return old_getAjax.apply(this, arguments);
-      };
-
-      $(document).bind('ajaxStop.extraParams', function () {
-        start();
-        // Restore it for later tests.
-        $.ajax = old_getAjax;
-        // Cleanup
-        remove();
-        $('#test-as-location').remove();
-        $(document).unbind('ajaxStop.extraParams');
-      });
-
       el = create('data.html', opts);
-
-      el.focus();
-      el.val("J");
-      el.simulate("keydown", {"keyCode" : keyCode.J});
+      $.simulate2.triggerKeyEventsForString(el, 'J', 0, true);
     });
 
     module('XSS Tests');

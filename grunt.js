@@ -32,7 +32,7 @@ module.exports = function (grunt) {
       }
     },
     qunit : {
-      files : ['http://localhost:' + port + '/test/jquery.autoSuggest.html']
+      files : ['test/jquery.autoSuggest.html']
     },
     server : {
       port : port,
@@ -96,15 +96,15 @@ module.exports = function (grunt) {
   grunt.loadTasks('tasks');
 
   // Default task: Complete testing and building.
-  grunt.registerTask('default', 'sass lint coffee concat cssmin server qunit concat min');
+  grunt.registerTask('default', 'sass lint coffee concat cssmin qunit concat min');
 
   // Build task: Only building jquery.autoSuggest.min.js
   grunt.registerTask('build', 'sass coffee concat cssmin min');
 
   // Test task: Only testing the code (linting and unit tests).
-  grunt.registerTask('test', 'sass lint coffee server qunit');
+  grunt.registerTask('test', 'sass lint coffee qunit');
 
   // Travis: CI Server
-  grunt.registerTask('travis', 'sass lint coffee concat cssmin server qunit concat min');
+  grunt.registerTask('travis', 'sass lint coffee concat cssmin qunit concat min');
 
 };
