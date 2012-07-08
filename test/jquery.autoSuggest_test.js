@@ -7,28 +7,28 @@
 
     var el, res, sel,
       options = {
-        asHtmlID:'autosuggest',
-        selectedItemProp:"name",
-        searchObjProps:"name"
+        asHtmlID : 'autosuggest',
+        selectedItemProp : "name",
+        searchObjProps : "name"
       },
       data = [
-        {value:"21", name:"Mick Jagger"},
-        {value:"43", name:"Johnny Storm"},
-        {value:"46", name:"Richard Hatch"},
-        {value:"54", name:"Kelly Slater"},
-        {value:"55", name:"Rudy Hamilton"},
-        {value:"79", name:"Michael Jordan"},
-        {value:"76", name:"姚明"}
+        {value : "21", name : "Mick Jagger"},
+        {value : "43", name : "Johnny Storm"},
+        {value : "46", name : "Richard Hatch"},
+        {value : "54", name : "Kelly Slater"},
+        {value : "55", name : "Rudy Hamilton"},
+        {value : "79", name : "Michael Jordan"},
+        {value : "76", name : "姚明"}
       ],
       keyCode = {
-        DEL:8,
-        TAB:9,
-        ENTER:13,
-        ESC:27,
-        UP:38,
-        DOWN:40,
-        J:74,
-        COMMA:188
+        DEL : 8,
+        TAB : 9,
+        ENTER : 13,
+        ESC : 27,
+        UP : 38,
+        DOWN : 40,
+        J : 74,
+        COMMA : 188
       };
 
     function create(d, opts) {
@@ -89,7 +89,7 @@
       // Type "Yap Ming" and ","
       el.focus();
       el.val("Yao Ming");
-      el.simulate("keydown", {"keyCode":keyCode.COMMA});
+      el.simulate("keydown", {"keyCode" : keyCode.COMMA});
 
       sel = selections();
       equal(sel.length, 1, "Should have one name");
@@ -103,7 +103,7 @@
       // Type "Yap Ming" and "\t"
       el.focus();
       el.val("Yao Ming");
-      el.simulate("keydown", {"keyCode":keyCode.TAB});
+      el.simulate("keydown", {"keyCode" : keyCode.TAB});
 
       sel = selections();
       equal(sel.length, 1, "Should have one name");
@@ -117,7 +117,7 @@
 
       el.focus();
       el.val("J");
-      el.simulate("keydown", {"keyCode":keyCode.J});
+      el.simulate("keydown", {"keyCode" : keyCode.J});
 
       stop();
       setTimeout(function () {
@@ -128,7 +128,7 @@
         ok($(res[1]).hasClass("active"), "Should be highlighted");
 
         // Press enter key to select it
-        el.simulate("keydown", {"keyCode":keyCode.ENTER});
+        el.simulate("keydown", {"keyCode" : keyCode.ENTER});
 
         sel = selections();
         equal(sel.length, 1, "Should have one name");
@@ -145,39 +145,39 @@
 
       el.focus();
       el.val("J");
-      el.simulate("keydown", {"keyCode":keyCode.J});
+      el.simulate("keydown", {"keyCode" : keyCode.J});
 
       stop();
       setTimeout(function () {
         res = results();
 
         // Move down to first suggest result
-        el.simulate("keydown", {"keyCode":keyCode.DOWN});
+        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
         ok($(res[0]).hasClass('active'), "Should be highlighted");
 
         // Move down to last suggest result
-        el.simulate("keydown", {"keyCode":keyCode.DOWN});
-        el.simulate("keydown", {"keyCode":keyCode.DOWN});
+        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
+        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
         ok($(res[2]).hasClass("active"), "Should be highlighted");
 
         // None of results should be highlighted
-        el.simulate("keydown", {"keyCode":keyCode.DOWN});
+        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
         $.each(res, function () {
           ok(!$(this).hasClass("active"), "Should not be highlighted");
         });
 
         // Move back to first suggest result
-        el.simulate("keydown", {"keyCode":keyCode.DOWN});
+        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
         ok($(res[0]).hasClass('active'), "Should be highlighted");
 
         // Now we move up...
-        el.simulate("keydown", {"keyCode":keyCode.UP});
+        el.simulate("keydown", {"keyCode" : keyCode.UP});
         $.each(res, function () {
           ok(!$(this).hasClass("active"), "Should not be highlighted");
         });
 
         // Move back to last suggest result
-        el.simulate("keydown", {"keyCode":keyCode.UP});
+        el.simulate("keydown", {"keyCode" : keyCode.UP});
         ok($(res[2]).hasClass("active"), "Should be highlighted");
 
         start();
@@ -190,7 +190,7 @@
 
       el.focus();
       el.val("Yao Ming");
-      el.simulate("keydown", {"keyCode":keyCode.TAB});
+      el.simulate("keydown", {"keyCode" : keyCode.TAB});
 
       sel = selections();
       equal(sel.length, 1, "Should have one name");
@@ -209,19 +209,19 @@
 
       el.focus();
       el.val("Yao Ming");
-      el.simulate("keydown", {"keyCode":keyCode.COMMA});
+      el.simulate("keydown", {"keyCode" : keyCode.COMMA});
 
       sel = selections();
       equal(sel.length, 1, "Should have one name");
 
       // First time press delete key
-      el.simulate("keydown", {"keyCode":keyCode.DEL});
+      el.simulate("keydown", {"keyCode" : keyCode.DEL});
 
       sel = selections();
       ok($(sel[0]).hasClass("selected"), "Should be selected");
 
       // Second time press delete key
-      el.simulate("keydown", {"keyCode":keyCode.DEL});
+      el.simulate("keydown", {"keyCode" : keyCode.DEL});
 
       sel = selections();
       equal(sel.length, 0, "Should have no name left");
@@ -235,7 +235,7 @@
       function get_data(query, next) {
         wasCalled = true;
         next([
-          {value:'123', name:'zzzfffgg'}
+          {value : '123', name : 'zzzfffgg'}
         ], query);
       }
 
@@ -244,7 +244,7 @@
 
       el.focus();
       el.val("Y");
-      el.simulate("keydown", {"keyCode":keyCode.Y});
+      el.simulate("keydown", {"keyCode" : keyCode.Y});
       stop();
       setTimeout(function () {
         equal(wasCalled, true, "Was the callback called?");
@@ -256,7 +256,7 @@
     test("Add and remove from code", function () {
       var callbacks;
       var opts = $.extend({}, options, {
-        start:function (_callbacks) {
+        start : function (_callbacks) {
           callbacks = _callbacks;
         }
       });
@@ -276,7 +276,7 @@
       $('#container').append('<input type="checkbox" id="test-as-location" value="1" checked="checked" />');
 
       var opts = $.extend({}, options, {
-        extraParams:function () {
+        extraParams : function () {
           var checked = $('#test-as-location').is(':checked') ? 1 : 0;
           return '&specific_location=' + checked;
         }
@@ -287,7 +287,7 @@
       $.ajax = function (cfg) {
         equal(cfg.url, "data.html");
         deepEqual(cfg.data, {
-          q:'J', specific_location:'1'});
+          q : 'J', specific_location : '1'});
         return old_getAjax.apply(this, arguments);
       };
 
@@ -307,7 +307,7 @@
 
       el.focus();
       el.val("J");
-      el.simulate("keydown", {"keyCode":keyCode.J});
+      el.simulate("keydown", {"keyCode" : keyCode.J});
     });
 
     test("Type \"Yao Ming\" but press ESC. No value should be selected.", function () {
@@ -315,7 +315,7 @@
       // Type "Yap Ming" and ","
       el.focus();
       el.val("Yao Ming");
-      el.simulate("keydown", {"keyCode":keyCode.ESC});
+      el.simulate("keydown", {"keyCode" : keyCode.ESC});
 
       sel = selections();
       equal(sel.length, 0, "Should have no name");
@@ -342,7 +342,7 @@
 
       el.focus();
       el.val(xssString);
-      el.simulate("keydown", {"keyCode":keyCode.COMMA});
+      el.simulate("keydown", {"keyCode" : keyCode.COMMA});
 
       var sel = selections();
       equal(sel.length, 1, "Should have one value");
@@ -351,8 +351,8 @@
       equal(value().val(), "," + xssString + ",", "Should be the correct id.");
 
       // Checks that removing will work, too!
-      el.simulate("keydown", {"keyCode":keyCode.DEL});
-      el.simulate("keydown", {"keyCode":keyCode.DEL});
+      el.simulate("keydown", {"keyCode" : keyCode.DEL});
+      el.simulate("keydown", {"keyCode" : keyCode.DEL});
 
       sel = selections();
       equal(sel.length, 0, "Should have no value");
@@ -376,7 +376,7 @@
       var xssString = "\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works :('})</script>";
       var xssId = "4711";
       var el = create([
-        {value:xssId, name:xssString}
+        {value : xssId, name : xssString}
       ]);
 
       el.data('test', 'No injection :)');
@@ -393,8 +393,8 @@
         equal(res.length, 1, "Should suggest one value.");
         equal($(res[0]).text(), xssString, "Should be the injectable code.");
 
-        el.simulate("keydown", {"keyCode":keyCode.DOWN});
-        el.simulate("keydown", {"keyCode":keyCode.ENTER});
+        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
+        el.simulate("keydown", {"keyCode" : keyCode.ENTER});
 
         var sel = selections();
         equal(sel.length, 1, "Should have one value");
@@ -403,8 +403,8 @@
         equal(value().val(), "," + xssId + ",", "Should be the correct id.");
 
         // Checks that removing will work, too!
-        el.simulate("keydown", {"keyCode":keyCode.DEL});
-        el.simulate("keydown", {"keyCode":keyCode.DEL});
+        el.simulate("keydown", {"keyCode" : keyCode.DEL});
+        el.simulate("keydown", {"keyCode" : keyCode.DEL});
 
         sel = selections();
         equal(sel.length, 0, "Should have no value");
@@ -433,7 +433,7 @@
       var xssId = "4711";
       var query = "\"><";
       var el = create([
-        {value:xssId, name:xssString}
+        {value : xssId, name : xssString}
       ]);
 
       el.data('test', 'No injection :)');
@@ -450,8 +450,8 @@
         equal(res.length, 1, "Should suggest one value.");
         equal($(res[0]).html(), xssSelectionEscaped, "Should be the injectable code.");
 
-        el.simulate("keydown", {"keyCode":keyCode.DOWN});
-        el.simulate("keydown", {"keyCode":keyCode.ENTER});
+        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
+        el.simulate("keydown", {"keyCode" : keyCode.ENTER});
 
         var sel = selections();
         equal(sel.length, 1, "Should have one value");
@@ -460,8 +460,8 @@
         equal(value().val(), "," + xssId + ",", "Should be the correct id.");
 
         // Checks that removing will work.
-        el.simulate("keydown", {"keyCode":keyCode.DEL});
-        el.simulate("keydown", {"keyCode":keyCode.DEL});
+        el.simulate("keydown", {"keyCode" : keyCode.DEL});
+        el.simulate("keydown", {"keyCode" : keyCode.DEL});
 
         sel = selections();
         equal(sel.length, 0, "Should have no value");
@@ -476,8 +476,8 @@
           equal(res.length, 1, "Should suggest one value.");
           equal($(res[0]).html(), xssSelectionEscaped, "Should be the injectable code.");
 
-          el.simulate("keydown", {"keyCode":keyCode.DOWN});
-          el.simulate("keydown", {"keyCode":keyCode.ENTER});
+          el.simulate("keydown", {"keyCode" : keyCode.DOWN});
+          el.simulate("keydown", {"keyCode" : keyCode.ENTER});
 
           sel = selections();
           equal(sel.length, 1, "Should have one value");
@@ -486,8 +486,8 @@
           equal(value().val(), "," + xssId + ",", "Should be the correct id.");
 
           // Checks that removing will work.
-          el.simulate("keydown", {"keyCode":keyCode.DEL});
-          el.simulate("keydown", {"keyCode":keyCode.DEL});
+          el.simulate("keydown", {"keyCode" : keyCode.DEL});
+          el.simulate("keydown", {"keyCode" : keyCode.DEL});
 
           start();
           remove();
@@ -501,16 +501,16 @@
     test("Custom result list formatter", function () {
       var data = [
         {
-          value:'4711',
-          img:'john.png',
-          name:'John Doe'
+          value : '4711',
+          img : 'john.png',
+          name : 'John Doe'
         }
       ];
       var opts = {
-        asHtmlID:'autosuggest',
-        selectedItemProp:"name",
-        searchObjProps:"name",
-        formatList:function (data, elem) {
+        asHtmlID : 'autosuggest',
+        selectedItemProp : "name",
+        searchObjProps : "name",
+        formatList : function (data, elem) {
           return elem.append('<div><img src="' + data.img + '"/><span>' + data.name + '</span></div>');
         }
       };
@@ -528,8 +528,8 @@
         equal(res.length, 1, "Should suggest one value.");
         equal($(res[0]).html(), '<div><img src="john.png"><span>John <em>Doe</em></span></div>', "Should be rendered output.");
 
-        el.simulate("keydown", {"keyCode":keyCode.DOWN});
-        el.simulate("keydown", {"keyCode":keyCode.ENTER});
+        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
+        el.simulate("keydown", {"keyCode" : keyCode.ENTER});
 
         var sel = selections();
         equal(sel.length, 1, "Should have one value");
@@ -537,8 +537,8 @@
         equal(value().val(), ",4711,", "Should be 4711.");
 
         // Checks that removing will work, too!
-        el.simulate("keydown", {"keyCode":keyCode.DEL});
-        el.simulate("keydown", {"keyCode":keyCode.DEL});
+        el.simulate("keydown", {"keyCode" : keyCode.DEL});
+        el.simulate("keydown", {"keyCode" : keyCode.DEL});
 
         sel = selections();
         equal(sel.length, 0, "Should have no value");
@@ -556,23 +556,23 @@
     test("Custom result list formatter + prefilling, delete them all.", function () {
       var data = [
         {
-          value:'4711',
-          img:'john.png',
-          name:'John Doe'
+          value : '4711',
+          img : 'john.png',
+          name : 'John Doe'
         }
       ];
       var opts = {
-        asHtmlID:'autosuggest',
-        selectedItemProp:"name",
-        searchObjProps:"name",
-        formatList:function (data, elem) {
+        asHtmlID : 'autosuggest',
+        selectedItemProp : "name",
+        searchObjProps : "name",
+        formatList : function (data, elem) {
           return elem.append('<div><img src="' + data.img + '"/><span>' + data.name + '</span></div>');
         },
-        preFill:[
+        preFill : [
           {
-            value:'123',
-            img:'donald.png',
-            name:'Donald Duck'
+            value : '123',
+            img : 'donald.png',
+            name : 'Donald Duck'
           }
         ]
       };
@@ -594,8 +594,8 @@
         equal(res.length, 1, "Should suggest one value.");
         equal($(res[0]).html(), '<div><img src="john.png"><span>John <em>Doe</em></span></div>', "Should be rendered output.");
 
-        el.simulate("keydown", {"keyCode":keyCode.DOWN});
-        el.simulate("keydown", {"keyCode":keyCode.ENTER});
+        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
+        el.simulate("keydown", {"keyCode" : keyCode.ENTER});
 
         sel = selections();
         equal(sel.length, 2, "Should have two values");
@@ -604,15 +604,15 @@
         equal(value().val(), ",123,4711,", "Should be 123,4711.");
 
         // Checks that removing will work, too!
-        el.simulate("keydown", {"keyCode":keyCode.DEL});
-        el.simulate("keydown", {"keyCode":keyCode.DEL});
+        el.simulate("keydown", {"keyCode" : keyCode.DEL});
+        el.simulate("keydown", {"keyCode" : keyCode.DEL});
 
         sel = selections();
         equal(sel.length, 1, "Should have one value");
         equal(value().val(), ",123,", "Should be 123.");
 
-        el.simulate("keydown", {"keyCode":keyCode.DEL});
-        el.simulate("keydown", {"keyCode":keyCode.DEL});
+        el.simulate("keydown", {"keyCode" : keyCode.DEL});
+        el.simulate("keydown", {"keyCode" : keyCode.DEL});
 
         sel = selections();
         equal(sel.length, 0, "Should have no value");
@@ -630,23 +630,23 @@
     test("Custom result list formatter + prefilling, delete them all (w/ mouse).", function () {
       var data = [
         {
-          value:'4711',
-          img:'john.png',
-          name:'John Doe'
+          value : '4711',
+          img : 'john.png',
+          name : 'John Doe'
         }
       ];
       var opts = {
-        asHtmlID:'autosuggest',
-        selectedItemProp:"name",
-        searchObjProps:"name",
-        formatList:function (data, elem) {
+        asHtmlID : 'autosuggest',
+        selectedItemProp : "name",
+        searchObjProps : "name",
+        formatList : function (data, elem) {
           return elem.append('<div><img src="' + data.img + '"/><span>' + data.name + '</span></div>');
         },
-        preFill:[
+        preFill : [
           {
-            value:'123',
-            img:'donald.png',
-            name:'Donald Duck'
+            value : '123',
+            img : 'donald.png',
+            name : 'Donald Duck'
           }
         ]
       };
@@ -668,8 +668,8 @@
         equal(res.length, 1, "Should suggest one value.");
         equal($(res[0]).html(), '<div><img src="john.png"><span>John <em>Doe</em></span></div>', "Should be rendered output.");
 
-        el.simulate("keydown", {"keyCode":keyCode.DOWN});
-        el.simulate("keydown", {"keyCode":keyCode.ENTER});
+        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
+        el.simulate("keydown", {"keyCode" : keyCode.ENTER});
 
         sel = selections();
         equal(sel.length, 2, "Should have two values");
@@ -708,21 +708,21 @@
         return data;
       };
       var data = [applyRenderer({
-        value:'4711',
-        img:'john.png',
-        name:'John Doe'
+        value : '4711',
+        img : 'john.png',
+        name : 'John Doe'
       })];
       var opts = {
-        asHtmlID:'autosuggest',
-        selectedItemProp:"item",
-        searchObjProps:"name",
-        formatList:function (data, elem) {
+        asHtmlID : 'autosuggest',
+        selectedItemProp : "item",
+        searchObjProps : "name",
+        formatList : function (data, elem) {
           return elem.append(data.item);
         },
-        preFill:[applyRenderer({
-          value:'123',
-          img:'donald.png',
-          name:'Donald Duck'
+        preFill : [applyRenderer({
+          value : '123',
+          img : 'donald.png',
+          name : 'Donald Duck'
         })]
       };
       var query = 'Doe';
@@ -744,8 +744,8 @@
         equal(res.length, 1, "Should suggest one value.");
         equal($(res[0]).html(), '<div><img src="john.png" height="16" width="16" style="float:left"><span>John <em>Doe</em></span></div>', "Should be rendered output.");
 
-        el.simulate("keydown", {"keyCode":keyCode.DOWN});
-        el.simulate("keydown", {"keyCode":keyCode.ENTER});
+        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
+        el.simulate("keydown", {"keyCode" : keyCode.ENTER});
 
         sel = selections();
         equal(sel.length, 2, "Should have two values");
@@ -766,21 +766,21 @@
         return data;
       };
       var data = [applyRenderer({
-        value:'4711',
-        img:'john.png',
-        name:"Bad John\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works (John) :('})</script>"
+        value : '4711',
+        img : 'john.png',
+        name : "Bad John\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works (John) :('})</script>"
       })];
       var opts = {
-        asHtmlID:'autosuggest',
-        selectedItemProp:"item",
-        searchObjProps:"name",
-        formatList:function (data, elem) {
+        asHtmlID : 'autosuggest',
+        selectedItemProp : "item",
+        searchObjProps : "name",
+        formatList : function (data, elem) {
           return elem.append(data.item);
         },
-        preFill:[applyRenderer({
-          value:'123',
-          img:'donald.png',
-          name:"Bad Donald\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works (Donald) :('})</script>"
+        preFill : [applyRenderer({
+          value : '123',
+          img : 'donald.png',
+          name : "Bad Donald\"><script type=\"text/javascript\">$('#autosuggest').data({test:'Injection works (Donald) :('})</script>"
         })]
       };
       var query = 'john';
@@ -803,8 +803,8 @@
         equal(res.length, 1, "Should suggest one value.");
         equal($(res[0]).html(), '<div><img src="john.png" height="16" width="16" style="float:left"><span>Bad <em>John</em>\"&gt;&lt;script type=\"text/javascript\"&gt;$(\'#autosuggest\').data({test:\'Injection works (<em>John</em>) :(\'})&lt;/script&gt;</span></div>', "Should be rendered output.");
 
-        el.simulate("keydown", {"keyCode":keyCode.DOWN});
-        el.simulate("keydown", {"keyCode":keyCode.ENTER});
+        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
+        el.simulate("keydown", {"keyCode" : keyCode.ENTER});
 
         sel = selections();
         equal(el.data('test'), 'No injection :)', "The injected should not be executed. It must NEVER happen.");
