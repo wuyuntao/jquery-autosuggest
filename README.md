@@ -246,7 +246,6 @@ while ($row = mysql_fetch_assoc($query)) {
 }
 header("Content-type: application/json");
 echo json_encode($data);
-?>
 ```
 
 ## Release History
