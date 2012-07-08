@@ -27,6 +27,8 @@ $(function($) {
 </script>
 ```
 
+_Note: jQuery version 1.5 is required._
+
 More examples see [here](#examples).
 
 ## How It Works
