@@ -17,12 +17,6 @@ module.exports = function (grunt) {
       dist : {
         src : ['<banner:meta.banner>', '<file_strip_banner:src/<%= pkg.name %>.js>'],
         dest : 'dist/<%= pkg.name %>.js'
-      },
-      css1 : {
-        src : [
-          '<config:sass.dist1.dest>'
-        ],
-        dest : 'dist/jquery.autoSuggest.css'
       }
     },
     min : {
@@ -71,13 +65,33 @@ module.exports = function (grunt) {
         files : [ '<config:coffee.dist1.files>' ]
       }
     },
-    sass : {
-      dist1 : { src : 'src/jquery.autoSuggest.scss', dest : 'src/jquery.autoSuggest.css' }
-    },
     cssmin : {
       all : {
-        src : '<config:concat.css1.dest>',
+        src : 'dist/jquery.autoSuggest.css',
         dest : 'dist/jquery.autoSuggest.min.css'
+      }
+    },
+    compass : {
+      dev : {
+        src : 'scss',
+        dest : 'src',
+        linecomments : true,
+        forcecompile : true,
+        //require : 'animate-sass mylib',
+        debugsass : false,
+        images : 'images',
+        relativeassets : true
+      },
+      prod : {
+        src : 'scss',
+        dest : 'dist',
+        // outputstyle : 'compressed', // will be done w/ cssmin to provide a non minified version & license
+        linecomments : false,
+        forcecompile : true,
+        //require : 'animate-sass mylib',
+        debugsass : false,
+        images : 'images',
+        relativeassets : true
       }
     },
     watch : {
@@ -86,9 +100,9 @@ module.exports = function (grunt) {
         //tasks : 'coffeelint:dist1 coffee:dist1 ok'
         tasks : 'coffee:dist1 qunit ok'
       },
-      sass : {
-        files : '<config:sass.dist1.src>',
-        tasks : 'sass:dist1 cssmin ok'
+      compass : {
+        files : 'scss/*.scss',
+        tasks : 'compass:dev ok'
       },
       lint : {
         files : '<config:lint.files>',
@@ -100,15 +114,15 @@ module.exports = function (grunt) {
   grunt.loadTasks('tasks');
 
   // Default task: Complete testing and building.
-  grunt.registerTask('default', 'sass lint coffee concat cssmin qunit concat min');
+  grunt.registerTask('default', 'compass lint coffee concat cssmin qunit concat min');
 
   // Build task: Only building jquery.autoSuggest.min.js
-  grunt.registerTask('build', 'sass coffee concat cssmin min');
+  grunt.registerTask('build', 'compass coffee concat cssmin min');
 
   // Test task: Only testing the code (linting and unit tests).
-  grunt.registerTask('test', 'sass lint coffee qunit');
+  grunt.registerTask('test', 'compass:dev lint coffee qunit');
 
   // Travis: CI Server
-  grunt.registerTask('travis', 'sass lint coffee concat cssmin qunit concat min');
+  grunt.registerTask('travis', 'compass lint coffee concat cssmin qunit concat min');
 
 };
