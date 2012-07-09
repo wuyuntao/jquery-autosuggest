@@ -6,6 +6,7 @@ $border-color: #888888;
 $border-size: 1px;
 $selection-item-border-radius: 12px;
 $result-list-border-radius: 5px;
+$result-list-border-size: 1px;
 $font-family: "Lucida Grande", arial, sans-serif;
 
 // Configuration: Advanced
@@ -127,8 +128,8 @@ li {
     margin: 0 0 0 0;
     padding: 5px 12px;
     background-color: transparent;
-    border: 1px solid #fff;
-    border-bottom: 1px solid #ddd;
+    border: $result-list-border-size solid #fff;
+    border-bottom: $result-list-border-size solid #ddd;
     cursor: pointer;
     @include border-radius($result-list-border-radius);
   }
