@@ -352,13 +352,13 @@ $.fn.autoSuggest = (data, options) ->
     else
       input.val options.startText
 
-    add_selected_item = (data, num) ->
-      Selections.add data[options.selectedValuesProp]
+    insertSelection = (data, num) ->
+      currentSelection.add data[options.selectedValuesProp]
       item = $ "<li class=\"as-selection-item\" id=\"as-selection-#{num}\" data-value=\"#{escapeQuotes(escapeHtml(data[options.selectedValuesProp]))}\"></li>"
       item.click ->
         element = $ @
         if $.isFunction(options.selectionClick) then options.selectionClick.call @, element
-        selections_holder.children().removeClass 'selected'
+        selectionsContainer.children().removeClass 'selected'
         element.addClass 'selected'
         return
       item.mousedown ->
@@ -366,25 +366,34 @@ $.fn.autoSuggest = (data, options) ->
         return
       close = $ "<a class=\"as-close\">&times;</a>"
       close.click ->
-        Selections.remove data[options.selectedValuesProp]
+        currentSelection.remove data[options.selectedValuesProp]
         if $.isFunction(options.selectionRemoved) then options.selectionRemoved.call @, item
         input_focus = true
         input.focus()
         return false
       if typeof data[options.selectedItemProp] isnt 'string'
-        org_li.before item.append(data[options.selectedItemProp]).prepend(close)
+        actualInputWrapper.before item.append(data[options.selectedItemProp]).prepend(close)
       else
-        org_li.before item.text(data[options.selectedItemProp]).prepend(close)
-      if $.isFunction(options.selectionAdded) then options.selectionAdded.call @, org_li.prev(), data[options.selectedValuesProp]
-      return org_li.prev()
+        actualInputWrapper.before item.text(data[options.selectedItemProp]).prepend(close)
+      if $.isFunction(options.selectionAdded) then options.selectionAdded.call @, actualInputWrapper.prev(), data[options.selectedValuesProp]
+      return actualInputWrapper.prev()
 
     # Setup basic elements and render them to the DOM
     input.wrap("<ul class=\"as-selections\" id=\"as-selections-#{element}\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-#{element}\"></li>")
-    selections_holder = $ "#as-selections-#{element}"
-    org_li = $ "#as-original-#{element}"
-    results_holder = $ "<div class=\"as-results\" id=\"as-results-#{element}\"></div>"
-    results_ul =  $ "<ul class=\"as-list\"></ul>"
-    values_input = $ "<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{element}\" id=\"as-values-#{element}\" />"
+    selectionsContainer = $ "#as-selections-#{element}"
+    actualInputWrapper = $ "#as-original-#{element}"
+    resultsContainer = $ "<div class=\"as-results\" id=\"as-results-#{element}\"></div>"
+    resultsList =  $ "<ul class=\"as-list\"></ul>"
+    hiddenInput = $ "<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{element}\" id=\"as-values-#{element}\" />"
+
+    currentSelection = new SelectionControl(hiddenInput)
+    prefilledValue = ''
+    interval = null
+    timeout = null
+    prev = ''
+    lastKeyWasTab = false
+    lastKeyPressCode = null
+    num_count = 0
 
     ###
       DO START
@@ -392,15 +401,12 @@ $.fn.autoSuggest = (data, options) ->
     if $.isFunction options.start
       options.start.call @,
         add : (data) ->
-          counted = $(selections_holder).find('li').length
-          item = add_selected_item data, "u#{counted}"
+          counted = $(selectionsContainer).find('li').length
+          item = insertSelection data, "u#{counted}"
           item?.addClass 'blur'
         remove : (value) ->
-          Selections.remove value
-          selections_holder.find("li[data-value=\"#{escapeHtml(value)}\"]").remove()
-
-    Selections = new SelectionControl(values_input)
-    prefill_value = ''
+          currentSelection.remove value
+          selectionsContainer.find("li[data-value=\"#{escapeHtml(value)}\"]").remove()
 
     switch $.type options.preFill
       when 'string'
@@ -408,42 +414,33 @@ $.fn.autoSuggest = (data, options) ->
           item = {}
           item["#{options.selectedValuesProp}"] = value
           if value isnt ''
-            add_selected_item item, "000#{i}"
-        prefill_value = options.preFill
+            insertSelection item, "000#{i}"
+        prefilledValue = options.preFill
       when 'array'
-        prefill_value = ''
+        prefilledValue = ''
         if options.preFill.length
           for item, i in options.preFill
             new_value = item[options.selectedValuesProp]
             if typeof new_value is 'undefined'
               new_value = ''
-            prefill_value += new_value + ','
+            prefilledValue += new_value + ','
             if new_value isnt ''
-              add_selected_item item, "000#{i}"
+              insertSelection item, "000#{i}"
 
-    if prefill_value isnt ''
+    if prefilledValue isnt ''
       input.val ''
-      selections_holder.find('li.as-selection-item').addClass('blur').removeClass('selected')
+      selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
     # Append input to DOM.
-    input.after values_input
-    selections_holder.click ->
+    input.after hiddenInput
+    selectionsContainer.click ->
       input_focus = true
       input.focus()
       return
-    selections_holder.mousedown ->
+    selectionsContainer.mousedown ->
       input_focus = false
       return
-    # Append selections_holder to DOM.
-    selections_holder.after(results_holder)
-
-    interval = null
-    timeout = null
-    prev = ''
-    totalSelections = 0
-    # FIXME unused
-    tab_press = false
-    lastKeyPressCode = null
-    num_count = 0
+    # Append selectionsContainer to DOM.
+    selectionsContainer.after(resultsContainer)
 
     keyChange = () ->
       ###
@@ -452,18 +449,18 @@ $.fn.autoSuggest = (data, options) ->
       This might cause problem so we move the line to key events section;
       ignore if the following keys are pressed: [del] [shift] [capslock]
       ###
-      #if lastKeyPressCode is 46 || (lastKeyPressCode > 8 && lastKeyPressCode < 32) then return results_holder.hide()
+      #if lastKeyPressCode is 46 || (lastKeyPressCode > 8 && lastKeyPressCode < 32) then return resultsContainer.hide()
       string = input.val().replace /[\\]+|[\/]+/g, ''
 
       return if string is prev
 
       prev = string
       if string.length >= options.minChars
-        selections_holder.addClass 'loading'
+        selectionsContainer.addClass 'loading'
         processRequest string
       else
-        selections_holder.removeClass 'loading'
-        results_holder.hide()
+        selectionsContainer.removeClass 'loading'
+        resultsContainer.hide()
 
     processRequest = (string) ->
       if $.isFunction options.beforeRetrieve
@@ -475,8 +472,8 @@ $.fn.autoSuggest = (data, options) ->
       if !options.matchCase
         query = query.toLowerCase()
       query = query.replace('(', '\(', 'g').replace(')', '\)', 'g')
-      matchCound = 0
-      results_holder.hide().html(results_ul.html(''))
+      matchCount = 0
+      resultsContainer.hide().html(resultsList.html(''))
       num = 0
       for item in data
         num_count++
@@ -490,7 +487,7 @@ $.fn.autoSuggest = (data, options) ->
         if str
           unless options.matchCase
             str = str.toLowerCase()
-          if str.indexOf(query) isnt -1 && !Selections.exist(item[options.selectedValuesProp])
+          if str.indexOf(query) isnt -1 && !currentSelection.exist(item[options.selectedValuesProp])
             forward = true
         if forward
           formatted = $ "<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>"
@@ -498,21 +495,21 @@ $.fn.autoSuggest = (data, options) ->
             element = $ @
             raw_data = element.data 'data'
             number = raw_data.num
-            if selections_holder.find("#as-selection-#{number}").length <= 0 && !tab_press
+            if selectionsContainer.find("#as-selection-#{number}").length <= 0 && !lastKeyWasTab
               data = raw_data.attributes
               input.val('').focus()
               prev = ''
-              add_selected_item data, number
+              insertSelection data, number
               if $.isFunction(options.resultClick) then options.resultClick.call @, raw_data
-              results_holder.hide()
-            tab_press = false
+              resultsContainer.hide()
+            lastKeyWasTab = false
             return
           formatted.mousedown ->
             input_focus = false
             return
           formatted.mouseover ->
             element = $ @
-            results_ul.find('li').removeClass 'active'
+            resultsList.find('li').removeClass 'active'
             element.addClass 'active'
             return
           formatted.data 'data',
@@ -536,31 +533,31 @@ $.fn.autoSuggest = (data, options) ->
             formatted = formatted.html(this_data[options.selectedItemProp])
           else
             formatted = options.formatList.call @, this_data, formatted
-          results_ul.append formatted
+          resultsList.append formatted
           # GC: free memory
           this_data = null
-          matchCound++
-          if options.retrieveLimit && options.retrieveLimit is matchCound
+          matchCount++
+          if options.retrieveLimit && options.retrieveLimit is matchCount
             break
         num += 1
-      selections_holder.removeClass 'loading'
-      if matchCound <= 0
-        results_ul.html "<li class=\"as-message\">#{options.emptyText}</li>"
-      results_ul.css width : selections_holder.outerWidth()
-      if matchCound > 0 || !options.showResultListWhenNoMatch
-        results_holder.show()
+      selectionsContainer.removeClass 'loading'
+      if matchCount <= 0
+        resultsList.html "<li class=\"as-message\">#{options.emptyText}</li>"
+      resultsList.css width : selectionsContainer.outerWidth()
+      if matchCount > 0 || !options.showResultListWhenNoMatch
+        resultsContainer.show()
       if $.isFunction(options.resultsComplete) then options.resultsComplete.call @
       return
 
     moveSelection = (direction) ->
-      if results_holder.find(':visible').length
-        lis = results_holder.find('li')
+      if resultsContainer.find(':visible').length
+        lis = resultsContainer.find('li')
         switch direction
           when 'down'
             start = lis.eq(0)
           else
             start = lis.filter(':last')
-        active = results_holder.find('li.active:first')
+        active = resultsContainer.find('li.active:first')
         if active.length
           switch direction
             when 'down'
@@ -569,27 +566,29 @@ $.fn.autoSuggest = (data, options) ->
               start = active.prev()
         lis.removeClass 'active'
         start.addClass 'active'
+      return
 
     abortRequest = ->
       return unless request
       request.abort()
       request = null
+      return
 
     input.focus ->
       element = $ @
-      if !options.usePlaceholder && element.val() is options.startText && Selections.isEmpty()
+      if !options.usePlaceholder && element.val() is options.startText && currentSelection.isEmpty()
         element.val ''
       else if input_focus
-        selections_holder.find('li.as-selections-item').removeClass('blur')
+        selectionsContainer.find('li.as-selections-item').removeClass('blur')
         unless element.val() is ''
-          results_ul.css width : selections_holder.outerWidth()
-          results_holder.show()
+          resultsList.css width : selectionsContainer.outerWidth()
+          resultsContainer.show()
       if interval then clearInterval interval
       interval = setInterval (->
         if options.showResultList
-          if options.selectionLimit && selections_holder.find('li.as-selection-item').length >= options.selectionLimit
-            results_ul.html "<li class=\"as-message\">#{options.limitText}</li>"
-            results_holder.show()
+          if options.selectionLimit && selectionsContainer.find('li.as-selection-item').length >= options.selectionLimit
+            resultsList.html "<li class=\"as-message\">#{options.limitText}</li>"
+            resultsContainer.show()
           else
             keyChange()
         return
@@ -601,11 +600,11 @@ $.fn.autoSuggest = (data, options) ->
 
     input.blur ->
       element = $ @
-      if !options.usePlaceholder && element.val() is '' && Selections.isEmpty() && prefill_value is '' && options.minChars > 0
+      if !options.usePlaceholder && element.val() is '' && currentSelection.isEmpty() && prefilledValue is '' && options.minChars > 0
         element.val options.startText
       else if input_focus
-        selections_holder.find('li.as-selection-item').addClass('blur').removeClass('selected')
-        results_holder.hide()
+        selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
+        resultsContainer.hide()
       if interval then clearInterval interval
       return
     input.keydown (event) ->
@@ -621,23 +620,24 @@ $.fn.autoSuggest = (data, options) ->
           moveSelection 'down'
         when 8 # delete key
           if input.val() is ''
-            last = Selections.getAll()
-            if last.length
-              last = last[last.length - 1]
+            _selections = currentSelection.getAll()
+            _selection = null
+            if _selections.length
+              _selection = _selections[_selections.length - 1]
             else
-              last = null
-            selections_holder.children().not(org_li.prev()).removeClass 'selected'
-            if org_li.prev().hasClass 'selected'
-              Selections.remove last
-              if $.isFunction(options.selectionRemoved) then options.selectionRemoved.call @, org_li.prev()
+              _selection = null
+            selectionsContainer.children().not(actualInputWrapper.prev()).removeClass 'selected'
+            if actualInputWrapper.prev().hasClass 'selected'
+              currentSelection.remove _selection
+              if $.isFunction(options.selectionRemoved) then options.selectionRemoved.call @, actualInputWrapper.prev()
             else
-              if $.isFunction(options.selectionClick) then options.selectionClick.call @, org_li.prev()
-              org_li.prev().addClass 'selected'
+              if $.isFunction(options.selectionClick) then options.selectionClick.call @, actualInputWrapper.prev()
+              actualInputWrapper.prev().addClass 'selected'
           if input.val().length is 1
-            results_holder.hide()
+            resultsContainer.hide()
             prev = ''
             abortRequest()
-          if results_holder.find(':visible').length
+          if resultsContainer.find(':visible').length
             if timeout then clearTimeout timeout
             timeout = setTimeout (->
               keyChange()
@@ -645,32 +645,32 @@ $.fn.autoSuggest = (data, options) ->
             ), options.keyDelay
         when 9, 188 # tab, comma
           if options.canGenerateNewSelections
-            tab_press = true
+            lastKeyWasTab = true
             i_input = input.val().replace /(,)/g, ''
             # remove all comma
-            active = results_holder.find('li.active:first')
+            active = resultsContainer.find('li.active:first')
             ### Generate a new bubble with text when no suggestion selected ###
-            if i_input isnt '' && !Selections.exist(i_input) && i_input.length >= options.minChars && active.length is 0
+            if i_input isnt '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length is 0
               event.preventDefault()
               n_data = {}
               n_data["#{options.selectedItemProp}"] = i_input
               n_data["#{options.selectedValuesProp}"] = i_input
-              add_selected_item n_data, "00#{selections_holder.find('li').length + 1}"
+              insertSelection n_data, "00#{selectionsContainer.find('li').length + 1}"
               input.val ''
               ### Cancel previous request when new tag is added ###
               abortRequest()
         when 13 # return
-          tab_press = false
-          active = results_holder.find('li.active:first')
+          lastKeyWasTab = false
+          active = resultsContainer.find('li.active:first')
           if active.length
             active.click()
-            results_holder.hide()
+            resultsContainer.hide()
           if options.neverSubmit || active.length
             event.preventDefault()
         when 27 # esc
-          if options.preventPropagationOnEscape && results_holder.find(':visible').length
+          if options.preventPropagationOnEscape && resultsContainer.find(':visible').length
             event.stopPropagation()
         when 16, 20 # shift, capslock
           abortRequest()
-          results_holder.hide()
+          resultsContainer.hide()
       return

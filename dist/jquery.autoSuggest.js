@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.0.0 - 2012-07-08
+/*! jQuery AutoSuggest - v2.0.0 - 2012-07-09
 * http://hlsolutions.github.com/jquery-autosuggest
 * Copyright (c) 2012 Jan Philipp; Licensed MIT, GPL */
 
@@ -416,7 +416,7 @@ Based on the 1.6er release dated in July, 2012
     */
 
     return this.each(function(element) {
-      var Selections, abortRequest, add_selected_item, elementId, i, input, input_focus, interval, item, keyChange, lastKeyPressCode, moveSelection, new_value, num_count, org_li, prefill_value, prev, processData, processRequest, results_holder, results_ul, selections_holder, tab_press, timeout, totalSelections, value, values_input, _i, _j, _len, _len1, _ref, _ref1;
+      var abortRequest, actualInputWrapper, currentSelection, elementId, hiddenInput, i, input, input_focus, insertSelection, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
       input_focus = false;
       input = $(this);
       if (!options.asHtmlID) {
@@ -438,16 +438,16 @@ Based on the 1.6er release dated in July, 2012
       } else {
         input.val(options.startText);
       }
-      add_selected_item = function(data, num) {
+      insertSelection = function(data, num) {
         var close, item;
-        Selections.add(data[options.selectedValuesProp]);
+        currentSelection.add(data[options.selectedValuesProp]);
         item = $("<li class=\"as-selection-item\" id=\"as-selection-" + num + "\" data-value=\"" + (escapeQuotes(escapeHtml(data[options.selectedValuesProp]))) + "\"></li>");
         item.click(function() {
           element = $(this);
           if ($.isFunction(options.selectionClick)) {
             options.selectionClick.call(this, element);
           }
-          selections_holder.children().removeClass('selected');
+          selectionsContainer.children().removeClass('selected');
           element.addClass('selected');
         });
         item.mousedown(function() {
@@ -455,7 +455,7 @@ Based on the 1.6er release dated in July, 2012
         });
         close = $("<a class=\"as-close\">&times;</a>");
         close.click(function() {
-          Selections.remove(data[options.selectedValuesProp]);
+          currentSelection.remove(data[options.selectedValuesProp]);
           if ($.isFunction(options.selectionRemoved)) {
             options.selectionRemoved.call(this, item);
           }
@@ -464,21 +464,29 @@ Based on the 1.6er release dated in July, 2012
           return false;
         });
         if (typeof data[options.selectedItemProp] !== 'string') {
-          org_li.before(item.append(data[options.selectedItemProp]).prepend(close));
+          actualInputWrapper.before(item.append(data[options.selectedItemProp]).prepend(close));
         } else {
-          org_li.before(item.text(data[options.selectedItemProp]).prepend(close));
+          actualInputWrapper.before(item.text(data[options.selectedItemProp]).prepend(close));
         }
         if ($.isFunction(options.selectionAdded)) {
-          options.selectionAdded.call(this, org_li.prev(), data[options.selectedValuesProp]);
+          options.selectionAdded.call(this, actualInputWrapper.prev(), data[options.selectedValuesProp]);
         }
-        return org_li.prev();
+        return actualInputWrapper.prev();
       };
       input.wrap("<ul class=\"as-selections\" id=\"as-selections-" + element + "\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-" + element + "\"></li>");
-      selections_holder = $("#as-selections-" + element);
-      org_li = $("#as-original-" + element);
-      results_holder = $("<div class=\"as-results\" id=\"as-results-" + element + "\"></div>");
-      results_ul = $("<ul class=\"as-list\"></ul>");
-      values_input = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_" + element + "\" id=\"as-values-" + element + "\" />");
+      selectionsContainer = $("#as-selections-" + element);
+      actualInputWrapper = $("#as-original-" + element);
+      resultsContainer = $("<div class=\"as-results\" id=\"as-results-" + element + "\"></div>");
+      resultsList = $("<ul class=\"as-list\"></ul>");
+      hiddenInput = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_" + element + "\" id=\"as-values-" + element + "\" />");
+      currentSelection = new SelectionControl(hiddenInput);
+      prefilledValue = '';
+      interval = null;
+      timeout = null;
+      prev = '';
+      lastKeyWasTab = false;
+      lastKeyPressCode = null;
+      num_count = 0;
       /*
             DO START
       */
@@ -487,18 +495,16 @@ Based on the 1.6er release dated in July, 2012
         options.start.call(this, {
           add: function(data) {
             var counted, item;
-            counted = $(selections_holder).find('li').length;
-            item = add_selected_item(data, "u" + counted);
+            counted = $(selectionsContainer).find('li').length;
+            item = insertSelection(data, "u" + counted);
             return item != null ? item.addClass('blur') : void 0;
           },
           remove: function(value) {
-            Selections.remove(value);
-            return selections_holder.find("li[data-value=\"" + (escapeHtml(value)) + "\"]").remove();
+            currentSelection.remove(value);
+            return selectionsContainer.find("li[data-value=\"" + (escapeHtml(value)) + "\"]").remove();
           }
         });
       }
-      Selections = new SelectionControl(values_input);
-      prefill_value = '';
       switch ($.type(options.preFill)) {
         case 'string':
           _ref = options.preFill.split(',');
@@ -507,13 +513,13 @@ Based on the 1.6er release dated in July, 2012
             item = {};
             item["" + options.selectedValuesProp] = value;
             if (value !== '') {
-              add_selected_item(item, "000" + i);
+              insertSelection(item, "000" + i);
             }
           }
-          prefill_value = options.preFill;
+          prefilledValue = options.preFill;
           break;
         case 'array':
-          prefill_value = '';
+          prefilledValue = '';
           if (options.preFill.length) {
             _ref1 = options.preFill;
             for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
@@ -522,33 +528,26 @@ Based on the 1.6er release dated in July, 2012
               if (typeof new_value === 'undefined') {
                 new_value = '';
               }
-              prefill_value += new_value + ',';
+              prefilledValue += new_value + ',';
               if (new_value !== '') {
-                add_selected_item(item, "000" + i);
+                insertSelection(item, "000" + i);
               }
             }
           }
       }
-      if (prefill_value !== '') {
+      if (prefilledValue !== '') {
         input.val('');
-        selections_holder.find('li.as-selection-item').addClass('blur').removeClass('selected');
+        selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected');
       }
-      input.after(values_input);
-      selections_holder.click(function() {
+      input.after(hiddenInput);
+      selectionsContainer.click(function() {
         input_focus = true;
         input.focus();
       });
-      selections_holder.mousedown(function() {
+      selectionsContainer.mousedown(function() {
         input_focus = false;
       });
-      selections_holder.after(results_holder);
-      interval = null;
-      timeout = null;
-      prev = '';
-      totalSelections = 0;
-      tab_press = false;
-      lastKeyPressCode = null;
-      num_count = 0;
+      selectionsContainer.after(resultsContainer);
       keyChange = function() {
         /*
               Since most IME does not trigger any key events, if we press [del]
@@ -564,11 +563,11 @@ Based on the 1.6er release dated in July, 2012
         }
         prev = string;
         if (string.length >= options.minChars) {
-          selections_holder.addClass('loading');
+          selectionsContainer.addClass('loading');
           return processRequest(string);
         } else {
-          selections_holder.removeClass('loading');
-          return results_holder.hide();
+          selectionsContainer.removeClass('loading');
+          return resultsContainer.hide();
         }
       };
       processRequest = function(string) {
@@ -579,13 +578,13 @@ Based on the 1.6er release dated in July, 2012
         }
       };
       processData = function(data, query) {
-        var formatted, forward, matchCound, name, num, regx, str, this_data, _k, _l, _len2, _len3, _ref2;
+        var formatted, forward, matchCount, name, num, regx, str, this_data, _k, _l, _len2, _len3, _ref2;
         if (!options.matchCase) {
           query = query.toLowerCase();
         }
         query = query.replace('(', '\(', 'g').replace(')', '\)', 'g');
-        matchCound = 0;
-        results_holder.hide().html(results_ul.html(''));
+        matchCount = 0;
+        resultsContainer.hide().html(resultsList.html(''));
         num = 0;
         for (_k = 0, _len2 = data.length; _k < _len2; _k++) {
           item = data[_k];
@@ -605,7 +604,7 @@ Based on the 1.6er release dated in July, 2012
             if (!options.matchCase) {
               str = str.toLowerCase();
             }
-            if (str.indexOf(query) !== -1 && !Selections.exist(item[options.selectedValuesProp])) {
+            if (str.indexOf(query) !== -1 && !currentSelection.exist(item[options.selectedValuesProp])) {
               forward = true;
             }
           }
@@ -616,24 +615,24 @@ Based on the 1.6er release dated in July, 2012
               element = $(this);
               raw_data = element.data('data');
               number = raw_data.num;
-              if (selections_holder.find("#as-selection-" + number).length <= 0 && !tab_press) {
+              if (selectionsContainer.find("#as-selection-" + number).length <= 0 && !lastKeyWasTab) {
                 data = raw_data.attributes;
                 input.val('').focus();
                 prev = '';
-                add_selected_item(data, number);
+                insertSelection(data, number);
                 if ($.isFunction(options.resultClick)) {
                   options.resultClick.call(this, raw_data);
                 }
-                results_holder.hide();
+                resultsContainer.hide();
               }
-              tab_press = false;
+              lastKeyWasTab = false;
             });
             formatted.mousedown(function() {
               input_focus = false;
             });
             formatted.mouseover(function() {
               element = $(this);
-              results_ul.find('li').removeClass('active');
+              resultsList.find('li').removeClass('active');
               element.addClass('active');
             });
             formatted.data('data', {
@@ -659,24 +658,24 @@ Based on the 1.6er release dated in July, 2012
             } else {
               formatted = options.formatList.call(this, this_data, formatted);
             }
-            results_ul.append(formatted);
+            resultsList.append(formatted);
             this_data = null;
-            matchCound++;
-            if (options.retrieveLimit && options.retrieveLimit === matchCound) {
+            matchCount++;
+            if (options.retrieveLimit && options.retrieveLimit === matchCount) {
               break;
             }
           }
           num += 1;
         }
-        selections_holder.removeClass('loading');
-        if (matchCound <= 0) {
-          results_ul.html("<li class=\"as-message\">" + options.emptyText + "</li>");
+        selectionsContainer.removeClass('loading');
+        if (matchCount <= 0) {
+          resultsList.html("<li class=\"as-message\">" + options.emptyText + "</li>");
         }
-        results_ul.css({
-          width: selections_holder.outerWidth()
+        resultsList.css({
+          width: selectionsContainer.outerWidth()
         });
-        if (matchCound > 0 || !options.showResultListWhenNoMatch) {
-          results_holder.show();
+        if (matchCount > 0 || !options.showResultListWhenNoMatch) {
+          resultsContainer.show();
         }
         if ($.isFunction(options.resultsComplete)) {
           options.resultsComplete.call(this);
@@ -684,8 +683,8 @@ Based on the 1.6er release dated in July, 2012
       };
       moveSelection = function(direction) {
         var active, lis, start;
-        if (results_holder.find(':visible').length) {
-          lis = results_holder.find('li');
+        if (resultsContainer.find(':visible').length) {
+          lis = resultsContainer.find('li');
           switch (direction) {
             case 'down':
               start = lis.eq(0);
@@ -693,7 +692,7 @@ Based on the 1.6er release dated in July, 2012
             default:
               start = lis.filter(':last');
           }
-          active = results_holder.find('li.active:first');
+          active = resultsContainer.find('li.active:first');
           if (active.length) {
             switch (direction) {
               case 'down':
@@ -704,7 +703,7 @@ Based on the 1.6er release dated in July, 2012
             }
           }
           lis.removeClass('active');
-          return start.addClass('active');
+          start.addClass('active');
         }
       };
       abortRequest = function() {
@@ -712,19 +711,19 @@ Based on the 1.6er release dated in July, 2012
           return;
         }
         request.abort();
-        return request = null;
+        request = null;
       };
       input.focus(function() {
         element = $(this);
-        if (!options.usePlaceholder && element.val() === options.startText && Selections.isEmpty()) {
+        if (!options.usePlaceholder && element.val() === options.startText && currentSelection.isEmpty()) {
           element.val('');
         } else if (input_focus) {
-          selections_holder.find('li.as-selections-item').removeClass('blur');
+          selectionsContainer.find('li.as-selections-item').removeClass('blur');
           if (element.val() !== '') {
-            results_ul.css({
-              width: selections_holder.outerWidth()
+            resultsList.css({
+              width: selectionsContainer.outerWidth()
             });
-            results_holder.show();
+            resultsContainer.show();
           }
         }
         if (interval) {
@@ -732,9 +731,9 @@ Based on the 1.6er release dated in July, 2012
         }
         interval = setInterval((function() {
           if (options.showResultList) {
-            if (options.selectionLimit && selections_holder.find('li.as-selection-item').length >= options.selectionLimit) {
-              results_ul.html("<li class=\"as-message\">" + options.limitText + "</li>");
-              results_holder.show();
+            if (options.selectionLimit && selectionsContainer.find('li.as-selection-item').length >= options.selectionLimit) {
+              resultsList.html("<li class=\"as-message\">" + options.limitText + "</li>");
+              resultsContainer.show();
             } else {
               keyChange();
             }
@@ -748,11 +747,11 @@ Based on the 1.6er release dated in July, 2012
       });
       input.blur(function() {
         element = $(this);
-        if (!options.usePlaceholder && element.val() === '' && Selections.isEmpty() && prefill_value === '' && options.minChars > 0) {
+        if (!options.usePlaceholder && element.val() === '' && currentSelection.isEmpty() && prefilledValue === '' && options.minChars > 0) {
           element.val(options.startText);
         } else if (input_focus) {
-          selections_holder.find('li.as-selection-item').addClass('blur').removeClass('selected');
-          results_holder.hide();
+          selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected');
+          resultsContainer.hide();
         }
         if (interval) {
           clearInterval(interval);
@@ -762,7 +761,7 @@ Based on the 1.6er release dated in July, 2012
         /* track the last key pressed
         */
 
-        var active, first_focus, i_input, last, n_data;
+        var active, first_focus, i_input, n_data, _selection, _selections;
         lastKeyPressCode = event.keyCode;
         first_focus = false;
         switch (event.keyCode) {
@@ -776,31 +775,32 @@ Based on the 1.6er release dated in July, 2012
             break;
           case 8:
             if (input.val() === '') {
-              last = Selections.getAll();
-              if (last.length) {
-                last = last[last.length - 1];
+              _selections = currentSelection.getAll();
+              _selection = null;
+              if (_selections.length) {
+                _selection = _selections[_selections.length - 1];
               } else {
-                last = null;
+                _selection = null;
               }
-              selections_holder.children().not(org_li.prev()).removeClass('selected');
-              if (org_li.prev().hasClass('selected')) {
-                Selections.remove(last);
+              selectionsContainer.children().not(actualInputWrapper.prev()).removeClass('selected');
+              if (actualInputWrapper.prev().hasClass('selected')) {
+                currentSelection.remove(_selection);
                 if ($.isFunction(options.selectionRemoved)) {
-                  options.selectionRemoved.call(this, org_li.prev());
+                  options.selectionRemoved.call(this, actualInputWrapper.prev());
                 }
               } else {
                 if ($.isFunction(options.selectionClick)) {
-                  options.selectionClick.call(this, org_li.prev());
+                  options.selectionClick.call(this, actualInputWrapper.prev());
                 }
-                org_li.prev().addClass('selected');
+                actualInputWrapper.prev().addClass('selected');
               }
             }
             if (input.val().length === 1) {
-              results_holder.hide();
+              resultsContainer.hide();
               prev = '';
               abortRequest();
             }
-            if (results_holder.find(':visible').length) {
+            if (resultsContainer.find(':visible').length) {
               if (timeout) {
                 clearTimeout(timeout);
               }
@@ -812,18 +812,18 @@ Based on the 1.6er release dated in July, 2012
           case 9:
           case 188:
             if (options.canGenerateNewSelections) {
-              tab_press = true;
+              lastKeyWasTab = true;
               i_input = input.val().replace(/(,)/g, '');
-              active = results_holder.find('li.active:first');
+              active = resultsContainer.find('li.active:first');
               /* Generate a new bubble with text when no suggestion selected
               */
 
-              if (i_input !== '' && !Selections.exist(i_input) && i_input.length >= options.minChars && active.length === 0) {
+              if (i_input !== '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length === 0) {
                 event.preventDefault();
                 n_data = {};
                 n_data["" + options.selectedItemProp] = i_input;
                 n_data["" + options.selectedValuesProp] = i_input;
-                add_selected_item(n_data, "00" + (selections_holder.find('li').length + 1));
+                insertSelection(n_data, "00" + (selectionsContainer.find('li').length + 1));
                 input.val('');
                 /* Cancel previous request when new tag is added
                 */
@@ -833,25 +833,25 @@ Based on the 1.6er release dated in July, 2012
             }
             break;
           case 13:
-            tab_press = false;
-            active = results_holder.find('li.active:first');
+            lastKeyWasTab = false;
+            active = resultsContainer.find('li.active:first');
             if (active.length) {
               active.click();
-              results_holder.hide();
+              resultsContainer.hide();
             }
             if (options.neverSubmit || active.length) {
               event.preventDefault();
             }
             break;
           case 27:
-            if (options.preventPropagationOnEscape && results_holder.find(':visible').length) {
+            if (options.preventPropagationOnEscape && resultsContainer.find(':visible').length) {
               event.stopPropagation();
             }
             break;
           case 16:
           case 20:
             abortRequest();
-            results_holder.hide();
+            resultsContainer.hide();
         }
       });
     });
