@@ -74,7 +74,7 @@ ul.as-selections li.as-selection-item.blur {
 ul.as-selections li.as-selection-item.blur a.as-close {
   color: #999;
 }
-ul.as-selections li:hover.as-selection-item {
+ul.as-selections li:hover.as-selection-item, ul.as-selections li.hover.as-selection-item {
   color: #2b3840;
   background-color: #bbd4f1;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #bbd4f1), color-stop(100%, #a3c2e5));
@@ -85,13 +85,13 @@ ul.as-selections li:hover.as-selection-item {
   border-color: #6da0e0;
   border-top-color: #8bb7ed;
 }
-ul.as-selections li:hover.as-selection-item a.as-close {
+ul.as-selections li:hover.as-selection-item a.as-close, ul.as-selections li.hover.as-selection-item a.as-close {
   color: #4d70b0;
 }
 ul.as-selections li.as-selection-item.selected {
   border-color: #1f30e4;
 }
-ul.as-selections li.as-selection-item a:hover.as-close {
+ul.as-selections li.as-selection-item a:hover.as-close, ul.as-selections li.as-selection-item a.hover.as-close {
   color: #1b3c65;
 }
 ul.as-selections li.as-selection-item a:active.as-close {

@@ -71,7 +71,7 @@ ul {
           }
         }
       }
-      &:hover.as-selection-item {
+      &:hover.as-selection-item, &.hover.as-selection-item {
         color: #2b3840;
         background-color: #bbd4f1;
         @include background(linear-gradient(top, #bbd4f1, #a3c2e5));
@@ -86,7 +86,7 @@ ul {
           border-color: #1f30e4;
         }
         a {
-          &:hover.as-close {
+          &:hover.as-close, &.hover.as-close{
             color: #1b3c65;
           }
           &:active.as-close {

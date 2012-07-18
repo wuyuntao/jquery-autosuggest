@@ -1,0 +1,145 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>jQuery AutoSuggest Style Test</title>
+    <link rel="stylesheet" href="../src/jquery.autoSuggest.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        section {
+            width: 500px;
+            margin: auto;
+            margin-top: 60px;
+        }
+
+        form fieldset {
+        }
+
+        form fieldset input {
+            width: 300px;
+        }
+
+    </style>
+</head>
+<body>
+
+<section>
+    <form>
+        <h1>Selections (default)</h1>
+        <fieldset>
+            <ul class="as-selections">
+                <li class="as-selection-item" data-value="43"><a
+                        class="as-close">×</a>
+                    Normal
+                </li>
+                <li class="as-selection-item hover" data-value="43"><a
+                        class="as-close">×</a>
+                    Hover
+                </li>
+                <li class="as-original">
+                    <input name="name" type="text" autocomplete="off" class="as-input"><input
+                        type="hidden" class="as-values" name="as_values_098" value=",43,"></li>
+            </ul>
+        </fieldset>
+    </form>
+</section>
+
+<section>
+    <form>
+        <h1>Selections (default, loading)</h1>
+        <fieldset>
+            <ul class="as-selections loading">
+                <li class="as-original">
+                    <input name="name" type="text" autocomplete="off" class="as-input"><input
+                        type="hidden" class="as-values" name="as_values_098" value=",43,"></li>
+            </ul>
+        </fieldset>
+    </form>
+</section>
+
+<section>
+    <form>
+        <h1>Selections (blur)</h1>
+        <fieldset>
+            <ul class="as-selections">
+                <li class="as-selection-item blur" data-value="43"><a
+                        class="as-close">×</a>
+                    Normal
+                </li>
+                <li class="as-selection-item blur hover" data-value="43"><a
+                        class="as-close">×</a>
+                    Hover
+                </li>
+                <li class="as-original">
+                    <input name="name" type="text" autocomplete="off" class="as-input"><input
+                        type="hidden" class="as-values" name="as_values_098" value=",43,"></li>
+            </ul>
+        </fieldset>
+    </form>
+</section>
+
+<section>
+    <form>
+        <h1>Selections (selected)</h1>
+        <fieldset>
+            <ul class="as-selections">
+                <li class="as-selection-item selected" data-value="43"><a
+                        class="as-close">×</a>
+                    Normal
+                </li>
+                <li class="as-selection-item selected hover" data-value="43"><a
+                        class="as-close">×</a>
+                    Hover
+                </li>
+                <li class="as-original">
+                    <input name="name" type="text" autocomplete="off" class="as-input"><input
+                        type="hidden" class="as-values" name="as_values_098" value=",43,"></li>
+            </ul>
+        </fieldset>
+    </form>
+</section>
+
+<section>
+    <form>
+        <h1>Selections (blur selected)</h1>
+        <fieldset>
+            <ul class="as-selections">
+                <li class="as-selection-item blur selected" data-value="43"><a
+                        class="as-close">×</a>
+                    Normal
+                </li>
+                <li class="as-selection-item blur selected hover" data-value="43"><a
+                        class="as-close">×</a>
+                    Hover
+                </li>
+                <li class="as-original">
+                    <input name="name" type="text" autocomplete="off" class="as-input"><input
+                        type="hidden" class="as-values" name="as_values_098" value=",43,"></li>
+            </ul>
+        </fieldset>
+    </form>
+</section>
+
+<section>
+    <form>
+        <h1>Results list</h1>
+        <fieldset>
+            <div class="as-results" id="as-results-095" style="display: block; ">
+                <ul class="as-list" style="width: 468px; ">
+                    <li class="as-result-item active" id="as-result-item-0">Mick <em>J</em>agger</li>
+                    <li class="as-result-item" id="as-result-item-1"><em>J</em>ohnny Storm</li>
+                    <li class="as-result-item" id="as-result-item-5">Michael <em>J</em>ordan</li>
+                </ul>
+            </div>
+        </fieldset>
+    </form>
+</section>
+
+</body>
+</html>
