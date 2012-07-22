@@ -31,6 +31,35 @@
         COMMA : 188
       };
 
+    function createAjaxMock_Success(url) {
+      return $.mockjax({
+        responseTimeout : 100,
+        url : url,
+        dataType : 'json',
+        response : function (settings) {
+          this.responseText = {
+            requestData : settings.data,
+            result : [
+              {"value" : "Test"},
+              {"value" : "Data"}
+            ]
+          };
+        }
+      });
+    }
+
+    function createAjaxMock_Error(url) {
+      return $.mockjax({
+        responseTimeout : 100,
+        url : url,
+        status : 400
+      });
+    }
+
+    function destroyAjaxMock(id) {
+      $.mockjaxClear(id);
+    }
+
     function create(d, opts) {
       data = d || data;
       options = opts || options;
@@ -339,44 +368,162 @@
       equal(selections().length, 0, "Should remove using a callback.");
     });
 
-    module('Configuration: "options.extraParams"');
+    module('Configuration: "onAjaxRequestAlways"');
 
-    $.mockAjax('json', {
-      "data.html.*" : function (matches) {
-        return {
-          origin : matches.input,
-          result : [
-            {"value" : "Test"},
-            {"value" : "Data"}
-          ]
-        };
-      }
+    asyncTest('Check that the callback will be called on success.', 3, function () {
+      var url = 'url-' + Math.round(10000 * Math.random()) + '.html', ajaxMock = createAjaxMock_Success(url), response, called = false, opts = $.extend({}, options, {
+        onAjaxRequestAlways : function (result, statusText, serverResponse) {
+          called = true;
+          response = serverResponse;
+        }
+      });
+
+      el = create(url, opts);
+      $.simulate2.triggerKeyEventsForString(el, 'J', 0, true);
+
+      setTimeout(function () {
+        start();
+        equal(called, true, 'Callback should be called.');
+        equal(response.statusText, 'OK', 'Response statusText should be "OK".');
+        equal(response.status, 200, 'Response status should be "200".');
+        remove();
+        destroyAjaxMock(ajaxMock);
+      }, 1000);
     });
 
+    asyncTest('Check that the callback will be called on error.', 3, function () {
+      var url = 'url-' + Math.round(10000 * Math.random()) + '.html', ajaxMock = createAjaxMock_Error(url), response, called = false, opts = $.extend({}, options, {
+        onAjaxRequestAlways : function (result, statusText, serverResponse) {
+          called = true;
+          response = serverResponse;
+        }
+      });
+
+      el = create(url, opts);
+      $.simulate2.triggerKeyEventsForString(el, 'J', 0, true);
+
+      setTimeout(function () {
+        start();
+        equal(called, true, 'Callback should be called.');
+        notEqual(response.statusText, 'OK', 'Response statusText should be not "OK".');
+        notEqual(response.status, 200, 'Response status should be not "200".');
+        remove();
+        destroyAjaxMock(ajaxMock);
+      }, 1000);
+    });
+
+    module('Configuration: "onAjaxRequestDone"');
+
+    asyncTest('Check that the callback will be called on success.', 3, function () {
+      var url = 'url-' + Math.round(10000 * Math.random()) + '.html', ajaxMock = createAjaxMock_Success(url), response, called = false, opts = $.extend({}, options, {
+        onAjaxRequestDone : function (result, statusText, serverResponse) {
+          called = true;
+          response = serverResponse;
+        }
+      });
+
+      el = create(url, opts);
+      $.simulate2.triggerKeyEventsForString(el, 'J', 0, true);
+
+      setTimeout(function () {
+        start();
+        equal(called, true, 'Callback should be called.');
+        equal(response.statusText, 'OK', 'Response statusText should be "OK".');
+        equal(response.status, 200, 'Response status should be "200".');
+        remove();
+        destroyAjaxMock(ajaxMock);
+      }, 1000);
+    });
+
+    asyncTest('Check that the callback will be not called on error.', 2, function () {
+      var url = 'url-' + Math.round(10000 * Math.random()) + '.html', ajaxMock = createAjaxMock_Error(url), response = null, called = false, opts = $.extend({}, options, {
+        onAjaxRequestDone : function (result, statusText, serverResponse) {
+          called = true;
+        }
+      });
+
+      el = create(url, opts);
+      $.simulate2.triggerKeyEventsForString(el, 'J', 0, true);
+
+      setTimeout(function () {
+        start();
+        equal(called, false, 'Callback should be not called.');
+        equal(response, null, 'Response should be null.');
+        remove();
+        destroyAjaxMock(ajaxMock);
+      }, 1000);
+    });
+
+    module('Configuration: "onAjaxRequestFail"');
+
+    asyncTest('Check that the callback will be not called on success.', 2, function () {
+      var url = 'url-' + Math.round(10000 * Math.random()) + '.html', ajaxMock = createAjaxMock_Success(url), response = null, called = false, opts = $.extend({}, options, {
+        onAjaxRequestFail : function (result, statusText, serverResponse) {
+          called = true;
+          response = serverResponse;
+        }
+      });
+
+      el = create(url, opts);
+      $.simulate2.triggerKeyEventsForString(el, 'J', 0, true);
+
+      setTimeout(function () {
+        start();
+        equal(called, false, 'Callback should be not called.');
+        equal(response, null, 'Response should be null.');
+        remove();
+        destroyAjaxMock(ajaxMock);
+      }, 1000);
+    });
+
+    asyncTest('Check that the callback will be called on error.', 3, function () {
+      var url = 'url-' + Math.round(10000 * Math.random()) + '.html', ajaxMock = createAjaxMock_Error(url), response, called = false, opts = $.extend({}, options, {
+        onAjaxRequestFail : function (result, statusText, serverResponse) {
+          called = true;
+          response = serverResponse;
+        }
+      });
+
+      el = create(url, opts);
+      $.simulate2.triggerKeyEventsForString(el, 'J', 0, true);
+
+      setTimeout(function () {
+        start();
+        equal(called, true, 'Callback should be called.');
+        notEqual(response.statusText, 'OK', 'Response statusText should be not "OK".');
+        notEqual(response.status, 200, 'Response status should be not "200".');
+        remove();
+        destroyAjaxMock(ajaxMock);
+      }, 1000);
+    });
+
+    module('Configuration: "options.extraParams"');
+
     asyncTest('Add extraParams with function (instead of ONLY a string)', 2, function () {
-      var opts = $.extend({}, options, {
+      var url = 'url-' + Math.round(10000 * Math.random()) + '.html', ajaxMock = createAjaxMock_Success(url), opts = $.extend({}, options, {
 
         extraParams : function () {
           return '&specific_location=1';
         },
 
         // Should returns the inner result of the wrapped response. Internally, this checks the wrapped state.
-        retrieveComplete : function (data) {
+        afterRequest : function (data) {
 
           // Because of the mocked ajax, the data here is wrapped.
-          equal("data.html?q=J&specific_location=1", data.origin, 'The mocked ajax response should provide a correct origin.');
+          deepEqual({q : 'J', specific_location : '1'}, data.requestData, 'The mocked ajax response should provide a correct origin.');
           notEqual(null, data.result, 'The mocked ajax response should have a data result.');
 
           setTimeout(function () {
             start();
             remove();
+            destroyAjaxMock(ajaxMock);
           }, 500);
 
           return data.result;
         }
       });
 
-      el = create('data.html', opts);
+      el = create(url, opts);
       $.simulate2.triggerKeyEventsForString(el, 'J', 0, true);
     });
 

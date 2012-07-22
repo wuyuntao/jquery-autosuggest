@@ -76,12 +76,18 @@ Use an `array` if you want to define a static list of items. Each item must be a
 
 Use a `function` returning an `array` if you want to define dynamic builder of a list of items. The structure of this list must be the same as described for an `array`.
 
-Use a `string` if you want to load the data asynchronously via AJAX. Eventually, in that case you want to override the option `retrieveComplete` to match the specification of a data array.
+Use a `string` if you want to load the data asynchronously via AJAX. Eventually, in that case you want to override the option `afterRequest` to match the specification of a data array.
 
 
 ### `options`
 
 * **ajaxOptions**: *object (type : 'get', dataType : 'json' by default)* - Defines the configuration options which will be applied to **$.ajax** when using Ajax on search.
+
+* **onAjaxRequestAlways**: *deferred callback function* (deferred chaining of jQuery) - Defines a callback which will be called regardless of the response.
+
+* **onAjaxRequestDone**: *deferred callback function* (deferred chaining of jQuery) - Defines a callback which will be called when the response succeeded.
+
+* **onAjaxRequestFail**: *deferred callback function* (deferred chaining of jQuery) - Defines a callback which will be called when the response failed.
 
 * **asHtmlID**: *string (false by default)* - Enables you to specify your own custom ID that will be appended to the top level AutoSuggest UL element's ID name. Otherwise it will default to using a random ID. Example: id="CUSTOM_ID". This is also applies to the hidden input filed that holds all of the selected values. Example: id="as-values-CUSTOM_ID"
 
@@ -134,9 +140,9 @@ Use a `string` if you want to load the data asynchronously via AJAX. Eventually,
 
 * **formatList**: *callback function* - Custom function that is run after all the data has been retrieved and before the results are put into the suggestion results list. This is here so you can modify what & how things show up in the suggestion results list.
 
-* **beforeRetrieve**: *callback function* - Custom function that is run right before the AJAX request is made, or before the local objected is searched. This is used to modify the search string before it is processed. So if a user entered "jim" into the AutoSuggest box, you can call this function to prepend their query with "guy_". Making the final query = "guy_jim". The search query is passed into this function. Example: beforeRetrieve: function(string){ return string; }
+* **beforeRequest**: *callback function* - Custom function that is run right before the AJAX request is made, or before the local objected is searched. This is used to modify the search string before it is processed. So if a user entered "jim" into the AutoSuggest box, you can call this function to prepend their query with "guy_". Making the final query = "guy_jim". The search query is passed into this function. `Example: beforeRequest: function(string){ return string; }`
 
-* **retrieveComplete**: *callback function* - Custom function that is run after the ajax request has completed. The data object MUST be returned if this is used. `Example: retrieveComplete: function(data){ return data; }`
+* **afterRequest**: *callback function* - Custom function that is run after the ajax request has completed. The data object MUST be returned if this is used. `Example: afterRequest: function(data){ return data; }`
 
 * **resultClick**: *callback function* - Custom function that is run when a search result item is clicked. The data from the item that is clicked is passed into this callback function as 'data'.
 `Example: resultClick: function(data){ console.log(data); }`
@@ -278,6 +284,8 @@ The plugin project now uses **CoffeeScript** and **SASS** for source building. T
 * Reduced memory consumption moving some local to global defined util functions.
 * Extended `extraParams` being a plain object (with downgrade compatibility).
 * Changed the Ajax call from `$.getJSON` to the more flexible `$.ajax`, besides introduced `ajaxOptions`.
+* **API change**: *beforeRetrieve* was renamed to *beforeRequest* and added the second argument `options`.
+* **API change**: *retrieveComplete* was renamed to *afterRequest*.
 
 ## 2012-07-03 Version 1.7.0
 

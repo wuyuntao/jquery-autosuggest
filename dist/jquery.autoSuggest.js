@@ -333,19 +333,31 @@ Based on the 1.6er release dated in July, 2012
 
       formatList: null,
       /**
-       * interceptor
+       * Defines a callback function intercepting the url
+       * @return String should return the ajaxRequest url
       */
 
-      beforeRetrieve: function(string) {
-        return string;
-      },
+      beforeRequest: null,
       /**
-       * interceptor
+       * Defines a callback function intercepting the result data.
       */
 
-      retrieveComplete: function(data) {
-        return data;
-      },
+      afterRequest: null,
+      /**
+       * Defines a deferred callback function for the internal ajax request (on success).
+      */
+
+      onAjaxRequestDone: null,
+      /**
+       * Defines a deferred callback function for the internal ajax request (on error).
+      */
+
+      onAjaxRequestFail: null,
+      /**
+       * Defines a deferred callback function for the internal ajax request (on complete).
+      */
+
+      onAjaxRequestAlways: null,
       /**
        * Defines a trigger after clicking on a search result element.
        * @type function with arguments: data
@@ -393,8 +405,8 @@ Based on the 1.6er release dated in July, 2012
         case 'function':
           return data;
         case 'string':
-          return function(query, next) {
-            var ajaxRequestConfig, extraParams, params;
+          return function(query, callback) {
+            var ajaxRequestConfig, extraParams, onDone, params;
             params = {};
             /* ensures query is encoded
             */
@@ -411,14 +423,26 @@ Based on the 1.6er release dated in July, 2012
               url: data,
               data: params
             });
-            return ajaxRequest = $.ajax(ajaxRequestConfig).done(function(data) {
-              return next(options.retrieveComplete.call(this, data), query);
-            });
+            onDone = function(data) {
+              var data2;
+              data2 = $.isFunction(options.afterRequest) ? options.afterRequest.apply(this, [data]) : data;
+              return callback(data2, query);
+            };
+            ajaxRequest = $.ajax(ajaxRequestConfig).done(onDone);
+            if (options.onAjaxRequestDone) {
+              ajaxRequest.done(options.onAjaxRequestDone);
+            }
+            if (options.onAjaxRequestFail) {
+              ajaxRequest.fail(options.onAjaxRequestFail);
+            }
+            if (options.onAjaxRequestAlways) {
+              ajaxRequest.always(options.onAjaxRequestAlways);
+            }
           };
         case 'array':
         case 'object':
-          return function(query, next) {
-            return next(data, query);
+          return function(query, callback) {
+            return callback(data, query);
           };
       }
     })();
@@ -592,8 +616,8 @@ Based on the 1.6er release dated in July, 2012
         }
       };
       processRequest = function(string) {
-        if ($.isFunction(options.beforeRetrieve)) {
-          string = options.beforeRetrieve.call(this, string);
+        if ($.isFunction(options.beforeRequest)) {
+          string = options.beforeRequest.apply(this, [string, options]);
         }
         abortRequest();
         return fetcher(string, processData);

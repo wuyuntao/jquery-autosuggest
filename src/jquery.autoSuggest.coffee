@@ -267,14 +267,30 @@ $.fn.autoSuggest = (data, options) ->
     formatList : null
 
     ###*
-     * interceptor
+     * Defines a callback function intercepting the url
+     * @return String should return the ajaxRequest url
     ###
-    beforeRetrieve : (string) -> string
+    beforeRequest : null
 
     ###*
-     * interceptor
+     * Defines a callback function intercepting the result data.
     ###
-    retrieveComplete : (data) -> data
+    afterRequest : null
+
+    ###*
+     * Defines a deferred callback function for the internal ajax request (on success).
+    ###
+    onAjaxRequestDone : null
+
+    ###*
+     * Defines a deferred callback function for the internal ajax request (on error).
+    ###
+    onAjaxRequestFail : null
+
+    ###*
+     * Defines a deferred callback function for the internal ajax request (on complete).
+    ###
+    onAjaxRequestAlways : null
 
     ###*
      * Defines a trigger after clicking on a search result element.
@@ -323,8 +339,9 @@ $.fn.autoSuggest = (data, options) ->
   fetcher = switch $.type data
     when 'function' # handle a callback function
       data
+
     when 'string' # handle an url string
-      (query, next) ->
+      (query, callback) ->
         params = {}
         ### ensures query is encoded ###
         params["#{options.queryParam}"] = encodeURIComponent(decodeURIComponent(query))
@@ -339,9 +356,23 @@ $.fn.autoSuggest = (data, options) ->
         ajaxRequestConfig = $.extend {}, options.ajaxOptions,
           url : data
           data : params
-        ajaxRequest = $.ajax(ajaxRequestConfig).done (data) -> next(options.retrieveComplete.call(@, data), query)
+        onDone = (data) ->
+          data2 = if $.isFunction options.afterRequest
+            options.afterRequest.apply @, [data]
+          else
+            data
+          callback(data2, query)
+        ajaxRequest = $.ajax(ajaxRequestConfig).done(onDone)
+
+        # Apply jQuery Deferred Callbacks.
+        if options.onAjaxRequestDone then ajaxRequest.done options.onAjaxRequestDone
+        if options.onAjaxRequestFail then ajaxRequest.fail options.onAjaxRequestFail
+        if options.onAjaxRequestAlways then ajaxRequest.always options.onAjaxRequestAlways
+
+        return # return nothing
+
     when 'array', 'object' # handle an object a list of objects
-      (query, next) -> next(data, query)
+      (query, callback) -> callback(data, query)
 
   # Abort plugin if no fetcher was specified (in this case, option "data" is not supported).
   return unless fetcher
@@ -505,8 +536,8 @@ $.fn.autoSuggest = (data, options) ->
 
     processRequest = (string) ->
       # Call hook "before-request"
-      if $.isFunction options.beforeRetrieve
-        string = options.beforeRetrieve.call @, string
+      if $.isFunction options.beforeRequest
+        string = options.beforeRequest.apply @, [string, options]
       abortRequest()
       fetcher string, processData
 
