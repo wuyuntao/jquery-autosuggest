@@ -504,10 +504,11 @@ $.fn.autoSuggest = (data, options) ->
         resultsContainer.hide()
 
     processRequest = (string) ->
+      # Call hook "before-request"
       if $.isFunction options.beforeRetrieve
         string = options.beforeRetrieve.call @, string
-        abortRequest()
-        fetcher string, processData
+      abortRequest()
+      fetcher string, processData
 
     processData = (data, query) ->
       if !options.matchCase

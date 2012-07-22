@@ -594,9 +594,9 @@ Based on the 1.6er release dated in July, 2012
       processRequest = function(string) {
         if ($.isFunction(options.beforeRetrieve)) {
           string = options.beforeRetrieve.call(this, string);
-          abortRequest();
-          return fetcher(string, processData);
         }
+        abortRequest();
+        return fetcher(string, processData);
       };
       processData = function(data, query) {
         var formatted, forward, matchCount, name, num, regx, str, this_data, _k, _l, _len2, _len3, _ref2;
