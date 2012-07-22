@@ -1,4 +1,6 @@
 ###
+jQuery AutoSuggest 2
+
 This is a rewritten version of Drew Wilsons "AutoSuggest" plugin from 2009/2010.
 www.drewwilson.com / code.drewwilson.com/entry/autosuggest-jquery-plugin
 
@@ -7,11 +9,56 @@ http://github.com/wuyuntao/jquery-autosuggest
 Based on the 1.6er release dated in July, 2012
 ###
 
-### Override any existing $ ###
+
+# In our scope, override any existing $ with the original jQuery object.
 $ = jQuery
 
+
+### A collection of utility functions. ###
+class Utils
+
+  _ : undefined # intellij formatting workaround
+
+  # Returns a string where the quotes are escaped correctly when used in inline HTML attributes.
+  @escapeQuotes : (text) -> if text then text.replace /"/g, '\\"'
+
+  # Returns a string where the html special chars are escaped correctly.
+  @escapeHtml = (text) -> $('<span/>').text(text).html()
+
+
+### A collection of configuration resolvers. ###
+class ConfigResolver
+
+  _ : undefined
+  # intellij formatting workaround
+
+  ###
+  Resolving the extra params as an object.
+  The input of options.extraParams can be a string, a function or an object.
+  ###
+  @getExtraParams = (options) ->
+    result = options.extraParams
+    if $.isFunction result
+      result = result(@)
+
+    ###*
+     * AutoSuggest <= 1.7 supported only a string of params. Since 2, the extra params will be used as a standard
+     * $.fn.Ajax "data" parameter. The next lines will ensure that the result is such an object.
+    ###
+    if $.type(result) is 'string'
+      obj = {}
+      for pair in result.split '&' when pair isnt ''
+        parts = pair.split '=', 2
+        obj[parts[0]] = parts[1] if parts.length
+      result = obj
+
+    return result
+
+
 ### The SelectionControl maintains and manage any selections.###
-class SelectionControl
+class SelectionHolder
+
+  _ : undefined # intellij formatting workwround
 
   hiddenField : null
   items : null
@@ -123,13 +170,13 @@ $.fn.autoSuggest = (data, options) ->
     limitParam : 'limit'
 
     ###*
-     * number for 'limit' param on ajax request
+     * number for 'limit' param on ajaxRequest
      * @type number
     ###
     retrieveLimit : null
 
     ###*
-     * Defines additional extraParams which will be appended to the Ajax request.
+     * Defines additional extraParams which will be appended to the ajaxRequest.
      * The recommended way is defining an object or a function returning such a object.
      *
      * If this is a string or a function returning a string, the string must be a valid query url. Internally,
@@ -254,58 +301,29 @@ $.fn.autoSuggest = (data, options) ->
     preventPropagationOnEscape : false
 
     ###*
-     * Defines the base options used for the Ajax request.
+     * Defines the base options used for the ajaxRequest.
     ###
     ajaxOptions :
       type : 'get'
       dataType : 'json'
 
-  # build settings merging configuration with options
+    ###*
+     * specifies a list of attributes which will be applied to each input on startup
+    ###
+    inputAttrs :
+      autocomplete : 'off'
+
+  # Creates a new options object and appending the default and the actual user options.
   options = $.extend {}, defaults, options
 
-  ### TODO ###
-  countObjectProperties = (object) -> (item for own item of object).length
+  # global reference to the plugin's ajax request object
+  ajaxRequest = null
 
-  ###
-  TODO: Utility
-  ###
-  getExtraParams = ->
-    result = options.extraParams
-    if $.isFunction result
-      result = result(@)
-
-    ###*
-     * AutoSuggest <= 1.7 supported only a string of params. Since 2, the extra params will be used as a standard
-     * $.fn.Ajax "data" parameter. The next lines will ensure that the result is such an object.
-    ###
-    if $.type(result) is 'string'
-      obj = {}
-      for pair in result.split '&' when pair isnt ''
-        parts = pair.split '=', 2
-        obj[parts[0]] = parts[1] if parts.length
-      result = obj
-
-    return result
-
-  ###
-  TODO: Utility
-  Internal helper escaping HTML correctly.
-  ###
-  escapeHtml = (text) ->
-    $('<span/>').text(text).html()
-
-  ###
-  TODO: Utility
-  Internal helper escaping quotes correctly when used in inline HTML attributes).
-  ###
-  escapeQuotes = (text) ->
-    if text then text.replace /"/g, '\\"'
-
-  request = null
+  # defines the actual fetcher strategy based on the option "data"
   fetcher = switch $.type data
-    when 'function' # Callback
+    when 'function' # handle a callback function
       data
-    when 'string' # URL
+    when 'string' # handle an url string
       (query, next) ->
         params = {}
         ### ensures query is encoded ###
@@ -314,25 +332,37 @@ $.fn.autoSuggest = (data, options) ->
         if options.retrieveLimit
           params[options.limitParam] = encodeURIComponent options.retrieveLimit
 
-        extraParams = getExtraParams()
+        extraParams = ConfigResolver.getExtraParams(options)
         if $.type(extraParams) is 'object'
           $.extend params, extraParams
 
-        ajaxCfg = $.extend {}, options.ajaxOptions,
+        ajaxRequestConfig = $.extend {}, options.ajaxOptions,
           url : data
           data : params
-        request = $.ajax(ajaxCfg).done (data) -> next(options.retrieveComplete.call(@, data), query)
-    when 'array', 'object'
+        ajaxRequest = $.ajax(ajaxRequestConfig).done (data) -> next(options.retrieveComplete.call(@, data), query)
+    when 'array', 'object' # handle an object a list of objects
       (query, next) -> next(data, query)
 
+  # Abort plugin if no fetcher was specified (in this case, option "data" is not supported).
   return unless fetcher
 
   ###
   For each selected item, we will create an own scope.
+  All variables above are "instance" locale!
   ###
   return @each (element) ->
+
+    # prevent null pointer exceptions
+    options.inputAttrs = $.extend options.inputAttrs, {}
+
+    # TODO: intention of input_focus?
     input_focus = false
+    # TODO: should this be checked if it is really an input?
     input = $ @
+
+    # TODO: needs definition
+    element = null
+    elementId = null
 
     # Configure local IDs.
     unless options.asHtmlID
@@ -343,40 +373,17 @@ $.fn.autoSuggest = (data, options) ->
       element = options.asHtmlID
       elementId = element
 
-    # Setup instance properties.
+    # override always the id
+    options.inputAttrs.id = elementId
 
-    input.attr autocomplete : 'off', id : elementId
-    input.addClass 'as-input'
+    # override placeholder if this is required
     if options.usePlaceholder
-      input.attr placeholder : options.startText
-    else
-      input.val options.startText
+      options.inputAttrs.placeholder = options.startText
 
-    insertSelection = (data, num) ->
-      currentSelection.add data[options.selectedValuesProp]
-      item = $ "<li class=\"as-selection-item\" id=\"as-selection-#{num}\" data-value=\"#{escapeQuotes(escapeHtml(data[options.selectedValuesProp]))}\"></li>"
-      item.click ->
-        element = $ @
-        if $.isFunction(options.selectionClick) then options.selectionClick.call @, element
-        selectionsContainer.children().removeClass 'selected'
-        element.addClass 'selected'
-        return
-      item.mousedown ->
-        input_focus = false
-        return
-      close = $ "<a class=\"as-close\">&times;</a>"
-      close.click ->
-        currentSelection.remove data[options.selectedValuesProp]
-        if $.isFunction(options.selectionRemoved) then options.selectionRemoved.call @, item
-        input_focus = true
-        input.focus()
-        return false
-      if typeof data[options.selectedItemProp] isnt 'string'
-        actualInputWrapper.before item.append(data[options.selectedItemProp]).prepend(close)
-      else
-        actualInputWrapper.before item.text(data[options.selectedItemProp]).prepend(close)
-      if $.isFunction(options.selectionAdded) then options.selectionAdded.call @, actualInputWrapper.prev(), data[options.selectedValuesProp]
-      return actualInputWrapper.prev()
+    input.attr options.inputAttrs
+    input.addClass 'as-input'
+    unless options.usePlaceholder
+      input.val options.startText
 
     # Setup basic elements and render them to the DOM
     input.wrap("<ul class=\"as-selections\" id=\"as-selections-#{element}\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-#{element}\"></li>")
@@ -386,7 +393,7 @@ $.fn.autoSuggest = (data, options) ->
     resultsList =  $ "<ul class=\"as-list\"></ul>"
     hiddenInput = $ "<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{element}\" id=\"as-values-#{element}\" />"
 
-    currentSelection = new SelectionControl(hiddenInput)
+    currentSelection = new SelectionHolder(hiddenInput)
     prefilledValue = ''
     interval = null
     timeout = null
@@ -395,6 +402,40 @@ $.fn.autoSuggest = (data, options) ->
     lastKeyPressCode = null
     num_count = 0
 
+    ###*
+     * Adds the specified selection.
+     * @param Object data
+     * @param Number num
+    ###
+    addSelection = (data, num) ->
+      currentSelection.add data[options.selectedValuesProp]
+      item = $ "<li class=\"as-selection-item\" id=\"as-selection-#{num}\" data-value=\"#{Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))}\"></li>"
+      item.click ->
+        element = $ @
+        if $.isFunction(options.selectionClick) then options.selectionClick.call @, element
+        selectionsContainer.children().removeClass 'selected'
+        element.addClass 'selected'
+        return
+      item.mousedown ->
+        input_focus = false
+        return
+      closeElement = $ "<a class=\"as-close\">&times;</a>"
+      closeElement.click ->
+        currentSelection.remove data[options.selectedValuesProp]
+        if $.isFunction(options.selectionRemoved) then options.selectionRemoved.call @, item
+        input_focus = true
+        input.focus()
+        return false
+      if typeof data[options.selectedItemProp] isnt 'string'
+        actualInputWrapper.before item.append(data[options.selectedItemProp]).prepend(closeElement)
+      else
+        actualInputWrapper.before item.text(data[options.selectedItemProp]).prepend(closeElement)
+
+      # Call hook "after selection added".
+      if $.isFunction(options.selectionAdded) then options.selectionAdded.call @, actualInputWrapper.prev(), data[options.selectedValuesProp]
+
+      return actualInputWrapper.prev()
+
     ###
       DO START
     ###
@@ -402,11 +443,11 @@ $.fn.autoSuggest = (data, options) ->
       options.start.call @,
         add : (data) ->
           counted = $(selectionsContainer).find('li').length
-          item = insertSelection data, "u#{counted}"
+          item = addSelection data, "u#{counted}"
           item?.addClass 'blur'
         remove : (value) ->
           currentSelection.remove value
-          selectionsContainer.find("li[data-value=\"#{escapeHtml(value)}\"]").remove()
+          selectionsContainer.find("li[data-value=\"#{Utils.escapeHtml(value)}\"]").remove()
 
     switch $.type options.preFill
       when 'string'
@@ -414,7 +455,7 @@ $.fn.autoSuggest = (data, options) ->
           item = {}
           item["#{options.selectedValuesProp}"] = value
           if value isnt ''
-            insertSelection item, "000#{i}"
+            addSelection item, "000#{i}"
         prefilledValue = options.preFill
       when 'array'
         prefilledValue = ''
@@ -425,7 +466,7 @@ $.fn.autoSuggest = (data, options) ->
               new_value = ''
             prefilledValue += new_value + ','
             if new_value isnt ''
-              insertSelection item, "000#{i}"
+              addSelection item, "000#{i}"
 
     if prefilledValue isnt ''
       input.val ''
@@ -499,7 +540,7 @@ $.fn.autoSuggest = (data, options) ->
               data = raw_data.attributes
               input.val('').focus()
               prev = ''
-              insertSelection data, number
+              addSelection data, number
               if $.isFunction(options.resultClick) then options.resultClick.call @, raw_data
               resultsContainer.hide()
             lastKeyWasTab = false
@@ -518,12 +559,12 @@ $.fn.autoSuggest = (data, options) ->
           this_data = $.extend {}, data[num]
           query = query.replace /"/g, '\\"'
           regx =  unless options.matchCase
-            new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "gi")
+            new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + Utils.escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "gi")
           else
-            new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g")
+            new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + Utils.escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g")
           ### When this is a string, escape the value and process a regular replacement for highlighting.###
           if typeof this_data[options.selectedItemProp] is 'string'
-            this_data[options.selectedItemProp] = escapeHtml(this_data[options.selectedItemProp])
+            this_data[options.selectedItemProp] = Utils.escapeHtml(this_data[options.selectedItemProp])
             if options.resultsHighlight && query.length > 0
               this_data[options.selectedItemProp] = this_data[options.selectedItemProp].replace regx, '<em>$1</em>'
           else
@@ -569,9 +610,9 @@ $.fn.autoSuggest = (data, options) ->
       return
 
     abortRequest = ->
-      return unless request
-      request.abort()
-      request = null
+      return unless ajaxRequest
+      ajaxRequest.abort()
+      ajaxRequest = null
       return
 
     input.focus ->
@@ -655,9 +696,9 @@ $.fn.autoSuggest = (data, options) ->
               n_data = {}
               n_data["#{options.selectedItemProp}"] = i_input
               n_data["#{options.selectedValuesProp}"] = i_input
-              insertSelection n_data, "00#{selectionsContainer.find('li').length + 1}"
+              addSelection n_data, "00#{selectionsContainer.find('li').length + 1}"
               input.val ''
-              ### Cancel previous request when new tag is added ###
+              ### Cancel previous ajaxRequest when new tag is added ###
               abortRequest()
         when 13 # return
           lastKeyWasTab = false
