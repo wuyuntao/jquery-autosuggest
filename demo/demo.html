@@ -183,6 +183,79 @@
                     output.text('Selected: ' + input.parent('.as-original').find(':hidden').val());
                 });
             }());
+
+            (function () {
+                var container = builder('Demo with static data + renderer (canGenerateNewSelections = false).', 'name', 'Name');
+                container.addClass('user-list');
+                var form = container.find('form');
+                var input = container.find('input[type=text]');
+                var output = container.find('pre');
+
+                var data = [
+                    {
+                        value : "21",
+                        name : "Mick Jagger",
+                        email : 'mick.jagger@example.org',
+                        image : 'http://upload.wikimedia.org/wikipedia/commons/6/68/Mick_Jagger_in_red.jpg',
+                        imageCopyright : 'http://en.wikipedia.org/wiki/File:Mick_Jagger_in_red.jpg'
+                    },
+                    {
+                        value : "43",
+                        name : "Johnny Storm",
+                        email : 'johnny.storm@example.org',
+                        image : 'http://upload.wikimedia.org/wikipedia/en/d/d8/Human_Torch.png',
+                        imageCopyright : 'http://en.wikipedia.org/wiki/File:Human_Torch.png'
+                    },
+                    {
+                        value : "46",
+                        name : "Richard Hatch",
+                        email : 'richard.hatch@example.org',
+                        image : 'http://upload.wikimedia.org/wikipedia/commons/a/a1/Richard_Hatch_gatecon.jpg',
+                        imageCopyright : 'http://de.wikipedia.org/w/index.php?title=Datei:Richard_Hatch_gatecon.jpg&filetimestamp=20060629041830'
+                    },
+                    {
+                        value : "79",
+                        name : "Michael Jordan",
+                        email : 'michael.jordan@example.org',
+                        image : 'http://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Jordan_Lipofsky.jpg/200px-Jordan_Lipofsky.jpg',
+                        imageCopyright : 'http://en.wikipedia.org/wiki/File:Jordan_Lipofsky.jpg'}
+                ];
+                var i;
+                for (i = 0; i < data.length; i++) {
+                    var displayData = data[i];
+                    var user = $('<div class="user"><span class="image"/><span class="name"/></div>');
+                    user.find('span.image').append($('<img/>').attr({src : displayData.image, height : '18px', width : '18px'}));
+                    user.find('span.name').html(displayData.name);
+                    user.attr('tooltip', displayData.email);
+                    displayData.display = user;
+                }
+
+                var options = {
+
+                    selectedItemProp : 'display',
+
+                    searchObjProps : 'name',
+
+                    formatList : function (displayData, element) {
+                        var user = $('<div class="user"><span class="image"/><span class="name"/><span class="email"/></div>');
+                        user.find('span.image').append($('<img/>').attr({src : displayData.image, height : '18px', width : '18px'}));
+                        user.find('span.name').html(displayData.name);
+                        user.find('span.email').html(displayData.email);
+                        element.append(user);
+                        return element;
+                    },
+                    preFill : [$.extend(true, {}, data[1])],
+
+                    canGenerateNewSelections : false
+
+                };
+                input.autoSuggest(data, options);
+
+                form.submit(function (event) {
+                    event.preventDefault();
+                    output.text('Selected: ' + input.parent('.as-original').find(':hidden').val());
+                });
+            }());
         });
     </script>
 </head>
