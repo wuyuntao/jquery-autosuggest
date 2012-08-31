@@ -631,7 +631,7 @@ $.fn.autoSuggest = (data, options) ->
       if matchCount <= 0
         resultsList.html "<li class=\"as-message\">#{options.emptyText}</li>"
       resultsList.css width : selectionsContainer.outerWidth()
-      if matchCount > 0 || !options.showResultListWhenNoMatch
+      if matchCount > 0 || options.showResultListWhenNoMatch
         resultsContainer.show()
       if $.isFunction(options.resultsComplete) then options.resultsComplete.call @
       return

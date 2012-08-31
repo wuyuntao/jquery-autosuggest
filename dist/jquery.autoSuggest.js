@@ -743,7 +743,7 @@ Based on the 1.6er release dated in July, 2012
         resultsList.css({
           width: selectionsContainer.outerWidth()
         });
-        if (matchCount > 0 || !options.showResultListWhenNoMatch) {
+        if (matchCount > 0 || options.showResultListWhenNoMatch) {
           resultsContainer.show();
         }
         if ($.isFunction(options.resultsComplete)) {
