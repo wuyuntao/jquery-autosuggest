@@ -129,13 +129,13 @@ Use a `string` if you want to load the data asynchronously via AJAX. Eventually,
 
 * **start**: *callback function* - Custom function that is run only once on each AutoSuggest field when the code is first applied. A set of callbacks are passed. The callbacks are `add` (for selecting a data item from code -- pass the whole item to select) and `remove` (for removing a selected item from code -- pass the value).
 
-* **selectionClick**: *callback function* - Custom function that is run when a previously chosen item is clicked. The item that is clicked is passed into this callback function as 'elem'.
+* **selectionClick**: (elem, item, selections) *callback function* - Custom function that is run when a previously chosen item is clicked. The item that is clicked is passed into this callback function as 'elem'.
 `Example: selectionClick: function(elem){ elem.fadeTo("slow", 0.33); }`
 
-* **selectionAdded**: *callback function* - Custom function that is run when a selection is made by choosing one from the Results dropdown, or by using the tab/comma keys to add one. The selection item is passed into this callback function as 'elem'.
+* **selectionAdded**: (elem, item, selections) *callback function* - Custom function that is run when a selection is made by choosing one from the Results dropdown, or by using the tab/comma keys to add one. The selection item is passed into this callback function as 'elem'.
 `Example: selectionAdded: function(elem){ elem.fadeTo("slow", 0.33); }`
 
-* **selectionRemoved**: *callback function* - Custom function that is run when a selection removed from the AutoSuggest by using the delete key or by clicking the "x" inside the selection. The selection item is passed into this callback function as 'elem'.
+* **selectionRemoved**: (elem, item, selections) *callback function* - Custom function that is run when a selection removed from the AutoSuggest by using the delete key or by clicking the "x" inside the selection. The selection item is passed into this callback function as 'elem'.
 `Example: selectionRemoved: function(elem){ elem.fadeTo("fast", 0, function(){ elem.remove(); }); }`
 
 * **formatList**: *callback function* - Custom function that is run after all the data has been retrieved and before the results are put into the suggestion results list. This is here so you can modify what & how things show up in the suggestion results list.
