@@ -12,3 +12,4 @@
 .sass-cache
 src/jquery.autoSuggest.js
 src/jquery.autoSuggest.css
+node_modules
