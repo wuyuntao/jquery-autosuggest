@@ -882,10 +882,10 @@ Based on the 1.6er release dated in July, 2012
             break;
           case 9:
           case 188:
+            active = resultsContainer.find('li.active:first');
             if (options.canGenerateNewSelections) {
               lastKeyWasTab = true;
               i_input = input.val().replace(/(,)/g, '');
-              active = resultsContainer.find('li.active:first');
               /* Generate a new bubble with text when no suggestion selected
               */
 
@@ -901,6 +901,12 @@ Based on the 1.6er release dated in July, 2012
 
                 abortRequest();
               }
+            }
+            if (active.length) {
+              lastKeyWasTab = false;
+              active.click();
+              resultsContainer.hide();
+              event.preventDefault();
             }
             break;
           case 13:

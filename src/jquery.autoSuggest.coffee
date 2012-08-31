@@ -737,11 +737,11 @@ $.fn.autoSuggest = (data, options) ->
               return
             ), options.keyDelay
         when 9, 188 # tab, comma
+          active = resultsContainer.find('li.active:first')
           if options.canGenerateNewSelections
             lastKeyWasTab = true
-            i_input = input.val().replace /(,)/g, ''
             # remove all comma
-            active = resultsContainer.find('li.active:first')
+            i_input = input.val().replace /(,)/g, ''
             ### Generate a new bubble with text when no suggestion selected ###
             if i_input isnt '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length is 0
               event.preventDefault()
@@ -752,6 +752,11 @@ $.fn.autoSuggest = (data, options) ->
               input.val ''
               ### Cancel previous ajaxRequest when new tag is added ###
               abortRequest()
+          if active.length
+            lastKeyWasTab = false
+            active.click()
+            resultsContainer.hide()
+            event.preventDefault()
         when 13 # return
           lastKeyWasTab = false
           active = resultsContainer.find('li.active:first')
