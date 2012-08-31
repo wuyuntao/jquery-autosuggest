@@ -522,6 +522,7 @@ $.fn.autoSuggest = (data, options) ->
       input.focus()
       return
     selectionsContainer.mousedown ->
+      selectionsContainer.children().removeClass 'selected'
       input_focus = false
       return
     # Append selectionsContainer to DOM.

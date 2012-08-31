@@ -1,5 +1,6 @@
 @import "compass";
 @import "compass/css3";
+@import "compass/css3/user-interface";
 
 // Configuration: Basics
 $as-border-color: #888888;
@@ -48,6 +49,8 @@ ul {
     overflow: auto;
     background-color: $as-selection-list-background-color;
     @include box-shadow(inset 0 1px 2px $as-selection-list-border-base-color);
+    cursor: default;
+    @include user-select(none);
     &.loading {
       background-color: $as-selection-list-disabled-background-color;
     }

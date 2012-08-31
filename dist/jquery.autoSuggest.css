@@ -11,6 +11,10 @@ ul.as-selections {
   -webkit-box-shadow: inset 0 1px 2px #888888;
   -moz-box-shadow: inset 0 1px 2px #888888;
   box-shadow: inset 0 1px 2px #888888;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
 }
 ul.as-selections.loading {
   background-color: #e6e6e6;

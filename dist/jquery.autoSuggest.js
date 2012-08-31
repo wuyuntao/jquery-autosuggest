@@ -164,22 +164,22 @@ Based on the 1.6er release dated in July, 2012
 
     function Events() {}
 
-    Events.onSelectionAdded = function(scope, element, options, item) {
+    Events.onSelectionAdded = function(scope, element, options, item, selections) {
       if ($.isFunction(options.selectionAdded)) {
-        return options.selectionAdded.call(scope, element, item);
+        return options.selectionAdded.call(scope, element, item, selections);
       }
     };
 
-    Events.onSelectionRemoved = function(scope, element, options, item) {
+    Events.onSelectionRemoved = function(scope, element, options, item, selections) {
       if ($.isFunction(options.selectionRemoved)) {
-        options.selectionRemoved.call(scope, element, item);
+        options.selectionRemoved.call(scope, element, item, selections);
       }
       return element.remove();
     };
 
-    Events.onSelectionClicked = function(scope, element, options, item) {
+    Events.onSelectionClicked = function(scope, element, options, item, selections) {
       if ($.isFunction(options.selectionClick)) {
-        return options.selectionClick.call(scope, element, item);
+        return options.selectionClick.call(scope, element, item, selections);
       }
     };
 
@@ -552,7 +552,7 @@ Based on the 1.6er release dated in July, 2012
         } else {
           actualInputWrapper.before(item.text(data[options.selectedItemProp]).prepend(closeElement));
         }
-        Events.onSelectionAdded(this, actualInputWrapper.prev(), options, data[options.selectedValuesProp]);
+        Events.onSelectionAdded(this, actualInputWrapper.prev(), options, data[options.selectedValuesProp], currentSelection.getAll());
         return actualInputWrapper.prev();
       };
       /*
@@ -613,6 +613,7 @@ Based on the 1.6er release dated in July, 2012
         input.focus();
       });
       selectionsContainer.mousedown(function() {
+        selectionsContainer.children().removeClass('selected');
         input_focus = false;
       });
       selectionsContainer.after(resultsContainer);
@@ -853,9 +854,9 @@ Based on the 1.6er release dated in July, 2012
               selectionsContainer.children().not(actualInputWrapper.prev()).removeClass('selected');
               if (actualInputWrapper.prev().hasClass('selected')) {
                 currentSelection.remove(_selection);
-                Events.onSelectionRemoved(this, actualInputWrapper.prev(), options, null);
+                Events.onSelectionRemoved(this, actualInputWrapper.prev(), options, null, currentSelection.getAll());
               } else {
-                Events.onSelectionClicked(this, actualInputWrapper.prev(), options, null);
+                Events.onSelectionClicked(this, actualInputWrapper.prev(), options, null, currentSelection.getAll());
                 actualInputWrapper.prev().addClass('selected');
               }
             }
