@@ -98,6 +98,19 @@ class SelectionHolder
     @syncToHiddenField()
     return
 
+
+class Events
+
+  @onSelectionAdded : (scope, element, options, item) ->
+    if $.isFunction(options.selectionAdded) then options.selectionAdded.call scope, element, item
+
+  @onSelectionRemoved : (scope, element, options, item) ->
+    if $.isFunction(options.selectionRemoved) then options.selectionRemoved.call scope, element, item
+    element.remove()
+
+  @onSelectionClicked : (scope, element, options, item) ->
+    if $.isFunction(options.selectionClick) then options.selectionClick.call scope, element, item
+
 ###
 Defines the actual jQuery plugin
 ###
@@ -255,10 +268,9 @@ $.fn.autoSuggest = (data, options) ->
 
     ###*
      * Defines a callback for removing a selection item.
-     * Note: Overriding this options means that the plugin itself won't destroy the element anymore.
      * @type function with arguments: element
     ###
-    selectionRemoved : (elem) -> elem.remove()
+    selectionRemoved : null
 
     ###*
      * Defines a callback called for every item that will be rendered.
@@ -454,6 +466,7 @@ $.fn.autoSuggest = (data, options) ->
       closeElement.click ->
         currentSelection.remove data[options.selectedValuesProp]
         if $.isFunction(options.selectionRemoved) then options.selectionRemoved.call @, item
+        item.remove()
         input_focus = true
         input.focus()
         return false
@@ -463,7 +476,7 @@ $.fn.autoSuggest = (data, options) ->
         actualInputWrapper.before item.text(data[options.selectedItemProp]).prepend(closeElement)
 
       # Call hook "after selection added".
-      if $.isFunction(options.selectionAdded) then options.selectionAdded.call @, actualInputWrapper.prev(), data[options.selectedValuesProp]
+      Events.onSelectionAdded @, actualInputWrapper.prev(), options, data[options.selectedValuesProp]
 
       return actualInputWrapper.prev()
 
@@ -702,9 +715,9 @@ $.fn.autoSuggest = (data, options) ->
             selectionsContainer.children().not(actualInputWrapper.prev()).removeClass 'selected'
             if actualInputWrapper.prev().hasClass 'selected'
               currentSelection.remove _selection
-              if $.isFunction(options.selectionRemoved) then options.selectionRemoved.call @, actualInputWrapper.prev()
+              Events.onSelectionRemoved @, actualInputWrapper.prev(), options, null
             else
-              if $.isFunction(options.selectionClick) then options.selectionClick.call @, actualInputWrapper.prev()
+              Events.onSelectionClicked @, actualInputWrapper.prev(), options, null
               actualInputWrapper.prev().addClass 'selected'
           if input.val().length is 1
             resultsContainer.hide()

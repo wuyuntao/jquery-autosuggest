@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.0.0 - 2012-07-22
+/*! jQuery AutoSuggest - v2.0.0 - 2012-08-31
 * http://hlsolutions.github.com/jquery-autosuggest
 * Copyright (c) 2012 Jan Philipp; Licensed MIT, GPL */
 
@@ -17,7 +17,7 @@ Based on the 1.6er release dated in July, 2012
 
 
 (function() {
-  var $, ConfigResolver, SelectionHolder, Utils;
+  var $, ConfigResolver, Events, SelectionHolder, Utils;
 
   $ = jQuery;
 
@@ -157,6 +157,33 @@ Based on the 1.6er release dated in July, 2012
     };
 
     return SelectionHolder;
+
+  })();
+
+  Events = (function() {
+
+    function Events() {}
+
+    Events.onSelectionAdded = function(scope, element, options, item) {
+      if ($.isFunction(options.selectionAdded)) {
+        return options.selectionAdded.call(scope, element, item);
+      }
+    };
+
+    Events.onSelectionRemoved = function(scope, element, options, item) {
+      if ($.isFunction(options.selectionRemoved)) {
+        options.selectionRemoved.call(scope, element, item);
+      }
+      return element.remove();
+    };
+
+    Events.onSelectionClicked = function(scope, element, options, item) {
+      if ($.isFunction(options.selectionClick)) {
+        return options.selectionClick.call(scope, element, item);
+      }
+    };
+
+    return Events;
 
   })();
 
@@ -319,13 +346,10 @@ Based on the 1.6er release dated in July, 2012
       selectionAdded: null,
       /**
        * Defines a callback for removing a selection item.
-       * Note: Overriding this options means that the plugin itself won't destroy the element anymore.
        * @type function with arguments: element
       */
 
-      selectionRemoved: function(elem) {
-        return elem.remove();
-      },
+      selectionRemoved: null,
       /**
        * Defines a callback called for every item that will be rendered.
        * @type function with arguments: element
@@ -518,6 +542,7 @@ Based on the 1.6er release dated in July, 2012
           if ($.isFunction(options.selectionRemoved)) {
             options.selectionRemoved.call(this, item);
           }
+          item.remove();
           input_focus = true;
           input.focus();
           return false;
@@ -527,9 +552,7 @@ Based on the 1.6er release dated in July, 2012
         } else {
           actualInputWrapper.before(item.text(data[options.selectedItemProp]).prepend(closeElement));
         }
-        if ($.isFunction(options.selectionAdded)) {
-          options.selectionAdded.call(this, actualInputWrapper.prev(), data[options.selectedValuesProp]);
-        }
+        Events.onSelectionAdded(this, actualInputWrapper.prev(), options, data[options.selectedValuesProp]);
         return actualInputWrapper.prev();
       };
       /*
@@ -830,13 +853,9 @@ Based on the 1.6er release dated in July, 2012
               selectionsContainer.children().not(actualInputWrapper.prev()).removeClass('selected');
               if (actualInputWrapper.prev().hasClass('selected')) {
                 currentSelection.remove(_selection);
-                if ($.isFunction(options.selectionRemoved)) {
-                  options.selectionRemoved.call(this, actualInputWrapper.prev());
-                }
+                Events.onSelectionRemoved(this, actualInputWrapper.prev(), options, null);
               } else {
-                if ($.isFunction(options.selectionClick)) {
-                  options.selectionClick.call(this, actualInputWrapper.prev());
-                }
+                Events.onSelectionClicked(this, actualInputWrapper.prev(), options, null);
                 actualInputWrapper.prev().addClass('selected');
               }
             }
