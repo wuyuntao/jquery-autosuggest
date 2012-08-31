@@ -101,15 +101,15 @@ class SelectionHolder
 
 class Events
 
-  @onSelectionAdded : (scope, element, options, item) ->
-    if $.isFunction(options.selectionAdded) then options.selectionAdded.call scope, element, item
+  @onSelectionAdded : (scope, element, options, item, selections) ->
+    if $.isFunction(options.selectionAdded) then options.selectionAdded.call scope, element, item, selections
 
-  @onSelectionRemoved : (scope, element, options, item) ->
-    if $.isFunction(options.selectionRemoved) then options.selectionRemoved.call scope, element, item
+  @onSelectionRemoved : (scope, element, options, item, selections) ->
+    if $.isFunction(options.selectionRemoved) then options.selectionRemoved.call scope, element, item, selections
     element.remove()
 
-  @onSelectionClicked : (scope, element, options, item) ->
-    if $.isFunction(options.selectionClick) then options.selectionClick.call scope, element, item
+  @onSelectionClicked : (scope, element, options, item, selections) ->
+    if $.isFunction(options.selectionClick) then options.selectionClick.call scope, element, item, selections
 
 ###
 Defines the actual jQuery plugin
@@ -476,7 +476,7 @@ $.fn.autoSuggest = (data, options) ->
         actualInputWrapper.before item.text(data[options.selectedItemProp]).prepend(closeElement)
 
       # Call hook "after selection added".
-      Events.onSelectionAdded @, actualInputWrapper.prev(), options, data[options.selectedValuesProp]
+      Events.onSelectionAdded @, actualInputWrapper.prev(), options, data[options.selectedValuesProp], currentSelection.getAll()
 
       return actualInputWrapper.prev()
 
@@ -715,9 +715,9 @@ $.fn.autoSuggest = (data, options) ->
             selectionsContainer.children().not(actualInputWrapper.prev()).removeClass 'selected'
             if actualInputWrapper.prev().hasClass 'selected'
               currentSelection.remove _selection
-              Events.onSelectionRemoved @, actualInputWrapper.prev(), options, null
+              Events.onSelectionRemoved @, actualInputWrapper.prev(), options, null, currentSelection.getAll()
             else
-              Events.onSelectionClicked @, actualInputWrapper.prev(), options, null
+              Events.onSelectionClicked @, actualInputWrapper.prev(), options, null, currentSelection.getAll()
               actualInputWrapper.prev().addClass 'selected'
           if input.val().length is 1
             resultsContainer.hide()
