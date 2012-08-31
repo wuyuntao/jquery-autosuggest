@@ -416,7 +416,7 @@ $.fn.autoSuggest = (data, options) ->
     # Configure local IDs.
     unless options.asHtmlID
       # ensures there will be unique IDs on the page if autoSuggest() is called multiple times
-      element = "#{element}#{Math.floor(Math.random() * 100)}"
+      element = "#{element || ''}#{Math.floor(Math.random() * 100)}"
       elementId = "as-input-#{element}"
     else
       element = options.asHtmlID
@@ -541,13 +541,15 @@ $.fn.autoSuggest = (data, options) ->
       This might cause problem so we move the line to key events section;
       ignore if the following keys are pressed: [del] [shift] [capslock]
       ###
-      #if lastKeyPressCode is 46 || (lastKeyPressCode > 8 && lastKeyPressCode < 32) then return resultsContainer.hide()
+      if lastKeyPressCode is 46 || (lastKeyPressCode > 8 && lastKeyPressCode < 32)
+        resultsContainer.hide()
+        return
       string = input.val().replace /[\\]+|[\/]+/g, ''
 
-      return if string is prev
+      return if string isnt '' && string is prev
 
       prev = string
-      if string.length >= options.minChars
+      if (string.length >= options.minChars) || (options.minChars is 0 && string.length is 0)
         selectionsContainer.addClass 'loading'
         processRequest string
       else
@@ -642,7 +644,7 @@ $.fn.autoSuggest = (data, options) ->
       if $.isFunction(options.resultsComplete) then options.resultsComplete.call @
       return
 
-    moveSelection = (direction) ->
+    moveResultSelection = (direction) ->
       if resultsContainer.find(':visible').length
         lis = resultsContainer.find('li')
         switch direction
@@ -707,10 +709,17 @@ $.fn.autoSuggest = (data, options) ->
       switch event.keyCode
         when 38 # up key
           event.preventDefault()
-          moveSelection 'up'
+          moveResultSelection 'up'
         when 40 # down key
           event.preventDefault()
-          moveSelection 'down'
+          if $(":visible", resultsContainer).length > 0
+            moveResultSelection 'down'
+          else
+            if timeout then clearTimeout timeout
+            timeout = setTimeout (->
+              keyChange()
+              return
+            ), options.keyDelay
         when 8 # delete key
           if input.val() is ''
             _selections = currentSelection.getAll()

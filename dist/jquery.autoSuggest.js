@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.0.0 - 2012-08-31
+/*! jQuery AutoSuggest - v2.0.0 - 2012-09-01
 * http://hlsolutions.github.com/jquery-autosuggest
 * Copyright (c) 2012 Jan Philipp; Licensed MIT, GPL */
 
@@ -485,14 +485,14 @@ Based on the 1.6er release dated in July, 2012
     */
 
     return this.each(function(element) {
-      var abortRequest, actualInputWrapper, addSelection, currentSelection, elementId, hiddenInput, i, input, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
+      var abortRequest, actualInputWrapper, addSelection, currentSelection, elementId, hiddenInput, i, input, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
       options.inputAttrs = $.extend(options.inputAttrs, {});
       input_focus = false;
       input = $(this);
       element = null;
       elementId = null;
       if (!options.asHtmlID) {
-        element = "" + element + (Math.floor(Math.random() * 100));
+        element = "" + (element || '') + (Math.floor(Math.random() * 100));
         elementId = "as-input-" + element;
       } else {
         element = options.asHtmlID;
@@ -632,12 +632,16 @@ Based on the 1.6er release dated in July, 2012
         */
 
         var string;
+        if (lastKeyPressCode === 46 || (lastKeyPressCode > 8 && lastKeyPressCode < 32)) {
+          resultsContainer.hide();
+          return;
+        }
         string = input.val().replace(/[\\]+|[\/]+/g, '');
-        if (string === prev) {
+        if (string !== '' && string === prev) {
           return;
         }
         prev = string;
-        if (string.length >= options.minChars) {
+        if ((string.length >= options.minChars) || (options.minChars === 0 && string.length === 0)) {
           selectionsContainer.addClass('loading');
           return processRequest(string);
         } else {
@@ -756,7 +760,7 @@ Based on the 1.6er release dated in July, 2012
           options.resultsComplete.call(this);
         }
       };
-      moveSelection = function(direction) {
+      moveResultSelection = function(direction) {
         var active, lis, start;
         if (resultsContainer.find(':visible').length) {
           lis = resultsContainer.find('li');
@@ -842,11 +846,20 @@ Based on the 1.6er release dated in July, 2012
         switch (event.keyCode) {
           case 38:
             event.preventDefault();
-            moveSelection('up');
+            moveResultSelection('up');
             break;
           case 40:
             event.preventDefault();
-            moveSelection('down');
+            if ($(":visible", resultsContainer).length > 0) {
+              moveResultSelection('down');
+            } else {
+              if (timeout) {
+                clearTimeout(timeout);
+              }
+              timeout = setTimeout((function() {
+                keyChange();
+              }), options.keyDelay);
+            }
             break;
           case 8:
             if (input.val() === '') {

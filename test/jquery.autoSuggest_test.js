@@ -139,6 +139,24 @@
       remove();
     });
 
+    asyncTest('Type DOWN and see the result list.', 1, function () {
+      el = create(null, $.extend({}, options, {
+        minChars : 0
+      }));
+      el.focus();
+      el.simulate("keydown", {"keyCode" : keyCode.DOWN});
+
+      setTimeout(function () {
+        res = results();
+        equal(res.length, 7, "Should suggest three names");
+        //el.simulate("keydown", {"keyCode" : keyCode.TAB});
+        setTimeout(function(){
+          start();
+          remove();
+        }, 500);
+      }, 500);
+    });
+
     module('Basic UI Tests: type, let suggest and select one');
 
     asyncTest('Press enter to select suggestion', 4, function () {
@@ -459,6 +477,10 @@
     asyncTest('Check that the callback will be not called on success.', 2, function () {
       var url = 'url-' + Math.round(10000 * Math.random()) + '.html', ajaxMock = createAjaxMock_Success(url), response = null, called = false, opts = $.extend({}, options, {
         onAjaxRequestFail : function (result, statusText, serverResponse) {
+          if (statusText === 'abort') {
+            // Ignore aborted requests.
+            return;
+          }
           called = true;
           response = serverResponse;
         }
