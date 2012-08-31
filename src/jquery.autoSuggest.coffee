@@ -165,6 +165,12 @@ $.fn.autoSuggest = (data, options) ->
     selectedValuesProp : 'value'
 
     ###*
+     * Defines wether the result list should be filtered or not.
+     * @type string default 'value'
+    ###
+    searchActive : true
+
+    ###*
      * Defines the property of an item which will be used for searching.
      * @type string default 'value'
     ###
@@ -574,7 +580,7 @@ $.fn.autoSuggest = (data, options) ->
         if str
           unless options.matchCase
             str = str.toLowerCase()
-          if str.indexOf(query) isnt -1 && !currentSelection.exist(item[options.selectedValuesProp])
+          if !options.searchActive || (str.indexOf(query) isnt -1 && !currentSelection.exist(item[options.selectedValuesProp]))
             forward = true
         if forward
           formatted = $ "<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>"

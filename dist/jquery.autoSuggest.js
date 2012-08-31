@@ -243,6 +243,12 @@ Based on the 1.6er release dated in July, 2012
 
       selectedValuesProp: 'value',
       /**
+       * Defines wether the result list should be filtered or not.
+       * @type string default 'value'
+      */
+
+      searchActive: true,
+      /**
        * Defines the property of an item which will be used for searching.
        * @type string default 'value'
       */
@@ -673,7 +679,7 @@ Based on the 1.6er release dated in July, 2012
             if (!options.matchCase) {
               str = str.toLowerCase();
             }
-            if (str.indexOf(query) !== -1 && !currentSelection.exist(item[options.selectedValuesProp])) {
+            if (!options.searchActive || (str.indexOf(query) !== -1 && !currentSelection.exist(item[options.selectedValuesProp]))) {
               forward = true;
             }
           }
