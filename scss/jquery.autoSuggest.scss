@@ -14,10 +14,18 @@ $as-selection-item-border-radius: 12px;
 $as-selection-item-color: #2b3840;
 $as-selection-item-background-color: #BFE0F1;
 $as-selection-item-font-size: 13px;
-$as-selection-item-top-padding: 2px;
-$as-selection-item-right-padding: 7px;
-$as-selection-item-bottom-padding: 2px;
-$as-selection-item-left-padding: 10px;
+$as-selection-item-border-color: #acc3ec;
+$as-selection-item-border-2nd-color: #c0d9e9;
+$as-selection-item-shadow-color: #e4edf2;
+$as-selection-item-close-color: #5491be;
+$as-selection-item-close-shadow-color: #fff;
+$as-selection-item-blur-color: #666666;
+$as-selection-item-blur-background-color: #f4f4f4;
+$as-selection-item-blur-background-2nd-color: #d5d5d5;
+$as-selection-item-blur-border-color: #bbb;
+$as-selection-item-blur-border-2nd-color: #ccc;
+$as-selection-item-blur-shadow-color: #e9e9e9;
+$as-selection-item-blur-close-color: #999;
 $as-result-list-border-radius: 5px;
 $as-result-list-color: #000000;
 $as-result-item-border-size: 1px;
@@ -25,12 +33,17 @@ $as-result-item-border-color: #ffffff;
 $as-result-item-font-size: 14px;
 
 // Configuration: Advanced
+$as-selection-item-top-padding: 2px;
+$as-selection-item-right-padding: 7px;
+$as-selection-item-bottom-padding: 2px;
+$as-selection-item-left-padding: 10px;
+
 $as-selection-list-disabled-background-color: darken($as-selection-list-background-color, 10);
 $as-selection-list-border-base-color: $as-border-color;
 $as-selection-list-border-light-color: lighten($as-border-color, 10%);
 $as-selection-list-border-light2-color: lighten($as-border-color, 20%);
 $as-selection-item-font-family: $as-font-family;
-$as-selection-item-background-lighter-color: lighten($as-selection-item-background-color, 5);
+$as-selection-item-background-2nd-color: lighten($as-selection-item-background-color, 5);
 $as-result-list-font-family: $as-font-family;
 $as-result-item-border-top-color: $as-result-item-border-color;
 $as-result-item-border-right-color: $as-result-item-border-color;
@@ -62,16 +75,16 @@ ul {
         font-size: $as-selection-item-font-size;
         font-family: $as-selection-item-font-family;
         text-shadow: 0 1px 1px #fff;
-        background-color: $as-selection-item-background-lighter-color;
-        @include background(linear-gradient(top, $as-selection-item-background-lighter-color, $as-selection-item-background-color));
-        border: 1px solid #acc3ec;
-        border-top-color: #c0d9e9;
+        background-color: $as-selection-item-background-2nd-color;
+        @include background(linear-gradient(top, $as-selection-item-background-2nd-color, $as-selection-item-background-color));
+        border: 1px solid $as-selection-item-border-color;
+        border-top-color: $as-selection-item-border-2nd-color;
         padding-top: $as-selection-item-top-padding;
         padding-right: $as-selection-item-right-padding;
         padding-bottom: $as-selection-item-bottom-padding;
         padding-left: $as-selection-item-left-padding;
         @include border-radius($as-selection-item-border-radius);
-        @include box-shadow(0 1px 1px #e4edf2);
+        @include box-shadow(0 1px 1px $as-selection-item-shadow-color);
         &:last-child {
           margin-left: 30px;
         }
@@ -80,22 +93,22 @@ ul {
           margin: 1px 0 0 7px;
           padding: 0 2px;
           cursor: pointer;
-          color: #5491be;
+          color: $as-selection-item-close-color;
           font-family: "Helvetica", helvetica, arial, sans-serif;
           font-size: $as-result-item-font-size;
           font-weight: bold;
-          text-shadow: 0 1px 1px #fff;
+          text-shadow: 0 1px 1px $as-selection-item-close-shadow-color;
           -webkit-transition: color .1s ease-in;
         }
         &.blur {
-          color: #666666;
-          background-color: #f4f4f4;
-          @include background(linear-gradient(top, #f4f4f4, #d5d5d5));
-          border-color: #bbb;
-          border-top-color: #ccc;
-          @include box-shadow(0 1px 1px #e9e9e9);
+          color: $as-selection-item-blur-color;
+          background-color: $as-selection-item-blur-background-color;
+          @include background(linear-gradient(top, $as-selection-item-blur-background-color, $as-selection-item-blur-background-2nd-color));
+          border-color: $as-selection-item-blur-border-color;
+          border-top-color: $as-selection-item-blur-border-2nd-color;
+          @include box-shadow(0 1px 1px $as-selection-item-blur-shadow-color);
           a.as-close {
-            color: #999;
+            color: $as-selection-item-blur-close-color;
           }
         }
       }

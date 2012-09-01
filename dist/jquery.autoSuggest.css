@@ -61,7 +61,7 @@ ul.as-selections li.as-selection-item a.as-close {
   font-family: "Helvetica", helvetica, arial, sans-serif;
   font-size: 14px;
   font-weight: bold;
-  text-shadow: 0 1px 1px #fff;
+  text-shadow: 0 1px 1px white;
   -webkit-transition: color .1s ease-in;
 }
 ul.as-selections li.as-selection-item.blur {
@@ -72,14 +72,14 @@ ul.as-selections li.as-selection-item.blur {
   background: -moz-linear-gradient(top, #f4f4f4, #d5d5d5);
   background: -o-linear-gradient(top, #f4f4f4, #d5d5d5);
   background: linear-gradient(top, #f4f4f4, #d5d5d5);
-  border-color: #bbb;
-  border-top-color: #ccc;
+  border-color: #bbbbbb;
+  border-top-color: #cccccc;
   -webkit-box-shadow: 0 1px 1px #e9e9e9;
   -moz-box-shadow: 0 1px 1px #e9e9e9;
   box-shadow: 0 1px 1px #e9e9e9;
 }
 ul.as-selections li.as-selection-item.blur a.as-close {
-  color: #999;
+  color: #999999;
 }
 ul.as-selections li:hover.as-selection-item, ul.as-selections li.hover.as-selection-item {
   color: #2b3840;
