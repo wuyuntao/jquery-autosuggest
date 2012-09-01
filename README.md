@@ -166,6 +166,10 @@ In order to add extra things to the 'result' item (like an image) you will need 
 
 You MUST return the HTML object. **formatList** will run on each 'result' item.
 
+* **fadeOut**: *true or false (false by default)* - If set to `true` the selection remove will be faded out instead of a simple remove.
+
+* **fadeOutDuration**: *mixed (500 by default)* - Defines the duration of the `fadeOut` animation on a selection remove.
+
 ## Examples
 
 ### Multiple elements on one page
@@ -290,6 +294,7 @@ The plugin project now uses **CoffeeScript** and **SASS** for source building. T
 * **API change**: *selectionClick* was renamed to *afterSelectionClick*.
 * **API change**: *selectionRemoved* was renamed to *onSelectionRemove*.
 * **API change**: New event: *afterSelectionRemove*.
+* Added a built-in *fadeOut* feature.
 
 ## 2012-07-03 Version 1.7.0
 

@@ -102,18 +102,18 @@ class SelectionHolder
 class Events
 
   @onSelectionAdd : (scope, containerElement, detachedElement, options, item, selections) ->
-    element = options.onSelectionAdd.call scope, containerElement, detachedElement
-    if $.isFunction(options.afterSelectionAdd)
+    element = options.onSelectionAdd.call scope, containerElement, detachedElement, options
+    if $.isFunction options.afterSelectionAdd
       options.afterSelectionAdd.call scope, element, item, selections
 
   @onSelectionRemove : (scope, element, options, item, selections) ->
-    if $.isFunction(options.onSelectionRemove)
-      options.onSelectionRemove.call scope, element
-    if $.isFunction(options.afterSelectionRemove)
+    if $.isFunction options.onSelectionRemove
+      options.onSelectionRemove.call scope, element, options
+    if $.isFunction options.afterSelectionRemove
       options.afterSelectionRemove.call scope, element, item, selections
 
   @onSelectionClick : (scope, element, options, item, selections) ->
-    if $.isFunction(options.afterSelectionClick)
+    if $.isFunction options.afterSelectionClick
       options.afterSelectionClick.call scope, element, item, selections
 
 ###
@@ -287,7 +287,7 @@ $.fn.autoSuggest = (data, options) ->
      * Defines a callback for adding a selection item.
      * @type function with arguments: containerElement, detachedElement
     ###
-    onSelectionAdd : (containerElement, detachedElement) ->
+    onSelectionAdd : (containerElement, detachedElement, options) ->
       containerElement.before detachedElement
       return containerElement.prev()
 
@@ -295,7 +295,11 @@ $.fn.autoSuggest = (data, options) ->
      * Defines a callback for removing a selection item.
      * @type function with arguments: element
     ###
-    onSelectionRemove : (element) -> element.remove()
+    onSelectionRemove : (element, options) ->
+      if options.fadeOut
+        element.fadeOut options.fadeOutDuration, -> element.remove
+      else
+        element.remove()
 
     ###*
      * Defines a callback called for every item that will be rendered.
@@ -365,6 +369,16 @@ $.fn.autoSuggest = (data, options) ->
     ###
     inputAttrs :
       autocomplete : 'off'
+
+    ###*
+     * Defines whether the removing of a selection should be animated (using fadeOut)
+    ###
+    fadeOut : false
+
+    ###*
+     * Defines the duration of a fadeOut animation.
+    ###
+    fadeOutDuration : 500
 
   # Creates a new options object and appending the default and the actual user options.
   options = $.extend {}, defaults, options

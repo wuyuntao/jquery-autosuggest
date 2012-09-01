@@ -166,7 +166,7 @@ Based on the 1.6er release dated in July, 2012
 
     Events.onSelectionAdd = function(scope, containerElement, detachedElement, options, item, selections) {
       var element;
-      element = options.onSelectionAdd.call(scope, containerElement, detachedElement);
+      element = options.onSelectionAdd.call(scope, containerElement, detachedElement, options);
       if ($.isFunction(options.afterSelectionAdd)) {
         return options.afterSelectionAdd.call(scope, element, item, selections);
       }
@@ -174,7 +174,7 @@ Based on the 1.6er release dated in July, 2012
 
     Events.onSelectionRemove = function(scope, element, options, item, selections) {
       if ($.isFunction(options.onSelectionRemove)) {
-        options.onSelectionRemove.call(scope, element);
+        options.onSelectionRemove.call(scope, element, options);
       }
       if ($.isFunction(options.afterSelectionRemove)) {
         return options.afterSelectionRemove.call(scope, element, item, selections);
@@ -365,7 +365,7 @@ Based on the 1.6er release dated in July, 2012
        * @type function with arguments: containerElement, detachedElement
       */
 
-      onSelectionAdd: function(containerElement, detachedElement) {
+      onSelectionAdd: function(containerElement, detachedElement, options) {
         containerElement.before(detachedElement);
         return containerElement.prev();
       },
@@ -374,8 +374,14 @@ Based on the 1.6er release dated in July, 2012
        * @type function with arguments: element
       */
 
-      onSelectionRemove: function(element) {
-        return element.remove();
+      onSelectionRemove: function(element, options) {
+        if (options.fadeOut) {
+          return element.fadeOut(options.fadeOutDuration, function() {
+            return element.remove;
+          });
+        } else {
+          return element.remove();
+        }
       },
       /**
        * Defines a callback called for every item that will be rendered.
@@ -447,7 +453,17 @@ Based on the 1.6er release dated in July, 2012
 
       inputAttrs: {
         autocomplete: 'off'
-      }
+      },
+      /**
+       * Defines whether the removing of a selection should be animated (using fadeOut)
+      */
+
+      fadeOut: false,
+      /**
+       * Defines the duration of a fadeOut animation.
+      */
+
+      fadeOutDuration: 500
     };
     options = $.extend({}, defaults, options);
     ajaxRequest = null;
