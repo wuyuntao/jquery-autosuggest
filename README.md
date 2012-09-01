@@ -273,7 +273,7 @@ echo json_encode($data);
 
 ## Release History
 
-## 2012-07-?? Version 2.0.0
+## 2012-09-?? Version 2.0.0
 
 The plugin project now uses **CoffeeScript** and **SASS** for source building. The unit tests run still with **QUnit**. **grunt** is used to manage dependencies, tasks and tests. In addition, **Travis CI** is now checking every commit.
 
@@ -284,8 +284,12 @@ The plugin project now uses **CoffeeScript** and **SASS** for source building. T
 * Reduced memory consumption moving some local to global defined util functions.
 * Extended `extraParams` being a plain object (with downgrade compatibility).
 * Changed the Ajax call from `$.getJSON` to the more flexible `$.ajax`, besides introduced `ajaxOptions`.
-* **API change**: *beforeRetrieve* was renamed to *beforeRequest* and added the second argument `options`.
+* **API change**: *beforeRetrieve* was renamed to *beforeRequest* and was added the second argument `options`.
 * **API change**: *retrieveComplete* was renamed to *afterRequest*.
+* **API change**: *selectionAdded* was renamed to *afterSelectionAdd*.
+* **API change**: *selectionClick* was renamed to *afterSelectionClick*.
+* **API change**: *selectionRemoved* was renamed to *onSelectionRemove*.
+* **API change**: New event: *afterSelectionRemove*.
 
 ## 2012-07-03 Version 1.7.0
 

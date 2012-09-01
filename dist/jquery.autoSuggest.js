@@ -164,22 +164,26 @@ Based on the 1.6er release dated in July, 2012
 
     function Events() {}
 
-    Events.onSelectionAdded = function(scope, element, options, item, selections) {
-      if ($.isFunction(options.selectionAdded)) {
-        return options.selectionAdded.call(scope, element, item, selections);
+    Events.onSelectionAdd = function(scope, containerElement, detachedElement, options, item, selections) {
+      var element;
+      element = options.onSelectionAdd.call(scope, containerElement, detachedElement);
+      if ($.isFunction(options.afterSelectionAdd)) {
+        return options.afterSelectionAdd.call(scope, element, item, selections);
       }
     };
 
-    Events.onSelectionRemoved = function(scope, element, options, item, selections) {
-      if ($.isFunction(options.selectionRemoved)) {
-        options.selectionRemoved.call(scope, element, item, selections);
+    Events.onSelectionRemove = function(scope, element, options, item, selections) {
+      if ($.isFunction(options.onSelectionRemove)) {
+        options.onSelectionRemove.call(scope, element);
       }
-      return element.remove();
+      if ($.isFunction(options.afterSelectionRemove)) {
+        return options.afterSelectionRemove.call(scope, element, item, selections);
+      }
     };
 
-    Events.onSelectionClicked = function(scope, element, options, item, selections) {
-      if ($.isFunction(options.selectionClick)) {
-        return options.selectionClick.call(scope, element, item, selections);
+    Events.onSelectionClick = function(scope, element, options, item, selections) {
+      if ($.isFunction(options.afterSelectionClick)) {
+        return options.afterSelectionClick.call(scope, element, item, selections);
       }
     };
 
@@ -343,19 +347,36 @@ Based on the 1.6er release dated in July, 2012
        * @type function with arguments: element
       */
 
-      selectionClick: null,
+      afterSelectionClick: null,
       /**
        * Defines a trigger after adding a selection element.
        * @type function with arguments: elementBefore, id
       */
 
-      selectionAdded: null,
+      afterSelectionAdd: null,
+      /**
+       * Defines a callback notifying when a element was removed.
+       * @type function with arguments: element
+      */
+
+      afterSelectionRemove: null,
+      /**
+       * Defines a callback for adding a selection item.
+       * @type function with arguments: containerElement, detachedElement
+      */
+
+      onSelectionAdd: function(containerElement, detachedElement) {
+        containerElement.before(detachedElement);
+        return containerElement.prev();
+      },
       /**
        * Defines a callback for removing a selection item.
        * @type function with arguments: element
       */
 
-      selectionRemoved: null,
+      onSelectionRemove: function(element) {
+        return element.remove();
+      },
       /**
        * Defines a callback called for every item that will be rendered.
        * @type function with arguments: element
@@ -533,9 +554,7 @@ Based on the 1.6er release dated in July, 2012
         item = $("<li class=\"as-selection-item\" id=\"as-selection-" + num + "\" data-value=\"" + (Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))) + "\"></li>");
         item.click(function() {
           element = $(this);
-          if ($.isFunction(options.selectionClick)) {
-            options.selectionClick.call(this, element);
-          }
+          Events.onSelectionClick(this, element, options, data[options.selectedValuesProp], currentSelection.getAll());
           selectionsContainer.children().removeClass('selected');
           element.addClass('selected');
         });
@@ -545,20 +564,18 @@ Based on the 1.6er release dated in July, 2012
         closeElement = $("<a class=\"as-close\">&times;</a>");
         closeElement.click(function() {
           currentSelection.remove(data[options.selectedValuesProp]);
-          if ($.isFunction(options.selectionRemoved)) {
-            options.selectionRemoved.call(this, item);
-          }
-          item.remove();
+          Events.onSelectionRemove(this, item, options, null, currentSelection.getAll());
           input_focus = true;
           input.focus();
           return false;
         });
         if (typeof data[options.selectedItemProp] !== 'string') {
-          actualInputWrapper.before(item.append(data[options.selectedItemProp]).prepend(closeElement));
+          actualInputWrapper.before;
+          Events.onSelectionAdd(this, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll());
         } else {
-          actualInputWrapper.before(item.text(data[options.selectedItemProp]).prepend(closeElement));
+          actualInputWrapper.before;
+          Events.onSelectionAdd(this, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll());
         }
-        Events.onSelectionAdded(this, actualInputWrapper.prev(), options, data[options.selectedValuesProp], currentSelection.getAll());
         return actualInputWrapper.prev();
       };
       /*
@@ -873,9 +890,9 @@ Based on the 1.6er release dated in July, 2012
               selectionsContainer.children().not(actualInputWrapper.prev()).removeClass('selected');
               if (actualInputWrapper.prev().hasClass('selected')) {
                 currentSelection.remove(_selection);
-                Events.onSelectionRemoved(this, actualInputWrapper.prev(), options, null, currentSelection.getAll());
+                Events.onSelectionRemove(this, actualInputWrapper.prev(), options, null, currentSelection.getAll());
               } else {
-                Events.onSelectionClicked(this, actualInputWrapper.prev(), options, null, currentSelection.getAll());
+                Events.onSelectionClick(this, actualInputWrapper.prev(), options, null, currentSelection.getAll());
                 actualInputWrapper.prev().addClass('selected');
               }
             }

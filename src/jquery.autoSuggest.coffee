@@ -101,15 +101,20 @@ class SelectionHolder
 
 class Events
 
-  @onSelectionAdded : (scope, element, options, item, selections) ->
-    if $.isFunction(options.selectionAdded) then options.selectionAdded.call scope, element, item, selections
+  @onSelectionAdd : (scope, containerElement, detachedElement, options, item, selections) ->
+    element = options.onSelectionAdd.call scope, containerElement, detachedElement
+    if $.isFunction(options.afterSelectionAdd)
+      options.afterSelectionAdd.call scope, element, item, selections
 
-  @onSelectionRemoved : (scope, element, options, item, selections) ->
-    if $.isFunction(options.selectionRemoved) then options.selectionRemoved.call scope, element, item, selections
-    element.remove()
+  @onSelectionRemove : (scope, element, options, item, selections) ->
+    if $.isFunction(options.onSelectionRemove)
+      options.onSelectionRemove.call scope, element
+    if $.isFunction(options.afterSelectionRemove)
+      options.afterSelectionRemove.call scope, element, item, selections
 
-  @onSelectionClicked : (scope, element, options, item, selections) ->
-    if $.isFunction(options.selectionClick) then options.selectionClick.call scope, element, item, selections
+  @onSelectionClick : (scope, element, options, item, selections) ->
+    if $.isFunction(options.afterSelectionClick)
+      options.afterSelectionClick.call scope, element, item, selections
 
 ###
 Defines the actual jQuery plugin
@@ -264,19 +269,33 @@ $.fn.autoSuggest = (data, options) ->
      * Defines a trigger when clicking on a selection element.
      * @type function with arguments: element
     ###
-    selectionClick : null
+    afterSelectionClick : null
 
     ###*
      * Defines a trigger after adding a selection element.
      * @type function with arguments: elementBefore, id
     ###
-    selectionAdded : null
+    afterSelectionAdd : null
+
+    ###*
+     * Defines a callback notifying when a element was removed.
+     * @type function with arguments: element
+    ###
+    afterSelectionRemove : null
+
+    ###*
+     * Defines a callback for adding a selection item.
+     * @type function with arguments: containerElement, detachedElement
+    ###
+    onSelectionAdd : (containerElement, detachedElement) ->
+      containerElement.before detachedElement
+      return containerElement.prev()
 
     ###*
      * Defines a callback for removing a selection item.
      * @type function with arguments: element
     ###
-    selectionRemoved : null
+    onSelectionRemove : (element) -> element.remove()
 
     ###*
      * Defines a callback called for every item that will be rendered.
@@ -461,7 +480,7 @@ $.fn.autoSuggest = (data, options) ->
       item = $ "<li class=\"as-selection-item\" id=\"as-selection-#{num}\" data-value=\"#{Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))}\"></li>"
       item.click ->
         element = $ @
-        if $.isFunction(options.selectionClick) then options.selectionClick.call @, element
+        Events.onSelectionClick @, element, options, data[options.selectedValuesProp], currentSelection.getAll()
         selectionsContainer.children().removeClass 'selected'
         element.addClass 'selected'
         return
@@ -471,18 +490,16 @@ $.fn.autoSuggest = (data, options) ->
       closeElement = $ "<a class=\"as-close\">&times;</a>"
       closeElement.click ->
         currentSelection.remove data[options.selectedValuesProp]
-        if $.isFunction(options.selectionRemoved) then options.selectionRemoved.call @, item
-        item.remove()
+        Events.onSelectionRemove @, item, options, null, currentSelection.getAll()
         input_focus = true
         input.focus()
         return false
       if typeof data[options.selectedItemProp] isnt 'string'
-        actualInputWrapper.before item.append(data[options.selectedItemProp]).prepend(closeElement)
+        actualInputWrapper.before
+        Events.onSelectionAdd @, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll()
       else
-        actualInputWrapper.before item.text(data[options.selectedItemProp]).prepend(closeElement)
-
-      # Call hook "after selection added".
-      Events.onSelectionAdded @, actualInputWrapper.prev(), options, data[options.selectedValuesProp], currentSelection.getAll()
+        actualInputWrapper.before
+        Events.onSelectionAdd @, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll()
 
       return actualInputWrapper.prev()
 
@@ -731,9 +748,9 @@ $.fn.autoSuggest = (data, options) ->
             selectionsContainer.children().not(actualInputWrapper.prev()).removeClass 'selected'
             if actualInputWrapper.prev().hasClass 'selected'
               currentSelection.remove _selection
-              Events.onSelectionRemoved @, actualInputWrapper.prev(), options, null, currentSelection.getAll()
+              Events.onSelectionRemove @, actualInputWrapper.prev(), options, null, currentSelection.getAll()
             else
-              Events.onSelectionClicked @, actualInputWrapper.prev(), options, null, currentSelection.getAll()
+              Events.onSelectionClick @, actualInputWrapper.prev(), options, null, currentSelection.getAll()
               actualInputWrapper.prev().addClass 'selected'
           if input.val().length is 1
             resultsContainer.hide()
