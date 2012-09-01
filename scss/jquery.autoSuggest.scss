@@ -210,21 +210,7 @@ li {
   }
 }
 
-/* Opera Hacks  */
-@media all and (-webkit-min-device-pixel-ratio:10000), not all and (-webkit-min-device-pixel-ratio: 0) {
-  ul {
-    &.as-list {
-      border: 1px solid $as-selection-list-border-base-color;
-    }
-    &.as-selections a.as-close {
-      margin-left: 4px;
-      margin-top: 0;
-    }
-  }
-}
-
 /* IE Hacks  */
-
 ul {
   &.as-list {
     border: 1px solid $as-selection-list-border-base-color;

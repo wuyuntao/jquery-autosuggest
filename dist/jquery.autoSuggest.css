@@ -196,16 +196,6 @@ li.as-result-item.active em {
     height: 19px;
   }
 }
-/* Opera Hacks  */
-@media all and (-webkit-min-device-pixel-ratio:10000), not all and (-webkit-min-device-pixel-ratio: 0) {
-  ul.as-list {
-    border: 1px solid #888888;
-  }
-  ul.as-selections a.as-close {
-    margin-left: 4px;
-    margin-top: 0;
-  }
-}
 /* IE Hacks  */
 ul.as-list {
   border: 1px solid #888888;
