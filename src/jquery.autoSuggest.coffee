@@ -425,7 +425,7 @@ $.fn.autoSuggest = (data, options) ->
     when 'array', 'object' # handle an object a list of objects
       (query, callback) -> callback(data, query)
 
-  # Abort plugin if no fetcher was specified (in this case, option "data" is not supported).
+  # Abort plugin if no fetcher was specified (in this case, type of option "data" is not supported).
   return unless fetcher
 
   ###
