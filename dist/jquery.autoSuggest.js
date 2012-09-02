@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.0.0 - 2012-09-01
+/*! jQuery AutoSuggest - v2.0.0 - 2012-09-02
 * http://hlsolutions.github.com/jquery-autosuggest
 * Copyright (c) 2012 Jan Philipp; Licensed MIT, GPL */
 
@@ -370,7 +370,7 @@ Based on the 1.6er release dated in July, 2012
 
     onSelectionRemove: function(element, options) {
       if (options.fadeOut) {
-        return element.fadeOut(options.fadeOutDuration, function() {
+        return element.fadeOut(options.fadeOut, function() {
           return element.remove;
         });
       } else {
@@ -414,13 +414,13 @@ Based on the 1.6er release dated in July, 2012
      * @type function with arguments: data
     */
 
-    resultClick: null,
+    onResultItemClick: null,
     /**
      * Defines a trigger called after processData.
      * @type function
     */
 
-    resultsComplete: null,
+    afterResultListShow: null,
     /**
      * Defines whether an "event.preventDefault()" should be executed on an ENTER key.
      * @type boolean default false
@@ -452,12 +452,7 @@ Based on the 1.6er release dated in July, 2012
      * Defines whether the removing of a selection should be animated (using fadeOut)
     */
 
-    fadeOut: false,
-    /**
-     * Defines the duration of a fadeOut animation.
-    */
-
-    fadeOutDuration: 500
+    fadeOut: false
   };
 
   pluginMethods = {
@@ -688,7 +683,7 @@ Based on the 1.6er release dated in July, 2012
           return fetcher(string, processData);
         };
         processData = function(data, query) {
-          var formatted, forward, matchCount, name, num, regx, str, this_data, _k, _l, _len2, _len3, _ref2;
+          var formatted, forward, matchCount, name, num, regx, resultsContainerVisible, str, this_data, _k, _l, _len2, _len3, _ref2;
           if (!options.matchCase) {
             query = query.toLowerCase();
           }
@@ -730,8 +725,8 @@ Based on the 1.6er release dated in July, 2012
                   input.val('').focus();
                   prev = '';
                   addSelection(data, number);
-                  if ($.isFunction(options.resultClick)) {
-                    options.resultClick.call(this, raw_data);
+                  if ($.isFunction(options.onResultItemClick)) {
+                    options.onResultItemClick.call(this, raw_data);
                   }
                   resultsContainer.hide();
                 }
@@ -784,11 +779,12 @@ Based on the 1.6er release dated in July, 2012
           resultsList.css({
             width: selectionsContainer.outerWidth()
           });
-          if (matchCount > 0 || options.showResultListWhenNoMatch) {
+          resultsContainerVisible = matchCount > 0 || options.showResultListWhenNoMatch;
+          if (resultsContainerVisible) {
             resultsContainer.show();
           }
-          if ($.isFunction(options.resultsComplete)) {
-            options.resultsComplete.call(this);
+          if ($.isFunction(options.afterResultListShow)) {
+            options.afterResultListShow.call(this, resultsContainerVisible);
           }
         };
         moveResultSelection = function(direction) {

@@ -70,105 +70,259 @@ AutoSuggest has been tested (and works) in:
 
 ## Documentation
 
-### `data`
+The plugin's constructor expects two arguments: `data` and `options`.
 
-Use an `array` if you want to define a static list of items. Each item must be an object with properties which will match your `options` keys `selectedItemProp`, `selectedValuesProp` and `searchObjProps`.
+The first argument `data` defines how the suggested results will be retrieved:
+* Use an `array` if you want to define a static list of items. Each item must be an object with properties which will match your `options` keys `selectedItemProp`, `selectedValuesProp` and `searchObjProps`.
+* Use a `function` returning an `array` if you want to define dynamic builder of a list of items. The structure of this list must be the same as described for an `array`.
+* Use a `string` if you want to load the data asynchronously via AJAX. Eventually, in that case you want to override the option `afterRequest` to match the specification of a data array.
 
-Use a `function` returning an `array` if you want to define dynamic builder of a list of items. The structure of this list must be the same as described for an `array`.
+The second argument `options` specifies the behaviour of the plugin like data transformations, ajax options or event handling.
 
-Use a `string` if you want to load the data asynchronously via AJAX. Eventually, in that case you want to override the option `afterRequest` to match the specification of a data array.
+In general, the options are grouped into following categories:
+* General
+* Data
+* Ajax
+* Callbacks
 
+### General
 
-### `options`
+#### asHtmlID (string)
+Enables you to specify your own custom element id. Otherwise it will default to using a random element id.
+This is also applies to the hidden input filed that holds all of the selected values.
 
-* **ajaxOptions**: *object (type : 'get', dataType : 'json' by default)* - Defines the configuration options which will be applied to **$.ajax** when using Ajax on search.
+```javascript
+// example
+{
+  id : 'CUSTOM_ID'
+}
+```
+I.e., the id of the hidden input input will be now `as-values-CUSTOM_ID`.
 
-* **onAjaxRequestAlways**: *deferred callback function* (deferred chaining of jQuery) - Defines a callback which will be called regardless of the response.
+#### inputAttrs (object)
+Specify additional attributes which will be applied to each input on setup.
 
-* **onAjaxRequestDone**: *deferred callback function* (deferred chaining of jQuery) - Defines a callback which will be called when the response succeeded.
+Default:
+```javascript
+{
+  autocomplete : 'off'
+}
+```
 
-* **onAjaxRequestFail**: *deferred callback function* (deferred chaining of jQuery) - Defines a callback which will be called when the response failed.
+#### matchCase (boolean)
+Specify whether the search/highlight should be case sensitive.
 
-* **asHtmlID**: *string (false by default)* - Enables you to specify your own custom ID that will be appended to the top level AutoSuggest UL element's ID name. Otherwise it will default to using a random ID. Example: id="CUSTOM_ID". This is also applies to the hidden input filed that holds all of the selected values. Example: id="as-values-CUSTOM_ID"
+Default: `false`
 
-* **startText**: *string ("Enter Name Here" by default)* - Text to display when the AutoSuggest input field is empty.
+#### minChars (number)
+Minimum number of characters that must be entered into the input field before the search begins.
 
-* **usePlaceholder**: *true or false (false by default)* - Set HTML5 placeholder attribute to display *startText* when the input field is empty.
+Default: `1`
 
-* **emptyText**: *string ("No Results" by default)* - Text to display when their are no search results.
+#### neverSubmit (boolean)
+If set to `true` this option will never allow the _return key_ to submit the form that AutoSuggest is a part of.
 
-* **preFill**: *object or string (empty object by default)* - Enables you to pre-fill the AutoSuggest box with selections when the page is first loaded. You can pass in a comma separated list of values (a string), or an object. When using a string, each value is used as both the display text on the selected item and for it's value. When using an object, the options `selectedItemProp` will define the object property to use for the display text and `selectedValuesProp` will define the object property to use for the value for the selected item. Note: you must setup your preFill object in that format. A preFill object can look just like the example objects laid out above.
+Default: `false`
 
-* **limitText**: *string ("No More Selections Are Allowed" by default)* - Text to display when the number of selections has reached it's limit.
+#### selectionLimit (number)
+Specifiy the number of selections that are allowed to be made.
 
-* **selectedItemProp**: *string ("value" by default)* - Name of object property to use as the display text for each chosen item.
+Default: `false`
 
-* **selectedValuesProp**: *string ("value" by default)* - Name of object property to use as the value for each chosen item. This value will be stored into the hidden input field.
+#### preventPropagationOnEscape (boolean)
+If set to `true` this option will prevent bubbling events when the _escape key_ was pressed.
 
-* **searchObjProps**: *string ("value" by default)* - Comma separated list of object property names. The values in these objects properties will be used as the text to perform the search on.
+Default: `false`
 
-* **queryParam**: *string ("q" by default)* - The name of the param that will hold the search string value in the AJAX request.
+### Data
 
-* **retrieveLimit**: *number (false by default)* - If set to a number, it will add a '&limit=' param to the AJAX request. It also limits the number of search results allowed to be displayed in the results dropdown box.
+#### selectedItemProp (string)
+Specifiy the name of the property to use as the display text for each chosen item.
 
-* **extraParams**: *callback object* OR *function* OR *string ("" by default)* - Before **AutoSuggest 2**, this will be added onto the end of the AJAX request URL. Since **version 2**, the recommended way to define `extraParams` is a static object or a function returning a object. These params will be applied to the Ajax call's params. If you are using the old -- but still supported -- way defining a string, make sure you add an '&' before each param. If used as a callback function, it must return a string or an object. The callback function is fired before each search is performed.
+Default: `'value'`
 
-* **matchCase**: *true or false (false by default)* - Make the search case sensitive when set to true.
+#### selectedValuesProp (string)
+Specify the name of the property to use as the value for each chosen item.
 
-* **minChars**: *number (1 by default)* - Minimum number of characters that must be entered into the AutoSuggest input field before the search begins.
+This option configures the id values which will be stored into the hidden input field.
 
-* **keyDelay**: *number (400 by default)* - Number of milliseconds to delay after a keydown on the AutoSuggest input field and before search is started.
+Default: `'value'`
 
-* **resultsHighlight**: *true or false (true by default)* - Option to choose whether or not to highlight the matched text in each result item.
+#### searchObjProps (string)
+Specify a comma separated list of property names. The values in these objects properties will be used to perform the search/highlight on.
 
-* **neverSubmit**: *true or false (false by default)* - If set to `true` this option will never allow the 'return' key to submit the form that AutoSuggest is a part of.
+Default: `'value'`
 
-* **selectionLimit**: *number (false by default)* - Limits the number of selections that are allowed to be made to the number specified.
+#### Example
+Let's assume, each record contains at least a `firstName` and a `lastName`. Allowing the plugin to search/highlight in both columns, you have to provide following line.
+`searchObjProps = 'firstName,lastName'`
 
-* **showResultList**: *true or false (true by default)* - If set to `false`, the Results Dropdown List will never be shown at any time.
+#### preFill (object or string)
+Enables you to pre fill the box with selections when the page is first loaded. You can pass in a comma separated list of values (a string), or an object.
 
-* **start**: *callback function* - Custom function that is run only once on each AutoSuggest field when the code is first applied. A set of callbacks are passed. The callbacks are `add` (for selecting a data item from code -- pass the whole item to select) and `remove` (for removing a selected item from code -- pass the value).
+When using a string, each value is used as both the display text on the selected item and for it's value.
+When using an object, the options `selectedItemProp` will define the object property to use for the display text and `selectedValuesProp` will define the object property to use for the value for the selected item.
 
-* **selectionClick**: (elem, item, selections) *callback function* - Custom function that is run when a previously chosen item is clicked. The item that is clicked is passed into this callback function as 'elem'.
-`Example: selectionClick: function(elem){ elem.fadeTo("slow", 0.33); }`
+Note: You *must* setup your `preFill` object in that format. An example value can look just like the example objects laid out above.
 
-* **selectionAdded**: (elem, item, selections) *callback function* - Custom function that is run when a selection is made by choosing one from the Results dropdown, or by using the tab/comma keys to add one. The selection item is passed into this callback function as 'elem'.
-`Example: selectionAdded: function(elem){ elem.fadeTo("slow", 0.33); }`
+### UI
 
-* **selectionRemoved**: (elem, item, selections) *callback function* - Custom function that is run when a selection removed from the AutoSuggest by using the delete key or by clicking the "x" inside the selection. The selection item is passed into this callback function as 'elem'.
-`Example: selectionRemoved: function(elem){ elem.fadeTo("fast", 0, function(){ elem.remove(); }); }`
+#### emptyText (string
+Specify text to display when there are no search results.
 
-* **formatList**: *callback function* - Custom function that is run after all the data has been retrieved and before the results are put into the suggestion results list. This is here so you can modify what & how things show up in the suggestion results list.
+Default: `'No Results'`
 
-* **beforeRequest**: *callback function* - Custom function that is run right before the AJAX request is made, or before the local objected is searched. This is used to modify the search string before it is processed. So if a user entered "jim" into the AutoSuggest box, you can call this function to prepend their query with "guy_". Making the final query = "guy_jim". The search query is passed into this function. `Example: beforeRequest: function(string){ return string; }`
+#### limitText (string)
+Specify text to display when the number of selections has reached it's limit.
 
-* **afterRequest**: *callback function* - Custom function that is run after the ajax request has completed. The data object MUST be returned if this is used. `Example: afterRequest: function(data){ return data; }`
+Default: `'No More Selections Are Allowed'`
 
-* **resultClick**: *callback function* - Custom function that is run when a search result item is clicked. The data from the item that is clicked is passed into this callback function as 'data'.
-`Example: resultClick: function(data){ console.log(data); }`
+#### startText (string)
+Specify text to display when the input field is empty.
 
-* **resultsComplete**: *callback function* - Custom function that is run when the suggestion results dropdown list is made visible. Will run after every search query.
+Default: `'Enter Name Here'`
 
-* **preventPropagationOnEscape**: *true or false (false by default)* - If set to `true` this option will prevent bubbling events when the Escape key was pressed.
+#### usePlaceholder (boolean)
+Set *HTML5* placeholder attribute to display the *startText* when the input field is empty.
 
-The **formatList** option will hand you 2 objects:
+Default: `false`
 
-* **data**: This is the data you originally passed into AutoSuggest (or retrieved via an AJAX request)
-* **elem**: This is the HTML element you will be formatting (the 'result' `li` item).
+#### keyDelay (number)
+Number of milliseconds to delay after a keydown on the input field and before search is started.
 
-In order to add extra things to the 'result' item (like an image) you will need to make sure you pass that data into AutoSuggest. Below is an example of formatList in action:
+Default: `400`
 
-    formatList: function(data, elem){
-        var my_image = data.image;
-        var new_elem = elem.html("add/change stuff here, put image here, etc.");
-        return new_elem;
-    }
+#### resultsHighlight
+Option to choose whether or not to highlight the matched text in each result item.
 
-You MUST return the HTML object. **formatList** will run on each 'result' item.
+Default: `true`
 
-* **fadeOut**: *true or false (false by default)* - If set to `true` the selection remove will be faded out instead of a simple remove.
+#### showResultList (boolean)
+If set to `false` the result list will never be shown at any time.
 
-* **fadeOutDuration**: *mixed (500 by default)* - Defines the duration of the `fadeOut` animation on a selection remove.
+Default: `true`
+
+#### fadeOut (mixed)
+Specify whether the removing of a selection should be animated (using fadeOut) or not.
+
+The value of `fadeOut` will be passed directly into `$.fn.fadeOut`.
+
+### Ajax
+
+#### ajaxOptions (object)
+An additional options object for jQuery's `.ajax` (if the Ajax method is used). Example usage: Override the HTTP method into _POST_.
+
+The defaults will be merged unless they are overridden.
+
+```javascript
+// Default
+{type : 'get', dataType : 'json'}
+```
+
+#### queryParam (string)
+The name of the param that will hold the search string value in the AJAX request.
+
+Default: `'q'`
+
+#### retrieveLimit (number)
+If set to a number, it will add a '&limit=' param to the AJAX request. It also limits the number of search results allowed to be displayed in the results dropdown box.
+
+#### extraParams
+These params will be applied to the `$.ajax` params.
+
+There are three ways provide params.
+1. Use an object which will be applied directly onto the internal `$.ajax` request's params.
+2. Use the deprecated way defining a string (prior version 2). But please note: Make sure you add an `&` before each param. Otherwise you break it all..
+3. Use a callback function returning an object (or a string). The callback's first and only argument is the plugin's scope.
+
+#### onAjaxRequestAlways (function)
+A callback function which will be attached onto `$.ajax.always`.
+
+#### onAjaxRequestDone (function)
+A callback function which will be attached onto `$.ajax.done`.
+
+#### onAjaxRequestFail (function)
+A callback function which will be attached onto `$.ajax.fail`.
+
+### Callbacks
+
+#### start(api)
+Provide some internal hooks with the specified `api` object. Currently, following methods are provided:
+1. `add(item)` will add another selection item
+1. `remove(item` will remove a selection item
+
+#### afterSelectionClick (element, item, selections)
+A callback that is run when a previously chosen item is clicked. The item that is clicked is passed into this callback function as `element`.
+
+Example:
+```javascript
+afterSelectionClick: function(elem){
+  elem.fadeTo("slow", 0.33);
+}
+```
+
+#### afterSelectionAdd (element, item, selections)
+A callback that is run when a selection is made by choosing one from the results dropdown or by using the tab/comma keys to add one. The selection item is passed into this callback function as `element`.
+
+Example
+```javascript
+afterSelectionAdd: function(elem){
+  elem.fadeTo("slow", 0.33);
+}
+```
+
+#### selectionRemove (element, item, selections)
+A callback hat is run when a selection removed from the AutoSuggest by using the delete key or by clicking the "x" inside the selection. The selection item is passed into this callback function as `element`.
+
+Example:
+```javascript
+selectionRemoved: function(elem){
+  elem.fadeTo("fast", 0, function(){
+    elem.remove();
+  });
+}
+```
+
+#### beforeRequest (query, options)
+A callback that is run right before the Ajax request is made or before the local objected is searched. This is used to modify the search string before it is processed. So if a user entered `'jim'` into the AutoSuggest box, you can call this function to prepend their query with `'guy_'`. Making the final query `= 'guy_jim'`. The search query is passed into this function.
+
+Note: The callback *must* return a string if this is used.
+
+#### afterRequest (data)
+A callback that is run after the ajax request has completed. This allows modifiying the requested `data`.
+
+Note: The callback *must* return an object if this is used.
+
+#### formatList (items, element)
+A callback that is run after all the data has been retrieved and before the results are put into the suggestion results list. This is here so you can modify what and how things show up in the suggestion results list.
+
+The argument `items` is the data you originally passed into AutoSuggest (or retrieved via an AJAX request). The other argument `element` is the HTML element you will be formatting (the result `li` item).
+
+Note: The callback must return an element. If you don't care return `element`.
+
+In order to add extra things to the 'result item' (like an image) you will need to make sure you pass that data into AutoSuggest. Below is an example of `formatList` in action:
+```javascript
+formatList: function(data, elem){
+  var my_image = data.image;
+  var new_elem = elem.html("add/change stuff here, put image here, etc.");
+  return new_elem;
+}
+```
+
+#### onResultItemClick (data)
+A callback that is run when a search result item is clicked. The data from the item that is clicked is passed into this callback function as `data`.
+
+Example:
+```javascript
+onResultItemClick: function(data){
+  console.log(data);
+}
+```
+
+#### afterResultListShow(visible)
+A callback that is run when the suggestion results dropdown list is made visible. Will run after every search query.
+
+The argument `visible` indicates whether the result list is actually visible. Regarding the configuration, the result list will not be shown if there are not items available.
 
 ## Examples
 
@@ -295,6 +449,8 @@ The plugin project now uses **CoffeeScript** and **SASS** for source building. T
 * **API change**: *selectionRemoved* was renamed to *onSelectionRemove*.
 * **API change**: New event: *afterSelectionRemove*.
 * Added a built-in *fadeOut* feature.
+* **API change**: *resultClick* was renamed to *onResultItemClick*.
+* **API change**: *resultsComplete* was renamed to *afterResultListShow*.
 
 ## 2012-07-03 Version 1.7.0
 
