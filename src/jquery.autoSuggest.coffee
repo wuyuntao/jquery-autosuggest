@@ -293,7 +293,7 @@ defaults =
   ###
   onSelectionRemove : (element, options) ->
     if options.fadeOut
-      element.fadeOut options.fadeOutDuration, -> element.remove
+      element.fadeOut options.fadeOut, -> element.remove
     else
       element.remove()
 
@@ -370,11 +370,6 @@ defaults =
    * Defines whether the removing of a selection should be animated (using fadeOut)
   ###
   fadeOut : false
-
-  ###*
-   * Defines the duration of a fadeOut animation.
-  ###
-  fadeOutDuration : 500
 
 
 pluginMethods =
