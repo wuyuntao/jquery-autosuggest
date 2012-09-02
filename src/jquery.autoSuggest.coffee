@@ -333,13 +333,13 @@ defaults =
    * Defines a trigger after clicking on a search result element.
    * @type function with arguments: data
   ###
-  resultClick : null
+  onResultItemClick : null
 
   ###*
    * Defines a trigger called after processData.
    * @type function
   ###
-  resultsComplete : null
+  afterResultListShow : null
 
   ###*
    * Defines whether an "event.preventDefault()" should be executed on an ENTER key.
@@ -621,7 +621,7 @@ pluginMethods =
                 input.val('').focus()
                 prev = ''
                 addSelection data, number
-                if $.isFunction(options.resultClick) then options.resultClick.call @, raw_data
+                if $.isFunction(options.onResultItemClick) then options.onResultItemClick.call @, raw_data
                 resultsContainer.hide()
               lastKeyWasTab = false
               return
@@ -665,9 +665,10 @@ pluginMethods =
         if matchCount <= 0
           resultsList.html "<li class=\"as-message\">#{options.emptyText}</li>"
         resultsList.css width : selectionsContainer.outerWidth()
-        if matchCount > 0 || options.showResultListWhenNoMatch
+        resultsContainerVisible = matchCount > 0 || options.showResultListWhenNoMatch
+        if resultsContainerVisible
           resultsContainer.show()
-        if $.isFunction(options.resultsComplete) then options.resultsComplete.call @
+        if $.isFunction(options.afterResultListShow) then options.afterResultListShow.call @, resultsContainerVisible
         return
 
       moveResultSelection = (direction) ->
