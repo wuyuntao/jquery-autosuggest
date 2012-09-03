@@ -549,6 +549,9 @@ pluginMethods =
         when 'array'
           prefilledValue = ''
           if options.preFill.length
+            # Call the afterRequest interceptor if required.
+            if $.isFunction options.afterRequest
+              options.preFill = options.afterRequest.call @, options.preFill
             for item, i in options.preFill
               new_value = item[options.selectedValuesProp]
               if typeof new_value is 'undefined'

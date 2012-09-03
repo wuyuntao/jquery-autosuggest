@@ -635,6 +635,9 @@ Based on the 1.6er release dated in July, 2012
           case 'array':
             prefilledValue = '';
             if (options.preFill.length) {
+              if ($.isFunction(options.afterRequest)) {
+                options.preFill = options.afterRequest.call(this, options.preFill);
+              }
               _ref1 = options.preFill;
               for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
                 item = _ref1[i];
