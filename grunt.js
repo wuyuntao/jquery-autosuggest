@@ -114,7 +114,7 @@ module.exports = function (grunt) {
   grunt.loadTasks('tasks');
 
   // Default task: Complete testing and building.
-  grunt.registerTask('default', 'compass lint coffee concat cssmin qunit concat min');
+  grunt.registerTask('default', 'compass lint coffee concat cssmin qunit min');
 
   // Build task: Only building jquery.autoSuggest.min.js
   grunt.registerTask('build', 'compass coffee concat cssmin min');
@@ -123,6 +123,6 @@ module.exports = function (grunt) {
   grunt.registerTask('test', 'compass:dev lint coffee qunit');
 
   // Travis: CI Server
-  grunt.registerTask('travis', 'compass lint coffee concat cssmin qunit concat min');
+  grunt.registerTask('travis', 'compass lint coffee concat cssmin qunit min');
 
 };
