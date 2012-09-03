@@ -324,6 +324,46 @@ A callback that is run when the suggestion results dropdown list is made visible
 
 The argument `visible` indicates whether the result list is actually visible. Regarding the configuration, the result list will not be shown if there are not items available.
 
+### Methods
+The plugin itself provides different methods depending on the internal state.
+
+#### init (default)
+Arguments: `data`, `options`
+
+This is the default method and requires the options as described. This means that `$('input').autoSuggest('init', 'url', {})` is equal to `$('input').autoSuggest('url', {})`.
+
+#### add
+Arguments: `data` or array of `data`
+
+Example 1:
+```javascript
+$('input').autoSuggest('add', {
+  id : 4711, name : 'Mick Jagger'
+})
+```
+
+Example 2:
+```javascript
+$('input').autoSuggest('add', {
+  id : 4711, name : 'Mick Jagger'
+}, {
+ id : 4712, name : 'Kelly Slater'
+})
+```
+
+#### remove
+Arguments: `value` or array of `value`
+
+Example 1:
+```javascript
+$('input').autoSuggest('remove', 4711)
+```
+
+Example 2:
+```javascript
+$('input').autoSuggest('remove', 4711, 4722)
+```
+
 ## Examples
 
 ### Multiple elements on one page

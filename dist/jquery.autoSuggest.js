@@ -17,7 +17,8 @@ Based on the 1.6er release dated in July, 2012
 
 
 (function() {
-  var $, ConfigResolver, Events, SelectionHolder, Utils, defaults, pluginMethods;
+  var $, ConfigResolver, Events, SelectionHolder, Utils, defaults, pluginMethods,
+    __slice = [].slice;
 
   $ = jQuery;
 
@@ -515,7 +516,7 @@ Based on the 1.6er release dated in July, 2012
       */
 
       return this.each(function(element) {
-        var abortRequest, actualInputWrapper, addSelection, currentSelection, elementId, hiddenInput, i, input, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
+        var abortRequest, actualInputWrapper, addSelection, currentSelection, elementId, hiddenInput, i, input, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
         options.inputAttrs = $.extend(options.inputAttrs, {});
         input_focus = false;
         input = $(this);
@@ -551,6 +552,30 @@ Based on the 1.6er release dated in July, 2012
         lastKeyWasTab = false;
         lastKeyPressCode = null;
         num_count = 0;
+        /**
+         * This api will be exposed to the "start" callback.
+        */
+
+        publicApi = {
+          add: function(data) {
+            var counted, item;
+            counted = $(selectionsContainer).find('li').length;
+            item = addSelection(data, "u" + counted);
+            if (item != null) {
+              item.addClass('blur');
+            }
+          },
+          remove: function(value) {
+            currentSelection.remove(value);
+            selectionsContainer.find("li[data-value=\"" + (Utils.escapeHtml(value)) + "\"]").remove();
+          }
+        };
+        input.bind('addSelection', function(event, data) {
+          return publicApi.add(data);
+        });
+        input.bind('removeSelection', function(event, value) {
+          return publicApi.remove(value);
+        });
         /**
          * Adds the specified selection.
          * @param Object data
@@ -592,18 +617,7 @@ Based on the 1.6er release dated in July, 2012
         */
 
         if ($.isFunction(options.start)) {
-          options.start.call(this, {
-            add: function(data) {
-              var counted, item;
-              counted = $(selectionsContainer).find('li').length;
-              item = addSelection(data, "u" + counted);
-              return item != null ? item.addClass('blur') : void 0;
-            },
-            remove: function(value) {
-              currentSelection.remove(value);
-              return selectionsContainer.find("li[data-value=\"" + (Utils.escapeHtml(value)) + "\"]").remove();
-            }
-          });
+          options.start.call(this, publicApi);
         }
         switch ($.type(options.preFill)) {
           case 'string':
@@ -973,8 +987,23 @@ Based on the 1.6er release dated in July, 2012
         });
       });
     },
-    add: function(data) {
-      return console.log(this);
+    add: function() {
+      var element, item, items, _i, _len;
+      items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      element = $(this);
+      for (_i = 0, _len = items.length; _i < _len; _i++) {
+        item = items[_i];
+        element.trigger('addSelection', item);
+      }
+    },
+    remove: function() {
+      var element, value, values, _i, _len;
+      values = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      element = $(this);
+      for (_i = 0, _len = values.length; _i < _len; _i++) {
+        value = values[_i];
+        element.trigger('removeSelection', value);
+      }
     }
   };
 

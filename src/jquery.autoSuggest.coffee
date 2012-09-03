@@ -480,6 +480,26 @@ pluginMethods =
       num_count = 0
 
       ###*
+       * This api will be exposed to the "start" callback.
+      ###
+      publicApi =
+        add : (data) ->
+          counted = $(selectionsContainer).find('li').length
+          item = addSelection data, "u#{counted}"
+          item?.addClass 'blur'
+          return
+        remove : (value) ->
+          currentSelection.remove value
+          selectionsContainer.find("li[data-value=\"#{Utils.escapeHtml(value)}\"]").remove()
+          return
+
+      # Register an add event.
+      input.bind 'addSelection', (event, data) ->
+        publicApi.add data
+      input.bind 'removeSelection', (event, value) ->
+        publicApi.remove value
+
+      ###*
        * Adds the specified selection.
        * @param Object data
        * @param Number num
@@ -516,14 +536,7 @@ pluginMethods =
         DO START
       ###
       if $.isFunction options.start
-        options.start.call @,
-          add : (data) ->
-            counted = $(selectionsContainer).find('li').length
-            item = addSelection data, "u#{counted}"
-            item?.addClass 'blur'
-          remove : (value) ->
-            currentSelection.remove value
-            selectionsContainer.find("li[data-value=\"#{Utils.escapeHtml(value)}\"]").remove()
+        options.start.call @, publicApi
 
       switch $.type options.preFill
         when 'string'
@@ -810,9 +823,18 @@ pluginMethods =
         return
 
   # plugin method to add an item
-  add : (data) ->
-    # todo
-    console.log @
+  add : (items...) ->
+    element = $ @
+    for item in items
+      element.trigger 'addSelection', item
+    return
+
+  # plugin method to remove an item
+  remove : (values...) ->
+    element = $ @
+    for value in values
+      element.trigger 'removeSelection', value
+    return
 
 
 # Define the actual jQuery plugin constructor.
