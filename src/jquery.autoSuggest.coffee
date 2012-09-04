@@ -402,6 +402,11 @@ defaults =
   ###
   fadeOut : false
 
+  ###*
+   * Defines whether the server filter remote or not. If asuming so, this prevents the plugin to filter again.
+  ###
+  remoteFilter : false
+
 
 pluginMethods =
 
@@ -413,7 +418,7 @@ pluginMethods =
     ajaxRequest = null
 
     # Private Option: Indicates whether a server is responsible for a result list or not.
-    if options.remoteFilter not in [true, false]
+    if options.remoteFilter is 'auto'
       options.remoteFilter = ($.type data) is 'string'
 
     # defines the actual fetcher strategy based on the option "data"
@@ -660,7 +665,7 @@ pluginMethods =
           if str
             unless options.matchCase
               str = str.toLowerCase()
-            if !options.searchActive || ((str.indexOf(query) isnt -1 && !options.remoteFilter) && !currentSelection.exist(item[options.selectedValuesProp]))
+            if !options.searchActive || ((str.indexOf(query) isnt -1 || options.remoteFilter) && !currentSelection.exist(item[options.selectedValuesProp]))
               forward = true
           if forward
             formatted = $ "<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>"
