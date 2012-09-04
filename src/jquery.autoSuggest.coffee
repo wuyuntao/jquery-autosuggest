@@ -525,9 +525,9 @@ pluginMethods =
           input.focus()
           return false
         if typeof data[options.selectedItemProp] isnt 'string'
-          Events.onSelectionAdd @, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll()
+          Events.onSelectionAdd @, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll()
         else
-          Events.onSelectionAdd @, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll()
+          Events.onSelectionAdd @, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll()
 
         return actualInputWrapper.prev()
 
