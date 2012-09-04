@@ -139,6 +139,87 @@
       remove();
     });
 
+    asyncTest('Select two values and remove both of them.', 5, function () {
+      el = create();
+      // Type "Yap Ming" and ","
+      el.focus();
+      el.val("Yao Ming");
+      el.simulate("keydown", {"keyCode" : keyCode.COMMA});
+
+      setTimeout(function(){
+        // Type "Michael Jordan" and ","
+        el.focus();
+        el.val("Michael Jordan");
+        el.simulate("keydown", {"keyCode" : keyCode.COMMA});
+
+        setTimeout(function(){
+          sel = selections();
+          equal(sel.length, 2, "Should have two name");
+          equal($(sel[0]).text(), "×Yao Ming", "Should be Yao Ming");
+          equal($(sel[1]).text(), "×Michael Jordan", "Should be Michael Jordan");
+          equal(value().val(), ",Yao Ming,Michael Jordan,", "Should be Yao Ming & Michael Jordan");
+
+          setTimeout(function(){
+            el.simulate("keydown", {"keyCode" : keyCode.DEL});
+            setTimeout(function(){
+              el.simulate("keydown", {"keyCode" : keyCode.DEL});
+              setTimeout(function(){
+                el.simulate("keydown", {"keyCode" : keyCode.DEL});
+                setTimeout(function(){
+                  el.simulate("keydown", {"keyCode" : keyCode.DEL});
+                  setTimeout(function(){
+                    sel = selections();
+                    equal(sel.length, 0, "Should have no selections.");
+                    start();
+                    remove();
+                  }, 200);
+                }, 200);
+              }, 200);
+            }, 200);
+          }, 200);
+        }, 200);
+      }, 500);
+    });
+
+    asyncTest('Prefill two values and remove both of them.', 3, function () {
+      el = create(null, {
+        asHtmlID : 'autosuggest',
+        selectedItemProp : "name",
+        selectedValuesProp : "name",
+        searchObjProps : "name",
+        preFill : [{
+          name : 'John Doe'
+        }, {
+          name : 'Max Mustermann'
+        }]
+      });
+
+      setTimeout(function(){
+        sel = selections();
+        equal(sel.length, 2, "Should have two name");
+        equal(value().val(), ",John Doe,Max Mustermann,", "Should be John Doe & Max Mustermann");
+
+        setTimeout(function(){
+          el.simulate("keydown", {"keyCode" : keyCode.DEL});
+          setTimeout(function(){
+            el.simulate("keydown", {"keyCode" : keyCode.DEL});
+            setTimeout(function(){
+              el.simulate("keydown", {"keyCode" : keyCode.DEL});
+              setTimeout(function(){
+                el.simulate("keydown", {"keyCode" : keyCode.DEL});
+                setTimeout(function(){
+                  sel = selections();
+                  equal(sel.length, 0, "Should have no selections.");
+                  start();
+                  remove();
+                }, 200);
+              }, 200);
+            }, 200);
+          }, 200);
+        }, 200);
+      }, 500);
+    });
+
     asyncTest('Type DOWN and see the result list.', 1, function () {
       el = create(null, $.extend({}, options, {
         minChars : 0
@@ -547,6 +628,64 @@
 
       el = create(url, opts);
       $.simulate2.triggerKeyEventsForString(el, 'J', 0, true);
+    });
+
+    /**
+     * Extended test case with a custom html renderer and a prefilled entry.
+     * Additionally, this customize the selection tokens w/ an additional image.
+     */
+    asyncTest('Custom result list formatter, prefilling and with image in selection tokens.', 9, function () {
+      var renderer = function (data) {
+        return $('<div><img src="' + data.img + '" height=16 width=16 style="float:left"/><span>' + data.name + '</span></div>');
+      }, applyRenderer = function (data) {
+        data.item = renderer(data);
+        return data;
+      };
+      var data = [applyRenderer({
+        value : '4711',
+        img : 'john.png',
+        name : 'John Doe'
+      })];
+      var opts = {
+        asHtmlID : 'autosuggest',
+        selectedItemProp : "item",
+        searchObjProps : "name",
+        formatList : function (data, elem) {
+          return elem.append(data.item);
+        },
+        preFill : [applyRenderer({
+          value : '123',
+          img : 'donald.png',
+          name : 'Donald Duck'
+        })]
+      };
+      var query = 'Doe';
+      el = create(data, opts);
+
+      var sel = selections();
+      equal(sel.length, 1, "Prefill: The number of selections should be exactly one.");
+      equal($(sel[0]).html(), '<a class="as-close">×</a><div><img src="donald.png" height="16" width="16" style="float:left"><span>Donald Duck</span></div>', "#1 should be Donald Duck.");
+      equal(value().val(), ",123,", "Prefill: Value should be 123.");
+
+      el.focus();
+      el.val(query);
+
+      setTimeout(function () {
+        var res = results();
+        equal(res.length, 1, "Should suggest one value.");
+        equal($(res[0]).html(), '<div><img src="john.png" height="16" width="16" style="float:left"><span>John <em>Doe</em></span></div>', "Should be rendered output.");
+
+        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
+        el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+
+        sel = selections();
+        equal(sel.length, 2, "Should have two values");
+        equal($(sel[0]).text(), '×Donald Duck', "#1 should be Donald Duck.");
+        equal($(sel[1]).text(), '×John Doe', "#2 should be John Doe.");
+        equal(value().val(), ",123,4711,", "Should be 123,4711.");
+        start();
+        remove();
+      }, 500);
     });
 
     module('XSS Tests');
