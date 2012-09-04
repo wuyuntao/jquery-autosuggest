@@ -269,10 +269,28 @@ Provide some internal hooks with the specified `api` object. Currently, followin
 #### afterSelectionClick (element, item, selections)
 A callback that is run when a previously chosen item is clicked. The item that is clicked is passed into this callback function as `element`.
 
-Example:
+#### onSelectionAdd(element, markerElement, detachedElement, options)
+A callback that do the actual dom operation (add the `detachedElement` before `markerElement`).
+
 ```javascript
-afterSelectionClick: function(elem){
-  elem.fadeTo("slow", 0.33);
+onSelectionAdd : function(element, markerElement, detachedElement, options) {
+  markerElement.before(detachedElement);
+  return containerElement.prev();
+}
+```
+
+#### onSelectionRemove(element, options)
+A callback that do the actual dom operation (remove the element).
+
+```javascript
+onSelectionRemove : function(element, options) {
+  if (options.fadeOut) {
+    element.fadeOut(options.fadeOut, function(){
+      element.remove();
+    });
+  } else {
+    element.remove()
+  }
 }
 ```
 
@@ -281,8 +299,8 @@ A callback that is run when a selection is made by choosing one from the results
 
 Example
 ```javascript
-afterSelectionAdd: function(elem){
-  elem.fadeTo("slow", 0.33);
+afterSelectionAdd: function(element, item, currentSelections){
+  MyApp.addSelection(item);
 }
 ```
 
@@ -291,10 +309,8 @@ A callback hat is run when a selection removed from the AutoSuggest by using the
 
 Example:
 ```javascript
-selectionRemoved: function(elem){
-  elem.fadeTo("fast", 0, function(){
-    elem.remove();
-  });
+afterSelectionRemove: function(element, item, currentSelections){
+  MyApp.removeSelection(item);
 }
 ```
 
