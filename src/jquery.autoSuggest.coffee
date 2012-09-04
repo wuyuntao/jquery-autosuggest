@@ -412,6 +412,10 @@ pluginMethods =
     # global reference to the plugin's ajax request object
     ajaxRequest = null
 
+    # Private Option: Indicates whether a server is responsible for a result list or not.
+    if options.remoteFilter not in [true, false]
+      options.remoteFilter = ($.type data) is 'string'
+
     # defines the actual fetcher strategy based on the option "data"
     fetcher = switch $.type data
       when 'function' # handle a callback function
@@ -647,17 +651,21 @@ pluginMethods =
         for item in data
           num_count++
           forward = false
-          if options.searchObjProps is 'value'
-            str = item.value
+          if options.remoteFilter
+            # accept all values if a server has responsed.
+            forward = true
           else
-            str = ''
-            for name in options.searchObjProps.split ','
-              str += "#{item[$.trim(name)]} "
-          if str
-            unless options.matchCase
-              str = str.toLowerCase()
-            if !options.searchActive || (str.indexOf(query) isnt -1 && !currentSelection.exist(item[options.selectedValuesProp]))
-              forward = true
+            if options.searchObjProps is 'value'
+              str = item.value
+            else
+              str = ''
+              for name in options.searchObjProps.split ','
+                str += "#{item[$.trim(name)]} "
+            if str
+              unless options.matchCase
+                str = str.toLowerCase()
+              if !options.searchActive || (str.indexOf(query) isnt -1 && !currentSelection.exist(item[options.selectedValuesProp]))
+                forward = true
           if forward
             formatted = $ "<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>"
             formatted.click ->
