@@ -651,21 +651,17 @@ pluginMethods =
         for item in data
           num_count++
           forward = false
-          if options.remoteFilter
-            # accept all values if a server has responsed.
-            forward = true
+          if options.searchObjProps is 'value'
+            str = item.value
           else
-            if options.searchObjProps is 'value'
-              str = item.value
-            else
-              str = ''
-              for name in options.searchObjProps.split ','
-                str += "#{item[$.trim(name)]} "
-            if str
-              unless options.matchCase
-                str = str.toLowerCase()
-              if !options.searchActive || (str.indexOf(query) isnt -1 && !currentSelection.exist(item[options.selectedValuesProp]))
-                forward = true
+            str = ''
+            for name in options.searchObjProps.split ','
+              str += "#{item[$.trim(name)]} "
+          if str
+            unless options.matchCase
+              str = str.toLowerCase()
+            if !options.searchActive || ((str.indexOf(query) isnt -1 && !options.remoteFilter) && !currentSelection.exist(item[options.selectedValuesProp]))
+              forward = true
           if forward
             formatted = $ "<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>"
             formatted.click ->

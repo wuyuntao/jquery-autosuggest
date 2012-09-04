@@ -486,9 +486,12 @@ Based on the 1.6er release dated in July, 2012
 
   pluginMethods = {
     init: function(data, options) {
-      var ajaxRequest, fetcher;
+      var ajaxRequest, fetcher, _ref;
       options = $.extend({}, defaults, options);
       ajaxRequest = null;
+      if ((_ref = options.remoteFilter) !== true && _ref !== false) {
+        options.remoteFilter = ($.type(data)) === 'string';
+      }
       fetcher = (function() {
         switch ($.type(data)) {
           case 'function':
@@ -544,7 +547,7 @@ Based on the 1.6er release dated in July, 2012
       */
 
       return this.each(function(element) {
-        var abortRequest, actualInputWrapper, addSelection, currentSelection, elementId, hiddenInput, i, input, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
+        var abortRequest, actualInputWrapper, addSelection, currentSelection, elementId, hiddenInput, i, input, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref1, _ref2;
         options.inputAttrs = $.extend(options.inputAttrs, {});
         input_focus = false;
         input = $(this);
@@ -649,9 +652,9 @@ Based on the 1.6er release dated in July, 2012
         }
         switch ($.type(options.preFill)) {
           case 'string':
-            _ref = options.preFill.split(',');
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              value = _ref[_i];
+            _ref1 = options.preFill.split(',');
+            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+              value = _ref1[_i];
               item = {};
               item["" + options.selectedValuesProp] = value;
               if (value !== '') {
@@ -666,9 +669,9 @@ Based on the 1.6er release dated in July, 2012
               if ($.isFunction(options.afterRequest)) {
                 options.preFill = options.afterRequest.call(this, options.preFill);
               }
-              _ref1 = options.preFill;
-              for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
-                item = _ref1[i];
+              _ref2 = options.preFill;
+              for (i = _j = 0, _len1 = _ref2.length; _j < _len1; i = ++_j) {
+                item = _ref2[i];
                 new_value = item[options.selectedValuesProp];
                 if (typeof new_value === 'undefined') {
                   new_value = '';
@@ -731,7 +734,7 @@ Based on the 1.6er release dated in July, 2012
           return fetcher(string, processData);
         };
         processData = function(data, query) {
-          var formatted, forward, matchCount, name, num, regx, resultsContainerVisible, str, text, this_data, _k, _l, _len2, _len3, _ref2;
+          var formatted, forward, matchCount, name, num, regx, resultsContainerVisible, str, text, this_data, _k, _l, _len2, _len3, _ref3;
           if (!options.matchCase) {
             query = query.toLowerCase();
           }
@@ -747,9 +750,9 @@ Based on the 1.6er release dated in July, 2012
               str = item.value;
             } else {
               str = '';
-              _ref2 = options.searchObjProps.split(',');
-              for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
-                name = _ref2[_l];
+              _ref3 = options.searchObjProps.split(',');
+              for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+                name = _ref3[_l];
                 str += "" + item[$.trim(name)] + " ";
               }
             }
@@ -757,7 +760,7 @@ Based on the 1.6er release dated in July, 2012
               if (!options.matchCase) {
                 str = str.toLowerCase();
               }
-              if (!options.searchActive || (str.indexOf(query) !== -1 && !currentSelection.exist(item[options.selectedValuesProp]))) {
+              if (!options.searchActive || ((str.indexOf(query) !== -1 && !options.remoteFilter) && !currentSelection.exist(item[options.selectedValuesProp]))) {
                 forward = true;
               }
             }
