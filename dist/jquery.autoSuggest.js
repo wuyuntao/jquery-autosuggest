@@ -481,15 +481,20 @@ Based on the 1.6er release dated in July, 2012
      * Defines whether the removing of a selection should be animated (using fadeOut)
     */
 
-    fadeOut: false
+    fadeOut: false,
+    /**
+     * Defines whether the server filter remote or not. If asuming so, this prevents the plugin to filter again.
+    */
+
+    remoteFilter: false
   };
 
   pluginMethods = {
     init: function(data, options) {
-      var ajaxRequest, fetcher, _ref;
+      var ajaxRequest, fetcher;
       options = $.extend({}, defaults, options);
       ajaxRequest = null;
-      if ((_ref = options.remoteFilter) !== true && _ref !== false) {
+      if (options.remoteFilter === 'auto') {
         options.remoteFilter = ($.type(data)) === 'string';
       }
       fetcher = (function() {
@@ -547,7 +552,7 @@ Based on the 1.6er release dated in July, 2012
       */
 
       return this.each(function(element) {
-        var abortRequest, actualInputWrapper, addSelection, currentSelection, elementId, hiddenInput, i, input, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref1, _ref2;
+        var abortRequest, actualInputWrapper, addSelection, currentSelection, elementId, hiddenInput, i, input, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
         options.inputAttrs = $.extend(options.inputAttrs, {});
         input_focus = false;
         input = $(this);
@@ -652,9 +657,9 @@ Based on the 1.6er release dated in July, 2012
         }
         switch ($.type(options.preFill)) {
           case 'string':
-            _ref1 = options.preFill.split(',');
-            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-              value = _ref1[_i];
+            _ref = options.preFill.split(',');
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              value = _ref[_i];
               item = {};
               item["" + options.selectedValuesProp] = value;
               if (value !== '') {
@@ -669,9 +674,9 @@ Based on the 1.6er release dated in July, 2012
               if ($.isFunction(options.afterRequest)) {
                 options.preFill = options.afterRequest.call(this, options.preFill);
               }
-              _ref2 = options.preFill;
-              for (i = _j = 0, _len1 = _ref2.length; _j < _len1; i = ++_j) {
-                item = _ref2[i];
+              _ref1 = options.preFill;
+              for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
+                item = _ref1[i];
                 new_value = item[options.selectedValuesProp];
                 if (typeof new_value === 'undefined') {
                   new_value = '';
@@ -734,7 +739,7 @@ Based on the 1.6er release dated in July, 2012
           return fetcher(string, processData);
         };
         processData = function(data, query) {
-          var formatted, forward, matchCount, name, num, regx, resultsContainerVisible, str, text, this_data, _k, _l, _len2, _len3, _ref3;
+          var formatted, forward, matchCount, name, num, regx, resultsContainerVisible, str, text, this_data, _k, _l, _len2, _len3, _ref2;
           if (!options.matchCase) {
             query = query.toLowerCase();
           }
@@ -750,9 +755,9 @@ Based on the 1.6er release dated in July, 2012
               str = item.value;
             } else {
               str = '';
-              _ref3 = options.searchObjProps.split(',');
-              for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
-                name = _ref3[_l];
+              _ref2 = options.searchObjProps.split(',');
+              for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
+                name = _ref2[_l];
                 str += "" + item[$.trim(name)] + " ";
               }
             }
@@ -760,7 +765,7 @@ Based on the 1.6er release dated in July, 2012
               if (!options.matchCase) {
                 str = str.toLowerCase();
               }
-              if (!options.searchActive || ((str.indexOf(query) !== -1 && !options.remoteFilter) && !currentSelection.exist(item[options.selectedValuesProp]))) {
+              if (!options.searchActive || ((str.indexOf(query) !== -1 || options.remoteFilter) && !currentSelection.exist(item[options.selectedValuesProp]))) {
                 forward = true;
               }
             }

@@ -134,6 +134,16 @@ If set to `true` this option will prevent bubbling events when the _escape key_ 
 
 Default: `false`
 
+#### searchActive (boolean)
+If set to `true` this option will prevent the plugin filters the retrieved data again regardless whether the item was already selected.
+
+Default: `false`
+
+#### remoteFilter (boolean/string)
+If set to `false` this option will prevent the plugin filters the retrieved data again. If set to `'auto'` the plugin will resolve this setting regarding the datasource is a server or not. The idea is that in case of a server side response the data are already filtered.
+
+Default: `true`
+
 ### Data
 
 #### selectedItemProp (string)
