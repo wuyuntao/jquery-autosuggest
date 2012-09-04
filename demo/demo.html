@@ -88,7 +88,7 @@
             };
 
             (function () {
-                var container = builder('Demo with static data and native Placeholder.', 'name', 'Name');
+                var container = builder('Demo with static data, native Placeholder and showResultListWhenNoMatch.', 'name', 'Name');
                 var form = container.find('form');
                 var input = container.find('input[type=text]');
                 var output = container.find('pre');
@@ -106,7 +106,9 @@
                     searchObjProps : "name",
                     fadeOut : 'slow',
                     usePlaceholder : true,
-                    startText : ''
+                    startText : '',
+                    emptyText : 'No results for >>{0}<< found.',
+                    showResultListWhenNoMatch : true
                 };
                 input.autoSuggest(data, options);
 

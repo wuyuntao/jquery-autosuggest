@@ -167,10 +167,15 @@ Note: You *must* setup your `preFill` object in that format. An example value ca
 
 ### UI
 
-#### emptyText (string
+#### emptyText (string)
 Specify text to display when there are no search results.
 
 Default: `'No Results'`
+
+#### emptyTextPlaceholder (string)
+RegEx to replace values in emptyText values with query text. If you search for `Hans` and there is no result and `showResultListWhenNoMatch` is true, then, a list with one, unselectable entry is shown containing the `emptyText`, which occurrences of `{0}` are replaced by the query String.
+
+Default: `/\{\d+\}/`
 
 #### limitText (string)
 Specify text to display when the number of selections has reached it's limit.

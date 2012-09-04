@@ -171,6 +171,12 @@ defaults =
    * @type string
   ###
   emptyText : 'No Results Found'
+  
+  ###*
+   * RegEx to replace values in emptyText values with query text
+   * @type regex
+  ###
+  emptyTextPlaceholder : /\{\d+\}/
 
   ###*
    * Defines text shown when the limit of selections was exceeded.
@@ -705,7 +711,10 @@ pluginMethods =
           num += 1
         selectionsContainer.removeClass 'loading'
         if matchCount <= 0
-          resultsList.html "<li class=\"as-message\">#{options.emptyText}</li>"
+          text = options.emptyText
+          if $.type(options.emptyTextPlaceholder) is 'regexp'
+            text = text.replace options.emptyTextPlaceholder, query
+          resultsList.html "<li class=\"as-message\">#{text}</li>"
         resultsList.css width : selectionsContainer.outerWidth()
         resultsContainerVisible = matchCount > 0 || options.showResultListWhenNoMatch
         if resultsContainerVisible
