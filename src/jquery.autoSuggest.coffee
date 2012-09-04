@@ -58,7 +58,7 @@ class ConfigResolver
 ### The SelectionControl maintains and manage any selections.###
 class SelectionHolder
 
-  _ : undefined # intellij formatting workwround
+  _ : undefined # intellij formatting workaround
 
   hiddenField : null
   items : null
@@ -479,8 +479,8 @@ pluginMethods =
       lastKeyPressCode = null
       num_count = 0
 
-      ###*
-       * This api will be exposed to the "start" callback.
+      ###
+        This api will be exposed to the "start" callback.
       ###
       publicApi =
         add : (data) ->
