@@ -58,7 +58,7 @@ class ConfigResolver
 ### The SelectionControl maintains and manage any selections.###
 class SelectionHolder
 
-  _ : undefined # intellij formatting workwround
+  _ : undefined # intellij formatting workaround
 
   hiddenField : null
   items : null
@@ -479,8 +479,8 @@ pluginMethods =
       lastKeyPressCode = null
       num_count = 0
 
-      ###*
-       * This api will be exposed to the "start" callback.
+      ###
+        This api will be exposed to the "start" callback.
       ###
       publicApi =
         add : (data) ->
@@ -507,13 +507,14 @@ pluginMethods =
       addSelection = (data, num) ->
         currentSelection.add data[options.selectedValuesProp]
         item = $ "<li class=\"as-selection-item\" id=\"as-selection-#{num}\" data-value=\"#{Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))}\"></li>"
-        item.click ->
+        item.on
+          'click' : ->
           element = $ @
           Events.onSelectionClick @, element, options, data[options.selectedValuesProp], currentSelection.getAll()
           selectionsContainer.children().removeClass 'selected'
           element.addClass 'selected'
           return
-        item.mousedown ->
+          'mousedown' : ->
           input_focus = false
           return
         closeElement = $ "<a class=\"as-close\">&times;</a>"
@@ -524,10 +525,8 @@ pluginMethods =
           input.focus()
           return false
         if typeof data[options.selectedItemProp] isnt 'string'
-          actualInputWrapper.before
           Events.onSelectionAdd @, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll()
         else
-          actualInputWrapper.before
           Events.onSelectionAdd @, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll()
 
         return actualInputWrapper.prev()
@@ -565,11 +564,12 @@ pluginMethods =
         selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
       # Append input to DOM.
       input.after hiddenInput
-      selectionsContainer.click ->
+      selectionsContainer.on
+        'click' : ->
         input_focus = true
         input.focus()
         return
-      selectionsContainer.mousedown ->
+        'mousedown' : ->
         selectionsContainer.children().removeClass 'selected'
         input_focus = false
         return
@@ -712,7 +712,8 @@ pluginMethods =
         ajaxRequest = null
         return
 
-      input.focus ->
+      input.on
+        'focus' : -> # On input focus
         element = $ @
         if !options.usePlaceholder && element.val() is options.startText && currentSelection.isEmpty()
           element.val ''
@@ -736,7 +737,7 @@ pluginMethods =
           processRequest element.val()
         return true
 
-      input.blur ->
+        'blur' : -> # On input blur
         element = $ @
         if !options.usePlaceholder && element.val() is '' && currentSelection.isEmpty() && prefilledValue is '' && options.minChars > 0
           element.val options.startText
@@ -745,7 +746,8 @@ pluginMethods =
           resultsContainer.hide()
         if interval then clearInterval interval
         return
-      input.keydown (event) ->
+          
+        'keydown' : (event) -> # On input keydown
         ### track the last key pressed ###
         lastKeyPressCode = event.keyCode
         first_focus = false
