@@ -1,0 +1,293 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>jQuery AutoSuggest Demo</title>
+    <link rel="stylesheet" href="../dist/jquery.autoSuggest.css">
+    <script src="../libs/jquery-loader.js"></script>
+    <script src="../dist/jquery.autoSuggest.js"></script>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        section {
+            width: 500px;
+            margin: auto;
+            margin-top: 60px;
+        }
+
+        form fieldset {
+        }
+
+        form fieldset input {
+            width: 300px;
+        }
+
+        .user-list .as-results .user .image {
+            width: 28px;
+            line-height: 16px;
+            height: 16px;
+            display: inline-block;
+        }
+
+        .user-list .as-results .user .image img {
+            border-radius: 4px;
+        }
+
+        .user-list .as-results .user .email {
+            margin-left: 20px;
+            color: #999999;
+        }
+
+        .user-list .as-results .user .email:before {
+            content: '<';
+        }
+
+        .user-list .as-results .user .email:after {
+            content: '>';
+        }
+
+        .user-list .as-selections .as-selection-item {
+            padding-left: 42px;
+        }
+
+        .user-list .as-selections .user {
+            width: 150px;
+        }
+
+        .user-list .as-selections .user .image {
+            width: 28px;
+            line-height: 16px;
+            height: 16px;
+            display: block;
+            float: left;
+            margin-left: -30px;
+        }
+
+        .user-list .as-selections .user .image img {
+            border-radius: 4px;
+        }
+
+    </style>
+    <script>
+        $(document).ready(function () {
+            // Build a new fieldset/form container.
+            var builder = function (title, name, label) {
+                var element = $('#template').clone();
+                var id = 'random' + Math.round(10000 * Math.random());
+                element.attr('id', 'container' + id).css('display', 'block');
+                element.find('h1').html(title);
+                element.find('label').html(label + ':').attr('for', id);
+                element.find('input').attr('name', name).attr('id', id);
+                $(document.body).append(element);
+                return element;
+            };
+
+            (function () {
+                var container = builder('Demo with static data, native Placeholder and showResultListWhenNoMatch.', 'name', 'Name');
+                var form = container.find('form');
+                var input = container.find('input[type=text]');
+                var output = container.find('pre');
+
+                var data = [
+                    {value : "21", name : "Mick Jagger"},
+                    {value : "43", name : "Johnny Storm"},
+                    {value : "46", name : "Richard Hatch"},
+                    {value : "54", name : "Kelly Slater"},
+                    {value : "55", name : "Rudy Hamilton"},
+                    {value : "79", name : "Michael Jordan"}
+                ];
+                var options = {
+                    selectedItemProp : "name",
+                    searchObjProps : "name",
+                    fadeOut : 'slow',
+                    usePlaceholder : true,
+                    startText : '',
+                    emptyText : 'No results for >>{0}<< found.',
+                    showResultListWhenNoMatch : true
+                };
+                input.autoSuggest(data, options);
+
+                form.submit(function (event) {
+                    event.preventDefault();
+                    output.text('Selected: ' + input.parent('.as-original').find(':hidden').val());
+                });
+            }());
+
+            (function () {
+                var container = builder('Demo with static data + renderer + fake placeholder.', 'name', 'Name');
+                container.addClass('user-list');
+                var form = container.find('form');
+                var input = container.find('input[type=text]');
+                var output = container.find('pre');
+
+                var data = [
+                    {
+                        value : "21",
+                        name : "Mick Jagger",
+                        email : 'mick.jagger@example.org',
+                        image : 'http://upload.wikimedia.org/wikipedia/commons/6/68/Mick_Jagger_in_red.jpg',
+                        imageCopyright : 'http://en.wikipedia.org/wiki/File:Mick_Jagger_in_red.jpg'
+                    },
+                    {
+                        value : "43",
+                        name : "Johnny Storm",
+                        email : 'johnny.storm@example.org',
+                        image : 'http://upload.wikimedia.org/wikipedia/en/d/d8/Human_Torch.png',
+                        imageCopyright : 'http://en.wikipedia.org/wiki/File:Human_Torch.png'
+                    },
+                    {
+                        value : "46",
+                        name : "Richard Hatch",
+                        email : 'richard.hatch@example.org',
+                        image : 'http://upload.wikimedia.org/wikipedia/commons/a/a1/Richard_Hatch_gatecon.jpg',
+                        imageCopyright : 'http://de.wikipedia.org/w/index.php?title=Datei:Richard_Hatch_gatecon.jpg&filetimestamp=20060629041830'
+                    },
+                    {
+                        value : "79",
+                        name : "Michael Jordan",
+                        email : 'michael.jordan@example.org',
+                        image : 'http://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Jordan_Lipofsky.jpg/200px-Jordan_Lipofsky.jpg',
+                        imageCopyright : 'http://en.wikipedia.org/wiki/File:Jordan_Lipofsky.jpg'}
+                ];
+                var i;
+                for (i = 0; i < data.length; i++) {
+                    var displayData = data[i];
+                    var user = $('<div class="user"><span class="image"/><span class="name"/></div>');
+                    user.find('span.image').append($('<img/>').attr({src : displayData.image, height : '18px', width : '18px'}));
+                    user.find('span.name').html(displayData.name);
+                    user.attr('tooltip', displayData.email);
+                    displayData.display = user;
+                }
+
+                var options = {
+
+                    selectedItemProp : 'display',
+
+                    searchObjProps : 'name',
+
+                    formatList : function (displayData, element) {
+                        var user = $('<div class="user"><span class="image"/><span class="name"/><span class="email"/></div>');
+                        user.find('span.image').append($('<img/>').attr({src : displayData.image, height : '18px', width : '18px'}));
+                        user.find('span.name').html(displayData.name);
+                        user.find('span.email').html(displayData.email);
+                        element.append(user);
+                        return element;
+                    },
+                    preFill : [$.extend(true, {}, data[1])],
+                    usePlaceholder : false,
+                    startText : 'Enter name ...'
+
+                };
+                input.removeAttr('placeholder');
+                input.autoSuggest(data, options);
+
+                form.submit(function (event) {
+                    event.preventDefault();
+                    output.text('Selected: ' + input.parent('.as-original').find(':hidden').val());
+                });
+            }());
+
+            (function () {
+                var container = builder('Demo with static data + renderer (canGenerateNewSelections = false).', 'name', 'Name');
+                container.addClass('user-list');
+                var form = container.find('form');
+                var input = container.find('input[type=text]');
+                var output = container.find('pre');
+
+                var data = [
+                    {
+                        value : "21",
+                        name : "Mick Jagger",
+                        email : 'mick.jagger@example.org',
+                        image : 'http://upload.wikimedia.org/wikipedia/commons/6/68/Mick_Jagger_in_red.jpg',
+                        imageCopyright : 'http://en.wikipedia.org/wiki/File:Mick_Jagger_in_red.jpg'
+                    },
+                    {
+                        value : "43",
+                        name : "Johnny Storm",
+                        email : 'johnny.storm@example.org',
+                        image : 'http://upload.wikimedia.org/wikipedia/en/d/d8/Human_Torch.png',
+                        imageCopyright : 'http://en.wikipedia.org/wiki/File:Human_Torch.png'
+                    },
+                    {
+                        value : "46",
+                        name : "Richard Hatch",
+                        email : 'richard.hatch@example.org',
+                        image : 'http://upload.wikimedia.org/wikipedia/commons/a/a1/Richard_Hatch_gatecon.jpg',
+                        imageCopyright : 'http://de.wikipedia.org/w/index.php?title=Datei:Richard_Hatch_gatecon.jpg&filetimestamp=20060629041830'
+                    },
+                    {
+                        value : "79",
+                        name : "Michael Jordan",
+                        email : 'michael.jordan@example.org',
+                        image : 'http://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Jordan_Lipofsky.jpg/200px-Jordan_Lipofsky.jpg',
+                        imageCopyright : 'http://en.wikipedia.org/wiki/File:Jordan_Lipofsky.jpg'}
+                ];
+                var i;
+                for (i = 0; i < data.length; i++) {
+                    var displayData = data[i];
+                    var user = $('<div class="user"><span class="image"/><span class="name"/></div>');
+                    user.find('span.image').append($('<img/>').attr({src : displayData.image, height : '18px', width : '18px'}));
+                    user.find('span.name').html(displayData.name);
+                    user.attr('tooltip', displayData.email);
+                    displayData.display = user;
+                }
+
+                var options = {
+
+                    selectedItemProp : 'display',
+
+                    searchObjProps : 'name',
+
+                    formatList : function (displayData, element) {
+                        var user = $('<div class="user"><span class="image"/><span class="name"/><span class="email"/></div>');
+                        user.find('span.image').append($('<img/>').attr({src : displayData.image, height : '18px', width : '18px'}));
+                        user.find('span.name').html(displayData.name);
+                        user.find('span.email').html(displayData.email);
+                        element.append(user);
+                        return element;
+                    },
+                    preFill : [$.extend(true, {}, data[1])],
+
+                    canGenerateNewSelections : false
+
+                };
+                input.autoSuggest(data, options);
+
+                form.submit(function (event) {
+                    event.preventDefault();
+                    output.text('Selected: ' + input.parent('.as-original').find(':hidden').val());
+                });
+            }());
+        });
+    </script>
+</head>
+<body>
+
+<section id="template" style="display:none;">
+    <form>
+        <h1>Title</h1>
+        <fieldset>
+            <legend>Form</legend>
+            <p>
+                <label for="person">Person:</label>
+                <input id="person" name="person" type="text" placeholder="Enter something ...">
+            </p>
+            <p>
+                <button type="submit">Submit</button>
+            </p>
+        </fieldset>
+        <fieldset>
+            <legend>Output</legend>
+            <pre></pre>
+        </fieldset>
+    </form>
+</section>
+
+</body>
+</html>
