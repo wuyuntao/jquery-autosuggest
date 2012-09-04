@@ -25,7 +25,7 @@ class Utils
   # Returns a string where the html special chars are escaped correctly.
   @escapeHtml : (text) -> $('<span/>').text(text).html()
   
-  # TODO sja toggle
+  # Move inputs' placeholder attribute to disabled-placeholder and vice versa
   @switchPlaceholder : (input, enable) ->
     targets = ['placeholder', 'disabled-placeholder']
     if enable
