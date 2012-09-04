@@ -839,7 +839,7 @@ Based on the 1.6er release dated in July, 2012
           ajaxRequest = null;
         };
         return input.on({
-          'focus': function() {
+          focus: function() {
             element = $(this);
             if (!options.usePlaceholder && element.val() === options.startText && currentSelection.isEmpty()) {
               element.val('');
@@ -871,7 +871,7 @@ Based on the 1.6er release dated in July, 2012
             }
             return true;
           },
-          'blur': function() {
+          blur: function() {
             element = $(this);
             if (!options.usePlaceholder && element.val() === '' && currentSelection.isEmpty() && prefilledValue === '' && options.minChars > 0) {
               element.val(options.startText);
@@ -883,7 +883,7 @@ Based on the 1.6er release dated in July, 2012
               clearInterval(interval);
             }
           },
-          'keydown': function(event) {
+          keydown: function(event) {
             /* track the last key pressed
             */
 
