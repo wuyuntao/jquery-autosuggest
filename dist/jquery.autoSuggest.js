@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.0.0 - 2012-09-03
+/*! jQuery AutoSuggest - v2.0.0 - 2012-09-04
 * http://hlsolutions.github.com/jquery-autosuggest
 * Copyright (c) 2012 Jan Philipp; Licensed MIT, GPL */
 
@@ -552,8 +552,8 @@ Based on the 1.6er release dated in July, 2012
         lastKeyWasTab = false;
         lastKeyPressCode = null;
         num_count = 0;
-        /**
-         * This api will be exposed to the "start" callback.
+        /*
+                This api will be exposed to the "start" callback.
         */
 
         publicApi = {
@@ -586,14 +586,16 @@ Based on the 1.6er release dated in July, 2012
           var closeElement, item;
           currentSelection.add(data[options.selectedValuesProp]);
           item = $("<li class=\"as-selection-item\" id=\"as-selection-" + num + "\" data-value=\"" + (Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))) + "\"></li>");
-          item.click(function() {
-            element = $(this);
-            Events.onSelectionClick(this, element, options, data[options.selectedValuesProp], currentSelection.getAll());
-            selectionsContainer.children().removeClass('selected');
-            element.addClass('selected');
-          });
-          item.mousedown(function() {
-            input_focus = false;
+          item.on({
+            'click': function() {
+              element = $(this);
+              Events.onSelectionClick(this, element, options, data[options.selectedValuesProp], currentSelection.getAll());
+              selectionsContainer.children().removeClass('selected');
+              element.addClass('selected');
+            },
+            'mousedown': function() {
+              input_focus = false;
+            }
           });
           closeElement = $("<a class=\"as-close\">&times;</a>");
           closeElement.click(function() {
@@ -604,10 +606,8 @@ Based on the 1.6er release dated in July, 2012
             return false;
           });
           if (typeof data[options.selectedItemProp] !== 'string') {
-            actualInputWrapper.before;
             Events.onSelectionAdd(this, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll());
           } else {
-            actualInputWrapper.before;
             Events.onSelectionAdd(this, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll());
           }
           return actualInputWrapper.prev();
@@ -657,13 +657,15 @@ Based on the 1.6er release dated in July, 2012
           selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected');
         }
         input.after(hiddenInput);
-        selectionsContainer.click(function() {
-          input_focus = true;
-          input.focus();
-        });
-        selectionsContainer.mousedown(function() {
-          selectionsContainer.children().removeClass('selected');
-          input_focus = false;
+        selectionsContainer.on({
+          'click': function() {
+            input_focus = true;
+            input.focus();
+          },
+          'mousedown': function() {
+            selectionsContainer.children().removeClass('selected');
+            input_focus = false;
+          }
         });
         selectionsContainer.after(resultsContainer);
         keyChange = function() {
@@ -836,156 +838,158 @@ Based on the 1.6er release dated in July, 2012
           ajaxRequest.abort();
           ajaxRequest = null;
         };
-        input.focus(function() {
-          element = $(this);
-          if (!options.usePlaceholder && element.val() === options.startText && currentSelection.isEmpty()) {
-            element.val('');
-          } else if (input_focus) {
-            selectionsContainer.find('li.as-selections-item').removeClass('blur');
-            if (element.val() !== '') {
-              resultsList.css({
-                width: selectionsContainer.outerWidth()
-              });
-              resultsContainer.show();
-            }
-          }
-          if (interval) {
-            clearInterval(interval);
-          }
-          interval = setInterval((function() {
-            if (options.showResultList) {
-              if (options.selectionLimit && selectionsContainer.find('li.as-selection-item').length >= options.selectionLimit) {
-                resultsList.html("<li class=\"as-message\">" + options.limitText + "</li>");
+        return input.on({
+          'focus': function() {
+            element = $(this);
+            if (!options.usePlaceholder && element.val() === options.startText && currentSelection.isEmpty()) {
+              element.val('');
+            } else if (input_focus) {
+              selectionsContainer.find('li.as-selections-item').removeClass('blur');
+              if (element.val() !== '') {
+                resultsList.css({
+                  width: selectionsContainer.outerWidth()
+                });
                 resultsContainer.show();
-              } else {
-                keyChange();
               }
             }
-          }), options.keyDelay);
-          input_focus = true;
-          if (options.minChars === 0) {
-            processRequest(element.val());
-          }
-          return true;
-        });
-        input.blur(function() {
-          element = $(this);
-          if (!options.usePlaceholder && element.val() === '' && currentSelection.isEmpty() && prefilledValue === '' && options.minChars > 0) {
-            element.val(options.startText);
-          } else if (input_focus) {
-            selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected');
-            resultsContainer.hide();
-          }
-          if (interval) {
-            clearInterval(interval);
-          }
-        });
-        return input.keydown(function(event) {
-          /* track the last key pressed
-          */
-
-          var active, first_focus, i_input, n_data, _selection, _selections;
-          lastKeyPressCode = event.keyCode;
-          first_focus = false;
-          switch (event.keyCode) {
-            case 38:
-              event.preventDefault();
-              moveResultSelection('up');
-              break;
-            case 40:
-              event.preventDefault();
-              if ($(":visible", resultsContainer).length > 0) {
-                moveResultSelection('down');
-              } else {
-                if (timeout) {
-                  clearTimeout(timeout);
-                }
-                timeout = setTimeout((function() {
-                  keyChange();
-                }), options.keyDelay);
-              }
-              break;
-            case 8:
-              if (input.val() === '') {
-                _selections = currentSelection.getAll();
-                _selection = null;
-                if (_selections.length) {
-                  _selection = _selections[_selections.length - 1];
+            if (interval) {
+              clearInterval(interval);
+            }
+            interval = setInterval((function() {
+              if (options.showResultList) {
+                if (options.selectionLimit && selectionsContainer.find('li.as-selection-item').length >= options.selectionLimit) {
+                  resultsList.html("<li class=\"as-message\">" + options.limitText + "</li>");
+                  resultsContainer.show();
                 } else {
+                  keyChange();
+                }
+              }
+            }), options.keyDelay);
+            input_focus = true;
+            if (options.minChars === 0) {
+              processRequest(element.val());
+            }
+            return true;
+          },
+          'blur': function() {
+            element = $(this);
+            if (!options.usePlaceholder && element.val() === '' && currentSelection.isEmpty() && prefilledValue === '' && options.minChars > 0) {
+              element.val(options.startText);
+            } else if (input_focus) {
+              selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected');
+              resultsContainer.hide();
+            }
+            if (interval) {
+              clearInterval(interval);
+            }
+          },
+          'keydown': function(event) {
+            /* track the last key pressed
+            */
+
+            var active, first_focus, i_input, n_data, _selection, _selections;
+            lastKeyPressCode = event.keyCode;
+            first_focus = false;
+            switch (event.keyCode) {
+              case 38:
+                event.preventDefault();
+                moveResultSelection('up');
+                break;
+              case 40:
+                event.preventDefault();
+                if ($(":visible", resultsContainer).length > 0) {
+                  moveResultSelection('down');
+                } else {
+                  if (timeout) {
+                    clearTimeout(timeout);
+                  }
+                  timeout = setTimeout((function() {
+                    keyChange();
+                  }), options.keyDelay);
+                }
+                break;
+              case 8:
+                if (input.val() === '') {
+                  _selections = currentSelection.getAll();
                   _selection = null;
+                  if (_selections.length) {
+                    _selection = _selections[_selections.length - 1];
+                  } else {
+                    _selection = null;
+                  }
+                  selectionsContainer.children().not(actualInputWrapper.prev()).removeClass('selected');
+                  if (actualInputWrapper.prev().hasClass('selected')) {
+                    currentSelection.remove(_selection);
+                    Events.onSelectionRemove(this, actualInputWrapper.prev(), options, null, currentSelection.getAll());
+                  } else {
+                    Events.onSelectionClick(this, actualInputWrapper.prev(), options, null, currentSelection.getAll());
+                    actualInputWrapper.prev().addClass('selected');
+                  }
                 }
-                selectionsContainer.children().not(actualInputWrapper.prev()).removeClass('selected');
-                if (actualInputWrapper.prev().hasClass('selected')) {
-                  currentSelection.remove(_selection);
-                  Events.onSelectionRemove(this, actualInputWrapper.prev(), options, null, currentSelection.getAll());
-                } else {
-                  Events.onSelectionClick(this, actualInputWrapper.prev(), options, null, currentSelection.getAll());
-                  actualInputWrapper.prev().addClass('selected');
-                }
-              }
-              if (input.val().length === 1) {
-                resultsContainer.hide();
-                prev = '';
-                abortRequest();
-              }
-              if (resultsContainer.find(':visible').length) {
-                if (timeout) {
-                  clearTimeout(timeout);
-                }
-                timeout = setTimeout((function() {
-                  keyChange();
-                }), options.keyDelay);
-              }
-              break;
-            case 9:
-            case 188:
-              active = resultsContainer.find('li.active:first');
-              if (options.canGenerateNewSelections) {
-                lastKeyWasTab = true;
-                i_input = input.val().replace(/(,)/g, '');
-                /* Generate a new bubble with text when no suggestion selected
-                */
-
-                if (i_input !== '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length === 0) {
-                  event.preventDefault();
-                  n_data = {};
-                  n_data["" + options.selectedItemProp] = i_input;
-                  n_data["" + options.selectedValuesProp] = i_input;
-                  addSelection(n_data, "00" + (selectionsContainer.find('li').length + 1));
-                  input.val('');
-                  /* Cancel previous ajaxRequest when new tag is added
-                  */
-
+                if (input.val().length === 1) {
+                  resultsContainer.hide();
+                  prev = '';
                   abortRequest();
                 }
-              }
-              if (active.length) {
+                if (resultsContainer.find(':visible').length) {
+                  if (timeout) {
+                    clearTimeout(timeout);
+                  }
+                  timeout = setTimeout((function() {
+                    keyChange();
+                  }), options.keyDelay);
+                }
+                break;
+              case 9:
+              case 188:
+                active = resultsContainer.find('li.active:first');
+                if (options.canGenerateNewSelections) {
+                  lastKeyWasTab = true;
+                  i_input = input.val().replace(/(,)/g, '');
+                  /* Generate a new bubble with text when no suggestion selected
+                  */
+
+                  if (i_input !== '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length === 0) {
+                    event.preventDefault();
+                    n_data = {};
+                    n_data["" + options.selectedItemProp] = i_input;
+                    n_data["" + options.selectedValuesProp] = i_input;
+                    addSelection(n_data, "00" + (selectionsContainer.find('li').length + 1));
+                    input.val('');
+                    /* Cancel previous ajaxRequest when new tag is added
+                    */
+
+                    abortRequest();
+                  }
+                }
+                if (active.length) {
+                  lastKeyWasTab = false;
+                  active.click();
+                  resultsContainer.hide();
+                  event.preventDefault();
+                }
+                break;
+              case 13:
                 lastKeyWasTab = false;
-                active.click();
+                active = resultsContainer.find('li.active:first');
+                if (active.length) {
+                  active.click();
+                  resultsContainer.hide();
+                }
+                if (options.neverSubmit || active.length) {
+                  event.preventDefault();
+                }
+                break;
+              case 27:
+                if (options.preventPropagationOnEscape && resultsContainer.find(':visible').length) {
+                  event.stopPropagation();
+                }
+                break;
+              case 16:
+              case 20:
+                abortRequest();
                 resultsContainer.hide();
-                event.preventDefault();
-              }
-              break;
-            case 13:
-              lastKeyWasTab = false;
-              active = resultsContainer.find('li.active:first');
-              if (active.length) {
-                active.click();
-                resultsContainer.hide();
-              }
-              if (options.neverSubmit || active.length) {
-                event.preventDefault();
-              }
-              break;
-            case 27:
-              if (options.preventPropagationOnEscape && resultsContainer.find(':visible').length) {
-                event.stopPropagation();
-              }
-              break;
-            case 16:
-            case 20:
-              abortRequest();
-              resultsContainer.hide();
+            }
           }
         });
       });

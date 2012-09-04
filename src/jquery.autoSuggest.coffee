@@ -509,14 +509,14 @@ pluginMethods =
         item = $ "<li class=\"as-selection-item\" id=\"as-selection-#{num}\" data-value=\"#{Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))}\"></li>"
         item.on
           'click' : ->
-          element = $ @
-          Events.onSelectionClick @, element, options, data[options.selectedValuesProp], currentSelection.getAll()
-          selectionsContainer.children().removeClass 'selected'
-          element.addClass 'selected'
-          return
+            element = $ @
+            Events.onSelectionClick @, element, options, data[options.selectedValuesProp], currentSelection.getAll()
+            selectionsContainer.children().removeClass 'selected'
+            element.addClass 'selected'
+            return
           'mousedown' : ->
-          input_focus = false
-          return
+            input_focus = false
+            return
         closeElement = $ "<a class=\"as-close\">&times;</a>"
         closeElement.click ->
           currentSelection.remove data[options.selectedValuesProp]
@@ -566,13 +566,13 @@ pluginMethods =
       input.after hiddenInput
       selectionsContainer.on
         'click' : ->
-        input_focus = true
-        input.focus()
-        return
+          input_focus = true
+          input.focus()
+          return
         'mousedown' : ->
-        selectionsContainer.children().removeClass 'selected'
-        input_focus = false
-        return
+          selectionsContainer.children().removeClass 'selected'
+          input_focus = false
+          return
       # Append selectionsContainer to DOM.
       selectionsContainer.after(resultsContainer)
 
@@ -713,119 +713,119 @@ pluginMethods =
         return
 
       input.on
-        'focus' : -> # On input focus
-        element = $ @
-        if !options.usePlaceholder && element.val() is options.startText && currentSelection.isEmpty()
-          element.val ''
-        else if input_focus
-          selectionsContainer.find('li.as-selections-item').removeClass('blur')
-          unless element.val() is ''
-            resultsList.css width : selectionsContainer.outerWidth()
-            resultsContainer.show()
-        if interval then clearInterval interval
-        interval = setInterval (->
-          if options.showResultList
-            if options.selectionLimit && selectionsContainer.find('li.as-selection-item').length >= options.selectionLimit
-              resultsList.html "<li class=\"as-message\">#{options.limitText}</li>"
+        focus : -> # On input focus
+          element = $ @
+          if !options.usePlaceholder && element.val() is options.startText && currentSelection.isEmpty()
+            element.val ''
+          else if input_focus
+            selectionsContainer.find('li.as-selections-item').removeClass('blur')
+            unless element.val() is ''
+              resultsList.css width : selectionsContainer.outerWidth()
               resultsContainer.show()
-            else
-              keyChange()
-          return
-        ), options.keyDelay
-        input_focus = true
-        if options.minChars is 0
-          processRequest element.val()
-        return true
+          if interval then clearInterval interval
+          interval = setInterval (->
+            if options.showResultList
+              if options.selectionLimit && selectionsContainer.find('li.as-selection-item').length >= options.selectionLimit
+                resultsList.html "<li class=\"as-message\">#{options.limitText}</li>"
+                resultsContainer.show()
+              else
+                keyChange()
+            return
+          ), options.keyDelay
+          input_focus = true
+          if options.minChars is 0
+            processRequest element.val()
+          return true
 
-        'blur' : -> # On input blur
-        element = $ @
-        if !options.usePlaceholder && element.val() is '' && currentSelection.isEmpty() && prefilledValue is '' && options.minChars > 0
-          element.val options.startText
-        else if input_focus
-          selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
-          resultsContainer.hide()
-        if interval then clearInterval interval
-        return
-          
-        'keydown' : (event) -> # On input keydown
-        ### track the last key pressed ###
-        lastKeyPressCode = event.keyCode
-        first_focus = false
-        switch event.keyCode
-          when 38 # up key
-            event.preventDefault()
-            moveResultSelection 'up'
-          when 40 # down key
-            event.preventDefault()
-            if $(":visible", resultsContainer).length > 0
-              moveResultSelection 'down'
-            else
-              if timeout then clearTimeout timeout
-              timeout = setTimeout (->
-                keyChange()
-                return
-              ), options.keyDelay
-          when 8 # delete key
-            if input.val() is ''
-              _selections = currentSelection.getAll()
-              _selection = null
-              if _selections.length
-                _selection = _selections[_selections.length - 1]
-              else
-                _selection = null
-              selectionsContainer.children().not(actualInputWrapper.prev()).removeClass 'selected'
-              if actualInputWrapper.prev().hasClass 'selected'
-                currentSelection.remove _selection
-                Events.onSelectionRemove @, actualInputWrapper.prev(), options, null, currentSelection.getAll()
-              else
-                Events.onSelectionClick @, actualInputWrapper.prev(), options, null, currentSelection.getAll()
-                actualInputWrapper.prev().addClass 'selected'
-            if input.val().length is 1
-              resultsContainer.hide()
-              prev = ''
-              abortRequest()
-            if resultsContainer.find(':visible').length
-              if timeout then clearTimeout timeout
-              timeout = setTimeout (->
-                keyChange()
-                return
-              ), options.keyDelay
-          when 9, 188 # tab, comma
-            active = resultsContainer.find('li.active:first')
-            if options.canGenerateNewSelections
-              lastKeyWasTab = true
-              # remove all comma
-              i_input = input.val().replace /(,)/g, ''
-              ### Generate a new bubble with text when no suggestion selected ###
-              if i_input isnt '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length is 0
-                event.preventDefault()
-                n_data = {}
-                n_data["#{options.selectedItemProp}"] = i_input
-                n_data["#{options.selectedValuesProp}"] = i_input
-                addSelection n_data, "00#{selectionsContainer.find('li').length + 1}"
-                input.val ''
-                ### Cancel previous ajaxRequest when new tag is added ###
-                abortRequest()
-            if active.length
-              lastKeyWasTab = false
-              active.click()
-              resultsContainer.hide()
-              event.preventDefault()
-          when 13 # return
-            lastKeyWasTab = false
-            active = resultsContainer.find('li.active:first')
-            if active.length
-              active.click()
-              resultsContainer.hide()
-            if options.neverSubmit || active.length
-              event.preventDefault()
-          when 27 # esc
-            if options.preventPropagationOnEscape && resultsContainer.find(':visible').length
-              event.stopPropagation()
-          when 16, 20 # shift, capslock
-            abortRequest()
+        blur : -> # On input blur
+          element = $ @
+          if !options.usePlaceholder && element.val() is '' && currentSelection.isEmpty() && prefilledValue is '' && options.minChars > 0
+            element.val options.startText
+          else if input_focus
+            selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
             resultsContainer.hide()
-        return
+          if interval then clearInterval interval
+          return
+          
+        keydown : (event) -> # On input keydown
+          ### track the last key pressed ###
+          lastKeyPressCode = event.keyCode
+          first_focus = false
+          switch event.keyCode
+            when 38 # up key
+              event.preventDefault()
+              moveResultSelection 'up'
+            when 40 # down key
+              event.preventDefault()
+              if $(":visible", resultsContainer).length > 0
+                moveResultSelection 'down'
+              else
+                if timeout then clearTimeout timeout
+                timeout = setTimeout (->
+                  keyChange()
+                  return
+                ), options.keyDelay
+            when 8 # delete key
+              if input.val() is ''
+                _selections = currentSelection.getAll()
+                _selection = null
+                if _selections.length
+                  _selection = _selections[_selections.length - 1]
+                else
+                  _selection = null
+                selectionsContainer.children().not(actualInputWrapper.prev()).removeClass 'selected'
+                if actualInputWrapper.prev().hasClass 'selected'
+                  currentSelection.remove _selection
+                  Events.onSelectionRemove @, actualInputWrapper.prev(), options, null, currentSelection.getAll()
+                else
+                  Events.onSelectionClick @, actualInputWrapper.prev(), options, null, currentSelection.getAll()
+                  actualInputWrapper.prev().addClass 'selected'
+              if input.val().length is 1
+                resultsContainer.hide()
+                prev = ''
+                abortRequest()
+              if resultsContainer.find(':visible').length
+                if timeout then clearTimeout timeout
+                timeout = setTimeout (->
+                  keyChange()
+                  return
+                ), options.keyDelay
+            when 9, 188 # tab, comma
+              active = resultsContainer.find('li.active:first')
+              if options.canGenerateNewSelections
+                lastKeyWasTab = true
+                # remove all comma
+                i_input = input.val().replace /(,)/g, ''
+                ### Generate a new bubble with text when no suggestion selected ###
+                if i_input isnt '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length is 0
+                  event.preventDefault()
+                  n_data = {}
+                  n_data["#{options.selectedItemProp}"] = i_input
+                  n_data["#{options.selectedValuesProp}"] = i_input
+                  addSelection n_data, "00#{selectionsContainer.find('li').length + 1}"
+                  input.val ''
+                  ### Cancel previous ajaxRequest when new tag is added ###
+                  abortRequest()
+              if active.length
+                lastKeyWasTab = false
+                active.click()
+                resultsContainer.hide()
+                event.preventDefault()
+            when 13 # return
+              lastKeyWasTab = false
+              active = resultsContainer.find('li.active:first')
+              if active.length
+                active.click()
+                resultsContainer.hide()
+              if options.neverSubmit || active.length
+                event.preventDefault()
+            when 27 # esc
+              if options.preventPropagationOnEscape && resultsContainer.find(':visible').length
+                event.stopPropagation()
+            when 16, 20 # shift, capslock
+              abortRequest()
+              resultsContainer.hide()
+          return
 
   # plugin method to add an item
   add : (items...) ->
