@@ -525,10 +525,8 @@ pluginMethods =
           input.focus()
           return false
         if typeof data[options.selectedItemProp] isnt 'string'
-          actualInputWrapper.before
           Events.onSelectionAdd @, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll()
         else
-          actualInputWrapper.before
           Events.onSelectionAdd @, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll()
 
         return actualInputWrapper.prev()
