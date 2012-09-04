@@ -561,11 +561,12 @@ pluginMethods =
         selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
       # Append input to DOM.
       input.after hiddenInput
-      selectionsContainer.click ->
+      selectionsContainer.on
+        'click' : ->
         input_focus = true
         input.focus()
         return
-      selectionsContainer.mousedown ->
+        'mousedown' : ->
         selectionsContainer.children().removeClass 'selected'
         input_focus = false
         return
