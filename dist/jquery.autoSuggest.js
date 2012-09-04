@@ -606,9 +606,9 @@ Based on the 1.6er release dated in July, 2012
             return false;
           });
           if (typeof data[options.selectedItemProp] !== 'string') {
-            Events.onSelectionAdd(this, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll());
+            Events.onSelectionAdd(this, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll());
           } else {
-            Events.onSelectionAdd(this, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data[options.selectedValuesProp], currentSelection.getAll());
+            Events.onSelectionAdd(this, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll());
           }
           return actualInputWrapper.prev();
         };
