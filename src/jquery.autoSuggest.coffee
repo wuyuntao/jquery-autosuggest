@@ -507,13 +507,14 @@ pluginMethods =
       addSelection = (data, num) ->
         currentSelection.add data[options.selectedValuesProp]
         item = $ "<li class=\"as-selection-item\" id=\"as-selection-#{num}\" data-value=\"#{Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))}\"></li>"
-        item.click ->
+        item.on
+          'click' : ->
           element = $ @
           Events.onSelectionClick @, element, options, data[options.selectedValuesProp], currentSelection.getAll()
           selectionsContainer.children().removeClass 'selected'
           element.addClass 'selected'
           return
-        item.mousedown ->
+          'mousedown' : ->
           input_focus = false
           return
         closeElement = $ "<a class=\"as-close\">&times;</a>"
@@ -709,7 +710,8 @@ pluginMethods =
         ajaxRequest = null
         return
 
-      input.focus ->
+      input.on
+        'focus' : -> # On input focus
         element = $ @
         if !options.usePlaceholder && element.val() is options.startText && currentSelection.isEmpty()
           element.val ''
@@ -733,7 +735,7 @@ pluginMethods =
           processRequest element.val()
         return true
 
-      input.blur ->
+        'blur' : -> # On input blur
         element = $ @
         if !options.usePlaceholder && element.val() is '' && currentSelection.isEmpty() && prefilledValue is '' && options.minChars > 0
           element.val options.startText
@@ -742,7 +744,8 @@ pluginMethods =
           resultsContainer.hide()
         if interval then clearInterval interval
         return
-      input.keydown (event) ->
+          
+        'keydown' : (event) -> # On input keydown
         ### track the last key pressed ###
         lastKeyPressCode = event.keyCode
         first_focus = false
