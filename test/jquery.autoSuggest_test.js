@@ -61,11 +61,8 @@
     }
 
     function create(d, opts) {
-      data = d || data;
-      options = opts || options;
-
       return $('<input type="text" name="autosuggest" value="" />')
-        .appendTo("#container").autoSuggest(data, options);
+        .appendTo("#container").autoSuggest(d || data, opts || options);
     }
 
     function selections() {
