@@ -23,7 +23,24 @@ class Utils
   @escapeQuotes : (text) -> if text then text.replace /"/g, '\\"'
 
   # Returns a string where the html special chars are escaped correctly.
-  @escapeHtml = (text) -> $('<span/>').text(text).html()
+  @escapeHtml : (text) -> $('<span/>').text(text).html()
+  
+  # TODO sja toggle
+  @switchPlaceholder : (input, enable) ->
+    targets = ['placeholder', 'disabled-placeholder']
+    if enable
+      from = targets[1]
+      to = targets[0]
+    else
+      from = targets[0]
+      to = targets[1]
+    
+    return if input.attr(to) or not input.attr(from)
+      
+    input.attr to, -> input.attr from
+    input.removeAttr(from)
+    return
+  
 
 
 ### A collection of configuration resolvers. ###
@@ -103,18 +120,26 @@ class Events
 
   @onSelectionAdd : (scope, containerElement, detachedElement, options, item, selections) ->
     element = options.onSelectionAdd.call scope, containerElement, detachedElement, options
+    
+    Utils.switchPlaceholder scope, selections.length is 0
+    
     if $.isFunction options.afterSelectionAdd
       options.afterSelectionAdd.call scope, element, item, selections
 
   @onSelectionRemove : (scope, element, options, item, selections) ->
     if $.isFunction options.onSelectionRemove
       options.onSelectionRemove.call scope, element, options
+    
+    Utils.switchPlaceholder scope, selections.length is 0
+    
     if $.isFunction options.afterSelectionRemove
       options.afterSelectionRemove.call scope, element, item, selections
 
   @onSelectionClick : (scope, element, options, item, selections) ->
     if $.isFunction options.afterSelectionClick
       options.afterSelectionClick.call scope, element, item, selections
+
+    Utils.switchPlaceholder scope, selections.length is 0
 
 
 ###*
@@ -293,7 +318,7 @@ defaults =
   ###
   onSelectionRemove : (element, options) ->
     if options.fadeOut
-      element.fadeOut options.fadeOut, -> element.remove
+      element.fadeOut options.fadeOut, -> element.remove()
     else
       element.remove()
 
@@ -454,7 +479,7 @@ pluginMethods =
       options.inputAttrs.id = elementId
 
       # override placeholder if this is required
-      if options.usePlaceholder
+      unless options.usePlaceholder
         options.inputAttrs.placeholder = options.startText
 
       input.attr options.inputAttrs
@@ -478,7 +503,7 @@ pluginMethods =
       lastKeyWasTab = false
       lastKeyPressCode = null
       num_count = 0
-
+      
       ###
         This api will be exposed to the "start" callback.
       ###
@@ -510,7 +535,7 @@ pluginMethods =
         item.on
           'click' : ->
             element = $ @
-            Events.onSelectionClick @, element, options, data[options.selectedValuesProp], currentSelection.getAll()
+            Events.onSelectionClick input, element, options, data[options.selectedValuesProp], currentSelection.getAll()
             selectionsContainer.children().removeClass 'selected'
             element.addClass 'selected'
             return
@@ -520,14 +545,14 @@ pluginMethods =
         closeElement = $ "<a class=\"as-close\">&times;</a>"
         closeElement.click ->
           currentSelection.remove data[options.selectedValuesProp]
-          Events.onSelectionRemove @, item, options, null, currentSelection.getAll()
+          Events.onSelectionRemove input, item, options, null, currentSelection.getAll()
           input_focus = true
           input.focus()
           return false
         if typeof data[options.selectedItemProp] isnt 'string'
-          Events.onSelectionAdd @, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll()
+          Events.onSelectionAdd input, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll()
         else
-          Events.onSelectionAdd @, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll()
+          Events.onSelectionAdd input, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll()
 
         return actualInputWrapper.prev()
 
@@ -562,6 +587,7 @@ pluginMethods =
       if prefilledValue isnt ''
         input.val ''
         selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
+        Utils.switchPlaceholder input, false
       # Append input to DOM.
       input.after hiddenInput
       selectionsContainer.on
@@ -745,6 +771,7 @@ pluginMethods =
             selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
             resultsContainer.hide()
           if interval then clearInterval interval
+          Utils.switchPlaceholder element, currentSelection.isEmpty()
           return
           
         keydown : (event) -> # On input keydown
@@ -776,9 +803,9 @@ pluginMethods =
                 selectionsContainer.children().not(actualInputWrapper.prev()).removeClass 'selected'
                 if actualInputWrapper.prev().hasClass 'selected'
                   currentSelection.remove _selection
-                  Events.onSelectionRemove @, actualInputWrapper.prev(), options, null, currentSelection.getAll()
+                  Events.onSelectionRemove input, actualInputWrapper.prev(), options, null, currentSelection.getAll()
                 else
-                  Events.onSelectionClick @, actualInputWrapper.prev(), options, null, currentSelection.getAll()
+                  Events.onSelectionClick input, actualInputWrapper.prev(), options, null, currentSelection.getAll()
                   actualInputWrapper.prev().addClass 'selected'
               if input.val().length is 1
                 resultsContainer.hide()
@@ -825,6 +852,8 @@ pluginMethods =
             when 16, 20 # shift, capslock
               abortRequest()
               resultsContainer.hide()
+          
+          Utils.switchPlaceholder input, currentSelection.isEmpty()
           return
 
   # plugin method to add an item

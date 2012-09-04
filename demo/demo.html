@@ -88,7 +88,7 @@
             };
 
             (function () {
-                var container = builder('Demo with static data.', 'name', 'Name');
+                var container = builder('Demo with static data and native Placeholder.', 'name', 'Name');
                 var form = container.find('form');
                 var input = container.find('input[type=text]');
                 var output = container.find('pre');
@@ -104,7 +104,9 @@
                 var options = {
                     selectedItemProp : "name",
                     searchObjProps : "name",
-                    fadeOut : 'slow'
+                    fadeOut : 'slow',
+                    usePlaceholder : true,
+                    startText : ''
                 };
                 input.autoSuggest(data, options);
 
@@ -115,7 +117,7 @@
             }());
 
             (function () {
-                var container = builder('Demo with static data + renderer.', 'name', 'Name');
+                var container = builder('Demo with static data + renderer + fake placeholder.', 'name', 'Name');
                 container.addClass('user-list');
                 var form = container.find('form');
                 var input = container.find('input[type=text]');
@@ -174,9 +176,12 @@
                         element.append(user);
                         return element;
                     },
-                    preFill : [$.extend(true, {}, data[1])]
+                    preFill : [$.extend(true, {}, data[1])],
+                    usePlaceholder : false,
+                    startText : 'Enter name ...'
 
                 };
+                input.removeAttr('placeholder');
                 input.autoSuggest(data, options);
 
                 form.submit(function (event) {
@@ -269,7 +274,7 @@
             <legend>Form</legend>
             <p>
                 <label for="person">Person:</label>
-                <input id="person" name="person" type="text">
+                <input id="person" name="person" type="text" placeholder="Enter something ...">
             </p>
             <p>
                 <button type="submit">Submit</button>
