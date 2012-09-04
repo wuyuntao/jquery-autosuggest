@@ -246,6 +246,12 @@ Based on the 1.6er release dated in July, 2012
 
     emptyText: 'No Results Found',
     /**
+     * RegEx to replace values in emptyText values with query text
+     * @type regex
+    */
+
+    emptyTextPlaceholder: /\{\d+\}/,
+    /**
      * Defines text shown when the limit of selections was exceeded.
      * @type string
     */
@@ -725,7 +731,7 @@ Based on the 1.6er release dated in July, 2012
           return fetcher(string, processData);
         };
         processData = function(data, query) {
-          var formatted, forward, matchCount, name, num, regx, resultsContainerVisible, str, this_data, _k, _l, _len2, _len3, _ref2;
+          var formatted, forward, matchCount, name, num, regx, resultsContainerVisible, str, text, this_data, _k, _l, _len2, _len3, _ref2;
           if (!options.matchCase) {
             query = query.toLowerCase();
           }
@@ -816,7 +822,11 @@ Based on the 1.6er release dated in July, 2012
           }
           selectionsContainer.removeClass('loading');
           if (matchCount <= 0) {
-            resultsList.html("<li class=\"as-message\">" + options.emptyText + "</li>");
+            text = options.emptyText;
+            if ($.type(options.emptyTextPlaceholder) === 'regexp') {
+              text = text.replace(options.emptyTextPlaceholder, query);
+            }
+            resultsList.html("<li class=\"as-message\">" + text + "</li>");
           }
           resultsList.css({
             width: selectionsContainer.outerWidth()
