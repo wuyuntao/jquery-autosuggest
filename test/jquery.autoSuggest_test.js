@@ -84,7 +84,11 @@
       $("#as-results-autosuggest, #as-selections-autosuggest").remove();
     }
 
-    module('Basic UI Tests: type and select');
+    module('Basic UI Tests: type and select', {
+      teardown : function () {
+        remove();
+      }
+    });
 
     asyncTest('Type J and select "Michael Jordan"', 8, function () {
       el = create();
@@ -161,20 +165,14 @@
 
           setTimeout(function(){
             el.simulate("keydown", {"keyCode" : keyCode.DEL});
+            el.simulate("keydown", {"keyCode" : keyCode.DEL});
+            el.simulate("keydown", {"keyCode" : keyCode.DEL});
+            el.simulate("keydown", {"keyCode" : keyCode.DEL});
             setTimeout(function(){
-              el.simulate("keydown", {"keyCode" : keyCode.DEL});
-              setTimeout(function(){
-                el.simulate("keydown", {"keyCode" : keyCode.DEL});
-                setTimeout(function(){
-                  el.simulate("keydown", {"keyCode" : keyCode.DEL});
-                  setTimeout(function(){
-                    sel = selections();
-                    equal(sel.length, 0, "Should have no selections.");
-                    start();
-                    remove();
-                  }, 200);
-                }, 200);
-              }, 200);
+              sel = selections();
+              equal(sel.length, 0, "Should have no selections.");
+              start();
+              remove();
             }, 200);
           }, 200);
         }, 200);
@@ -201,21 +199,13 @@
 
         setTimeout(function(){
           el.simulate("keydown", {"keyCode" : keyCode.DEL});
-          setTimeout(function(){
-            el.simulate("keydown", {"keyCode" : keyCode.DEL});
-            setTimeout(function(){
-              el.simulate("keydown", {"keyCode" : keyCode.DEL});
-              setTimeout(function(){
-                el.simulate("keydown", {"keyCode" : keyCode.DEL});
-                setTimeout(function(){
-                  sel = selections();
-                  equal(sel.length, 0, "Should have no selections.");
-                  start();
-                  remove();
-                }, 200);
-              }, 200);
-            }, 200);
-          }, 200);
+          el.simulate("keydown", {"keyCode" : keyCode.DEL});
+          el.simulate("keydown", {"keyCode" : keyCode.DEL});
+          el.simulate("keydown", {"keyCode" : keyCode.DEL});
+          sel = selections();
+          equal(sel.length, 0, "Should have no selections.");
+          start();
+          remove();
         }, 200);
       }, 500);
     });
@@ -238,7 +228,11 @@
       }, 500);
     });
 
-    module('Basic UI Tests: type, let suggest and select one');
+    module('Basic UI Tests: type, let suggest and select one', {
+      teardown : function () {
+        remove();
+      }
+    });
 
     asyncTest('Press enter to select suggestion', 4, function () {
       el = create();
@@ -311,7 +305,11 @@
       }, 500);
     });
 
-    module('Basic UI Tests: remove a selected item');
+    module('Basic UI Tests: remove a selected item', {
+      teardown : function () {
+        remove();
+      }
+    });
 
     test('Click close button to remove a name', 3, function () {
       el = create();
@@ -357,7 +355,11 @@
       remove();
     });
 
-    module('Basic UI Tests: close suggestions');
+    module('Basic UI Tests: close suggestions', {
+      teardown : function () {
+        remove();
+      }
+    });
 
     test('Type "Yao Ming" but press than ESC. No value should be selected.', 1, function () {
       el = create();
@@ -372,7 +374,11 @@
     });
 
 
-    module('Basic UI Tests (Regressions)');
+    module('Basic UI Tests (Regressions)', {
+      teardown : function () {
+        remove();
+      }
+    });
 
     // https://github.com/jsloane/jquery-autosuggest/commit/623f2426f0f225884dedbb2b0e3efdce6c983951
     asyncTest('Check for regression: Type "*". should not fail.', 2, function () {
@@ -419,7 +425,11 @@
       }, 500);
     });
 
-    module('Configuration: "data"');
+    module('Configuration: "data"', {
+      teardown : function () {
+        remove();
+      }
+    });
 
     asyncTest('Use function for data source', 1, function () {
       var wasCalled = false;
@@ -445,7 +455,11 @@
       }, 500);
     });
 
-    module('Configuration: "options.start"');
+    module('Configuration: "options.start"', {
+      teardown : function () {
+        remove();
+      }
+    });
 
     test('Add and remove from code', 4, function () {
       var callbacks;
@@ -467,7 +481,11 @@
       equal(selections().length, 0, "Should remove using a callback.");
     });
 
-    module('Configuration: "onAjaxRequestAlways"');
+    module('Configuration: "onAjaxRequestAlways"', {
+      teardown : function () {
+        remove();
+      }
+    });
 
     asyncTest('Check that the callback will be called on success.', 3, function () {
       var url = 'url-' + Math.round(10000 * Math.random()) + '.html', ajaxMock = createAjaxMock_Success(url), response, called = false, opts = $.extend({}, options, {
@@ -511,7 +529,11 @@
       }, 1000);
     });
 
-    module('Configuration: "onAjaxRequestDone"');
+    module('Configuration: "onAjaxRequestDone"', {
+      teardown : function () {
+        remove();
+      }
+    });
 
     asyncTest('Check that the callback will be called on success.', 3, function () {
       var url = 'url-' + Math.round(10000 * Math.random()) + '.html', ajaxMock = createAjaxMock_Success(url), response, called = false, opts = $.extend({}, options, {
@@ -553,7 +575,11 @@
       }, 1000);
     });
 
-    module('Configuration: "onAjaxRequestFail"');
+    module('Configuration: "onAjaxRequestFail"', {
+      teardown : function () {
+        remove();
+      }
+    });
 
     asyncTest('Check that the callback will be not called on success.', 2, function () {
       var url = 'url-' + Math.round(10000 * Math.random()) + '.html', ajaxMock = createAjaxMock_Success(url), response = null, called = false, opts = $.extend({}, options, {
@@ -600,7 +626,11 @@
       }, 1000);
     });
 
-    module('Configuration: "options.extraParams"');
+    module('Configuration: "options.extraParams"', {
+      teardown : function () {
+        remove();
+      }
+    });
 
     asyncTest('Add extraParams with function (instead of ONLY a string)', 2, function () {
       var url = 'url-' + Math.round(10000 * Math.random()) + '.html', ajaxMock = createAjaxMock_Success(url), opts = $.extend({}, options, {
@@ -630,65 +660,11 @@
       $.simulate2.triggerKeyEventsForString(el, 'J', 0, true);
     });
 
-    /**
-     * Extended test case with a custom html renderer and a prefilled entry.
-     * Additionally, this customize the selection tokens w/ an additional image.
-     */
-    asyncTest('Custom result list formatter, prefilling and with image in selection tokens.', 9, function () {
-      var renderer = function (data) {
-        return $('<div><img src="' + data.img + '" height=16 width=16 style="float:left"/><span>' + data.name + '</span></div>');
-      }, applyRenderer = function (data) {
-        data.item = renderer(data);
-        return data;
-      };
-      var data = [applyRenderer({
-        value : '4711',
-        img : 'john.png',
-        name : 'John Doe'
-      })];
-      var opts = {
-        asHtmlID : 'autosuggest',
-        selectedItemProp : "item",
-        searchObjProps : "name",
-        formatList : function (data, elem) {
-          return elem.append(data.item);
-        },
-        preFill : [applyRenderer({
-          value : '123',
-          img : 'donald.png',
-          name : 'Donald Duck'
-        })]
-      };
-      var query = 'Doe';
-      el = create(data, opts);
-
-      var sel = selections();
-      equal(sel.length, 1, "Prefill: The number of selections should be exactly one.");
-      equal($(sel[0]).html(), '<a class="as-close">×</a><div><img src="donald.png" height="16" width="16" style="float:left"><span>Donald Duck</span></div>', "#1 should be Donald Duck.");
-      equal(value().val(), ",123,", "Prefill: Value should be 123.");
-
-      el.focus();
-      el.val(query);
-
-      setTimeout(function () {
-        var res = results();
-        equal(res.length, 1, "Should suggest one value.");
-        equal($(res[0]).html(), '<div><img src="john.png" height="16" width="16" style="float:left"><span>John <em>Doe</em></span></div>', "Should be rendered output.");
-
-        el.simulate("keydown", {"keyCode" : keyCode.DOWN});
-        el.simulate("keydown", {"keyCode" : keyCode.ENTER});
-
-        sel = selections();
-        equal(sel.length, 2, "Should have two values");
-        equal($(sel[0]).text(), '×Donald Duck', "#1 should be Donald Duck.");
-        equal($(sel[1]).text(), '×John Doe', "#2 should be John Doe.");
-        equal(value().val(), ",123,4711,", "Should be 123,4711.");
-        start();
+    module('XSS Tests', {
+      teardown : function () {
         remove();
-      }, 500);
+      }
     });
-
-    module('XSS Tests');
 
     /**
      * XSS Check
@@ -857,7 +833,11 @@
       }, 500);
     });
 
-    module('Advanced HTML-Renderer');
+    module('Advanced HTML-Renderer', {
+      teardown : function () {
+        remove();
+      }
+    });
 
     /**
      * Extended test case with a custom format list renderer.
