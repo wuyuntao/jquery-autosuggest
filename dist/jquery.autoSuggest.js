@@ -42,6 +42,25 @@ Based on the 1.6er release dated in July, 2012
       return $('<span/>').text(text).html();
     };
 
+    Utils.switchPlaceholder = function(input, enable) {
+      var from, targets, to;
+      targets = ['placeholder', 'disabled-placeholder'];
+      if (enable) {
+        from = targets[1];
+        to = targets[0];
+      } else {
+        from = targets[0];
+        to = targets[1];
+      }
+      if (input.attr(to) || !input.attr(from)) {
+        return;
+      }
+      input.attr(to, function() {
+        return input.attr(from);
+      });
+      input.removeAttr(from);
+    };
+
     return Utils;
 
   })();
@@ -168,6 +187,7 @@ Based on the 1.6er release dated in July, 2012
     Events.onSelectionAdd = function(scope, containerElement, detachedElement, options, item, selections) {
       var element;
       element = options.onSelectionAdd.call(scope, containerElement, detachedElement, options);
+      Utils.switchPlaceholder(scope, selections.length === 0);
       if ($.isFunction(options.afterSelectionAdd)) {
         return options.afterSelectionAdd.call(scope, element, item, selections);
       }
@@ -177,6 +197,7 @@ Based on the 1.6er release dated in July, 2012
       if ($.isFunction(options.onSelectionRemove)) {
         options.onSelectionRemove.call(scope, element, options);
       }
+      Utils.switchPlaceholder(scope, selections.length === 0);
       if ($.isFunction(options.afterSelectionRemove)) {
         return options.afterSelectionRemove.call(scope, element, item, selections);
       }
@@ -184,8 +205,9 @@ Based on the 1.6er release dated in July, 2012
 
     Events.onSelectionClick = function(scope, element, options, item, selections) {
       if ($.isFunction(options.afterSelectionClick)) {
-        return options.afterSelectionClick.call(scope, element, item, selections);
+        options.afterSelectionClick.call(scope, element, item, selections);
       }
+      return Utils.switchPlaceholder(scope, selections.length === 0);
     };
 
     return Events;
@@ -372,7 +394,7 @@ Based on the 1.6er release dated in July, 2012
     onSelectionRemove: function(element, options) {
       if (options.fadeOut) {
         return element.fadeOut(options.fadeOut, function() {
-          return element.remove;
+          return element.remove();
         });
       } else {
         return element.remove();
@@ -530,7 +552,7 @@ Based on the 1.6er release dated in July, 2012
           elementId = element;
         }
         options.inputAttrs.id = elementId;
-        if (options.usePlaceholder) {
+        if (!options.usePlaceholder) {
           options.inputAttrs.placeholder = options.startText;
         }
         input.attr(options.inputAttrs);
@@ -589,7 +611,7 @@ Based on the 1.6er release dated in July, 2012
           item.on({
             'click': function() {
               element = $(this);
-              Events.onSelectionClick(this, element, options, data[options.selectedValuesProp], currentSelection.getAll());
+              Events.onSelectionClick(input, element, options, data[options.selectedValuesProp], currentSelection.getAll());
               selectionsContainer.children().removeClass('selected');
               element.addClass('selected');
             },
@@ -600,15 +622,15 @@ Based on the 1.6er release dated in July, 2012
           closeElement = $("<a class=\"as-close\">&times;</a>");
           closeElement.click(function() {
             currentSelection.remove(data[options.selectedValuesProp]);
-            Events.onSelectionRemove(this, item, options, null, currentSelection.getAll());
+            Events.onSelectionRemove(input, item, options, null, currentSelection.getAll());
             input_focus = true;
             input.focus();
             return false;
           });
           if (typeof data[options.selectedItemProp] !== 'string') {
-            Events.onSelectionAdd(this, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll());
+            Events.onSelectionAdd(input, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll());
           } else {
-            Events.onSelectionAdd(this, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll());
+            Events.onSelectionAdd(input, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll());
           }
           return actualInputWrapper.prev();
         };
@@ -655,6 +677,7 @@ Based on the 1.6er release dated in July, 2012
         if (prefilledValue !== '') {
           input.val('');
           selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected');
+          Utils.switchPlaceholder(input, false);
         }
         input.after(hiddenInput);
         selectionsContainer.on({
@@ -882,6 +905,7 @@ Based on the 1.6er release dated in July, 2012
             if (interval) {
               clearInterval(interval);
             }
+            Utils.switchPlaceholder(element, currentSelection.isEmpty());
           },
           keydown: function(event) {
             /* track the last key pressed
@@ -920,9 +944,9 @@ Based on the 1.6er release dated in July, 2012
                   selectionsContainer.children().not(actualInputWrapper.prev()).removeClass('selected');
                   if (actualInputWrapper.prev().hasClass('selected')) {
                     currentSelection.remove(_selection);
-                    Events.onSelectionRemove(this, actualInputWrapper.prev(), options, null, currentSelection.getAll());
+                    Events.onSelectionRemove(input, actualInputWrapper.prev(), options, null, currentSelection.getAll());
                   } else {
-                    Events.onSelectionClick(this, actualInputWrapper.prev(), options, null, currentSelection.getAll());
+                    Events.onSelectionClick(input, actualInputWrapper.prev(), options, null, currentSelection.getAll());
                     actualInputWrapper.prev().addClass('selected');
                   }
                 }
@@ -990,6 +1014,7 @@ Based on the 1.6er release dated in July, 2012
                 abortRequest();
                 resultsContainer.hide();
             }
+            Utils.switchPlaceholder(input, currentSelection.isEmpty());
           }
         });
       });
