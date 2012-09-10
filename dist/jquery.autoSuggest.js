@@ -214,6 +214,24 @@ Based on the 1.6er release dated in July, 2012
       Utils.setPlaceholderEnabled(scope, selections.length === 0);
     };
 
+    Events.onAjaxRequestDone = function(scope, ajaxRequest, options) {
+      if ($.isFunction(options.onAjaxRequestDone)) {
+        ajaxRequest.done(options.onAjaxRequestDone);
+      }
+    };
+
+    Events.onAjaxRequestFail = function(scope, ajaxRequest, options) {
+      if ($.isFunction(options.onAjaxRequestFail)) {
+        ajaxRequest.fail(options.onAjaxRequestFail);
+      }
+    };
+
+    Events.onAjaxRequestAlways = function(scope, ajaxRequest, options) {
+      if ($.isFunction(options.onAjaxRequestAlways)) {
+        ajaxRequest.always(options.onAjaxRequestAlways);
+      }
+    };
+
     return Events;
 
   })();
@@ -531,15 +549,9 @@ Based on the 1.6er release dated in July, 2012
                 return callback(data, query);
               };
               ajaxRequest = $.ajax(ajaxRequestConfig).done(onDone);
-              if (options.onAjaxRequestDone) {
-                ajaxRequest.done(options.onAjaxRequestDone);
-              }
-              if (options.onAjaxRequestFail) {
-                ajaxRequest.fail(options.onAjaxRequestFail);
-              }
-              if (options.onAjaxRequestAlways) {
-                ajaxRequest.always(options.onAjaxRequestAlways);
-              }
+              Events.onAjaxRequestDone(this, ajaxRequest, options);
+              Events.onAjaxRequestFail(this, ajaxRequest, options);
+              Events.onAjaxRequestAlways(this, ajaxRequest, options);
             };
           case 'array':
           case 'object':
@@ -754,7 +766,7 @@ Based on the 1.6er release dated in July, 2012
           return fetcher(string, processData);
         };
         processData = function(data, query) {
-          var formatted, forward, matchCount, name, num, regx, resultsContainerVisible, str, text, this_data, _k, _l, _len2, _len3, _ref2;
+          var formatted, forward, matchCount, name, num, regex, resultsContainerVisible, str, text, workingData, _k, _l, _len2, _len3, _ref2;
           if (!options.matchCase) {
             query = query.toLowerCase();
           }
@@ -817,27 +829,26 @@ Based on the 1.6er release dated in July, 2012
                 attributes: data[num],
                 num: num_count
               });
-              this_data = $.extend({}, data[num]);
+              workingData = $.extend({}, data[num]);
               query = query.replace(/"/g, '\\"');
-              regx = !options.matchCase ? new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + Utils.escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "gi") : new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + Utils.escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g");
+              regex = !options.matchCase ? new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + Utils.escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "gi") : new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + Utils.escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g");
               /* When this is a string, escape the value and process a regular replacement for highlighting.
               */
 
-              if (typeof this_data[options.selectedItemProp] === 'string') {
-                this_data[options.selectedItemProp] = Utils.escapeHtml(this_data[options.selectedItemProp]);
+              if (typeof workingData[options.selectedItemProp] === 'string') {
+                workingData[options.selectedItemProp] = Utils.escapeHtml(workingData[options.selectedItemProp]);
                 if (options.resultsHighlight && query.length > 0) {
-                  this_data[options.selectedItemProp] = this_data[options.selectedItemProp].replace(regx, '<em>$1</em>');
+                  workingData[options.selectedItemProp] = workingData[options.selectedItemProp].replace(regex, '<em>$1</em>');
                 }
               } else {
-                this_data[options.selectedItemProp].html(this_data[options.selectedItemProp].html().replace(regx, '<em>$1</em>'));
+                workingData[options.selectedItemProp].html(workingData[options.selectedItemProp].html().replace(regex, '<em>$1</em>'));
               }
               if (!options.formatList) {
-                formatted = formatted.html(this_data[options.selectedItemProp]);
+                formatted = formatted.html(workingData[options.selectedItemProp]);
               } else {
-                formatted = options.formatList.call(this, this_data, formatted);
+                formatted = options.formatList.call(this, workingData, formatted);
               }
               resultsList.append(formatted);
-              this_data = null;
               matchCount++;
               if (options.retrieveLimit && options.retrieveLimit === matchCount) {
                 break;

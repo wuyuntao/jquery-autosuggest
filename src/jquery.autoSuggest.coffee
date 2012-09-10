@@ -140,6 +140,18 @@ class Events
     Utils.setPlaceholderEnabled scope, (selections.length is 0)
     return
 
+  @onAjaxRequestDone : (scope, ajaxRequest, options) ->
+    if $.isFunction(options.onAjaxRequestDone) then ajaxRequest.done options.onAjaxRequestDone
+    return
+
+  @onAjaxRequestFail : (scope, ajaxRequest, options) ->
+    if $.isFunction(options.onAjaxRequestFail) then ajaxRequest.fail options.onAjaxRequestFail
+    return
+
+  @onAjaxRequestAlways : (scope, ajaxRequest, options) ->
+    if $.isFunction(options.onAjaxRequestAlways) then ajaxRequest.always options.onAjaxRequestAlways
+    return
+
 
 ###*
  * plugin's default options
@@ -450,9 +462,9 @@ pluginMethods =
           ajaxRequest = $.ajax(ajaxRequestConfig).done(onDone)
 
           # Apply jQuery Deferred Callbacks.
-          if options.onAjaxRequestDone then ajaxRequest.done options.onAjaxRequestDone
-          if options.onAjaxRequestFail then ajaxRequest.fail options.onAjaxRequestFail
-          if options.onAjaxRequestAlways then ajaxRequest.always options.onAjaxRequestAlways
+          Events.onAjaxRequestDone @, ajaxRequest, options
+          Events.onAjaxRequestFail @, ajaxRequest, options
+          Events.onAjaxRequestAlways @, ajaxRequest, options
 
           return # return nothing
 
