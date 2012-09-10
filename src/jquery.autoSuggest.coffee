@@ -83,6 +83,7 @@ class SelectionHolder
   constructor : (@hiddenField, @items = []) ->
 
   syncToHiddenField : ->
+    return unless @hiddenField
     value = ''
     for item in @items
       value += ',' + item
