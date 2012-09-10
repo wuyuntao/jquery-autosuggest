@@ -121,26 +121,24 @@ class Events
 
   @onSelectionAdd : (scope, containerElement, detachedElement, options, item, selections) ->
     element = options.onSelectionAdd.call scope, containerElement, detachedElement, options
-    
-    Utils.setPlaceholderEnabled scope, selections.length is 0
-    
+    Utils.setPlaceholderEnabled scope, (selections.length is 0)
     if $.isFunction options.afterSelectionAdd
       options.afterSelectionAdd.call scope, element, item, selections
+    return
 
   @onSelectionRemove : (scope, element, options, item, selections) ->
     if $.isFunction options.onSelectionRemove
       options.onSelectionRemove.call scope, element, options
-    
-    Utils.setPlaceholderEnabled scope, selections.length is 0
-    
+    Utils.setPlaceholderEnabled scope, (selections.length is 0)
     if $.isFunction options.afterSelectionRemove
       options.afterSelectionRemove.call scope, element, item, selections
+    return
 
   @onSelectionClick : (scope, element, options, item, selections) ->
     if $.isFunction options.afterSelectionClick
       options.afterSelectionClick.call scope, element, item, selections
-
-    Utils.setPlaceholderEnabled scope, selections.length is 0
+    Utils.setPlaceholderEnabled scope, (selections.length is 0)
+    return
 
 
 ###*
