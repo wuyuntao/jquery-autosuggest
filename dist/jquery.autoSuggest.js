@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.0.0 - 2012-09-04
+/*! jQuery AutoSuggest - v2.0.0 - 2012-09-10
 * http://hlsolutions.github.com/jquery-autosuggest
 * Copyright (c) 2012 Jan Philipp; Licensed MIT, GPL */
 
@@ -42,7 +42,7 @@ Based on the 1.6er release dated in July, 2012
       return $('<span/>').text(text).html();
     };
 
-    Utils.switchPlaceholder = function(input, enable) {
+    Utils.setPlaceholderEnabled = function(input, enable) {
       var from, targets, to;
       targets = ['placeholder', 'disabled-placeholder'];
       if (enable) {
@@ -133,6 +133,9 @@ Based on the 1.6er release dated in July, 2012
 
     SelectionHolder.prototype.syncToHiddenField = function() {
       var item, value, _i, _len, _ref;
+      if (!this.hiddenField) {
+        return;
+      }
       value = '';
       _ref = this.items;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -187,9 +190,9 @@ Based on the 1.6er release dated in July, 2012
     Events.onSelectionAdd = function(scope, containerElement, detachedElement, options, item, selections) {
       var element;
       element = options.onSelectionAdd.call(scope, containerElement, detachedElement, options);
-      Utils.switchPlaceholder(scope, selections.length === 0);
+      Utils.setPlaceholderEnabled(scope, selections.length === 0);
       if ($.isFunction(options.afterSelectionAdd)) {
-        return options.afterSelectionAdd.call(scope, element, item, selections);
+        options.afterSelectionAdd.call(scope, element, item, selections);
       }
     };
 
@@ -197,9 +200,9 @@ Based on the 1.6er release dated in July, 2012
       if ($.isFunction(options.onSelectionRemove)) {
         options.onSelectionRemove.call(scope, element, options);
       }
-      Utils.switchPlaceholder(scope, selections.length === 0);
+      Utils.setPlaceholderEnabled(scope, selections.length === 0);
       if ($.isFunction(options.afterSelectionRemove)) {
-        return options.afterSelectionRemove.call(scope, element, item, selections);
+        options.afterSelectionRemove.call(scope, element, item, selections);
       }
     };
 
@@ -207,7 +210,7 @@ Based on the 1.6er release dated in July, 2012
       if ($.isFunction(options.afterSelectionClick)) {
         options.afterSelectionClick.call(scope, element, item, selections);
       }
-      return Utils.switchPlaceholder(scope, selections.length === 0);
+      Utils.setPlaceholderEnabled(scope, selections.length === 0);
     };
 
     return Events;
@@ -490,17 +493,17 @@ Based on the 1.6er release dated in July, 2012
   };
 
   pluginMethods = {
-    init: function(data, options) {
+    init: function(dataSource, options) {
       var ajaxRequest, fetcher;
       options = $.extend({}, defaults, options);
       ajaxRequest = null;
       if (options.remoteFilter === 'auto') {
-        options.remoteFilter = ($.type(data)) === 'string';
+        options.remoteFilter = ($.type(dataSource)) === 'string';
       }
       fetcher = (function() {
-        switch ($.type(data)) {
+        switch ($.type(dataSource)) {
           case 'function':
-            return data;
+            return dataSource;
           case 'string':
             return function(query, callback) {
               var ajaxRequestConfig, extraParams, onDone, params;
@@ -517,7 +520,7 @@ Based on the 1.6er release dated in July, 2012
                 $.extend(params, extraParams);
               }
               ajaxRequestConfig = $.extend({}, options.ajaxOptions, {
-                url: data,
+                url: dataSource,
                 data: params
               });
               onDone = function(data) {
@@ -539,7 +542,7 @@ Based on the 1.6er release dated in July, 2012
           case 'array':
           case 'object':
             return function(query, callback) {
-              return callback(data, query);
+              return callback(dataSource, query);
             };
         }
       })();
@@ -691,7 +694,7 @@ Based on the 1.6er release dated in July, 2012
         if (prefilledValue !== '') {
           input.val('');
           selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected');
-          Utils.switchPlaceholder(input, false);
+          Utils.setPlaceholderEnabled(input, false);
         }
         input.after(hiddenInput);
         selectionsContainer.on({
@@ -923,7 +926,7 @@ Based on the 1.6er release dated in July, 2012
             if (interval) {
               clearInterval(interval);
             }
-            Utils.switchPlaceholder(element, currentSelection.isEmpty());
+            Utils.setPlaceholderEnabled(element, currentSelection.isEmpty());
           },
           keydown: function(event) {
             /* track the last key pressed
@@ -1032,7 +1035,7 @@ Based on the 1.6er release dated in July, 2012
                 abortRequest();
                 resultsContainer.hide();
             }
-            Utils.switchPlaceholder(input, currentSelection.isEmpty());
+            Utils.setPlaceholderEnabled(input, currentSelection.isEmpty());
           }
         });
       });

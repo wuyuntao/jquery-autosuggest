@@ -22,7 +22,7 @@ In your web page:
 <script src="dist/jquery.autoSuggest.min.js"></script>
 <script>
 $(function($) {
-  $('input[type=text]').autoSuggest(data, options);
+  $('input[type=text]').autoSuggest(dataSource, options);
 });
 </script>
 ```
@@ -33,7 +33,7 @@ More examples see [here](#examples).
 
 ## How It Works
 
-As you type into the AutoSuggest `input` box, it will filter through its `data` and suggest matched items to you. You can pass in an object of data or you can have it call a URL as you type to get its data from. AutoSuggest will display the matched items in a selectable list, which is 100% customizable. You have the option of structuring the HTML elements of that list however you want via the `formatList` callback function.
+As you type into the AutoSuggest `input` box, it will filter through its `dataSource` and suggest matched items to you. You can pass in an object of data or you can have it call a URL as you type to get its data from. AutoSuggest will display the matched items in a selectable list, which is 100% customizable. You have the option of structuring the HTML elements of that list however you want via the `formatList` callback function.
 
 When you type into the `input` box and the "suggestion" dropdown list appears, a few things happen:
 
@@ -70,9 +70,9 @@ AutoSuggest has been tested (and works) in:
 
 ## Documentation
 
-The plugin's constructor expects two arguments: `data` and `options`.
+The plugin's constructor expects two arguments: `dataSource` and `options`.
 
-The first argument `data` defines how the suggested results will be retrieved:
+The first argument `dataSource` defines how the suggested results will be retrieved:
 * Use an `array` if you want to define a static list of items. Each item must be an object with properties which will match your `options` keys `selectedItemProp`, `selectedValuesProp` and `searchObjProps`.
 * Use a `function` returning an `array` if you want to define dynamic builder of a list of items. The structure of this list must be the same as described for an `array`.
 * Use a `string` if you want to load the data asynchronously via AJAX. Eventually, in that case you want to override the option `afterRequest` to match the specification of a data array.

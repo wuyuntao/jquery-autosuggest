@@ -409,7 +409,7 @@ defaults =
 
 pluginMethods =
 
-  init : (data, options) ->
+  init : (dataSource, options) ->
     # Creates a new options object and appending the default and the actual user options.
     options = $.extend {}, defaults, options
 
@@ -418,12 +418,12 @@ pluginMethods =
 
     # PRIVATE API: Indicates whether a server is responsible for a result list or not.
     if options.remoteFilter is 'auto'
-      options.remoteFilter = ($.type data) is 'string'
+      options.remoteFilter = ($.type dataSource) is 'string'
 
-    # defines the actual fetcher strategy based on the option "data"
-    fetcher = switch $.type data
+    # defines the actual fetcher strategy based on the option "dataSource"
+    fetcher = switch $.type dataSource
       when 'function' # handle a callback function
-        data
+        dataSource
 
       when 'string' # handle an url string
         (query, callback) ->
@@ -439,7 +439,7 @@ pluginMethods =
             $.extend params, extraParams
 
           ajaxRequestConfig = $.extend {}, options.ajaxOptions,
-            url : data
+            url : dataSource
             data : params
           onDone = (data) ->
             data2 = if $.isFunction options.afterRequest
@@ -457,9 +457,9 @@ pluginMethods =
           return # return nothing
 
       when 'array', 'object' # handle an object a list of objects
-        (query, callback) -> callback(data, query)
+        (query, callback) -> callback(dataSource, query)
 
-    # Abort plugin if no fetcher was specified (in this case, type of option "data" is not supported).
+    # Abort plugin if no fetcher was specified (in this case, type of option "dataSource" is not supported).
     return unless fetcher
 
     ###
