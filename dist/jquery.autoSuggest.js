@@ -524,9 +524,10 @@ Based on the 1.6er release dated in July, 2012
                 data: params
               });
               onDone = function(data) {
-                var data2;
-                data2 = $.isFunction(options.afterRequest) ? options.afterRequest.apply(this, [data]) : data;
-                return callback(data2, query);
+                if ($.isFunction(options.afterRequest)) {
+                  data = options.afterRequest.apply(this, [data]);
+                }
+                return callback(data, query);
               };
               ajaxRequest = $.ajax(ajaxRequestConfig).done(onDone);
               if (options.onAjaxRequestDone) {

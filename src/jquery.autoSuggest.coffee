@@ -427,6 +427,7 @@ pluginMethods =
 
       when 'string' # handle an url string
         (query, callback) ->
+          # CHECKED: The fetcher will be invoked with two arguments. No null check is required.
           params = {}
           ### ensures query is encoded ###
           params["#{options.queryParam}"] = encodeURIComponent(decodeURIComponent(query))
@@ -434,19 +435,18 @@ pluginMethods =
           if options.retrieveLimit
             params[options.limitParam] = encodeURIComponent options.retrieveLimit
 
-          extraParams = ConfigResolver.getExtraParams(options)
+          extraParams = ConfigResolver.getExtraParams options
           if $.type(extraParams) is 'object'
             $.extend params, extraParams
 
           ajaxRequestConfig = $.extend {}, options.ajaxOptions,
             url : dataSource
             data : params
+
           onDone = (data) ->
-            data2 = if $.isFunction options.afterRequest
-              options.afterRequest.apply @, [data]
-            else
-              data
-            callback(data2, query)
+            if $.isFunction options.afterRequest
+              data = options.afterRequest.apply @, [data]
+            callback(data, query)
           ajaxRequest = $.ajax(ajaxRequestConfig).done(onDone)
 
           # Apply jQuery Deferred Callbacks.
@@ -459,7 +459,7 @@ pluginMethods =
       when 'array', 'object' # handle an object a list of objects
         (query, callback) -> callback(dataSource, query)
 
-    # Abort plugin if no fetcher was specified (in this case, type of option "dataSource" is not supported).
+    # Abort plugin when no fetcher was specified (in this case, type of option "dataSource" is not supported).
     return unless fetcher
 
     ###
