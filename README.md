@@ -502,7 +502,7 @@ echo json_encode($data);
 
 ## Release History
 
-## 2012-09-?? Version 2.0.0
+## 2012-09-11 Version 2.0.0
 
 The plugin project now uses **CoffeeScript** and **SASS** for source building. The unit tests run still with **QUnit**. **grunt** is used to manage dependencies, tasks and tests. In addition, **Travis CI** is now checking every commit.
 
