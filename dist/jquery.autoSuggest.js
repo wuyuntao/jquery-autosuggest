@@ -786,30 +786,32 @@ Based on the 1.6er release dated in July, 2012
             }
             if (forward) {
               formatted = $("<li class=\"as-result-item\" id=\"as-result-item-" + num + "\"></li>");
-              formatted.click(function() {
-                var number, raw_data;
-                element = $(this);
-                raw_data = element.data('data');
-                number = raw_data.num;
-                if (selectionsContainer.find("#as-selection-" + number).length <= 0 && !lastKeyWasTab) {
-                  data = raw_data.attributes;
-                  input.val('').focus();
-                  prev = '';
-                  addSelection(data, number);
-                  if ($.isFunction(options.onResultItemClick)) {
-                    options.onResultItemClick.call(this, raw_data);
+              formatted.on({
+                click: function() {
+                  var number, raw_data;
+                  element = $(this);
+                  raw_data = element.data('data');
+                  number = raw_data.num;
+                  if (selectionsContainer.find("#as-selection-" + number).length <= 0 && !lastKeyWasTab) {
+                    data = raw_data.attributes;
+                    input.val('').focus();
+                    prev = '';
+                    addSelection(data, number);
+                    if ($.isFunction(options.onResultItemClick)) {
+                      options.onResultItemClick.call(this, raw_data);
+                    }
+                    resultsContainer.hide();
                   }
-                  resultsContainer.hide();
+                  lastKeyWasTab = false;
+                },
+                mousedown: function() {
+                  input_focus = false;
+                },
+                mouseover: function() {
+                  element = $(this);
+                  resultsList.find('li').removeClass('active');
+                  element.addClass('active');
                 }
-                lastKeyWasTab = false;
-              });
-              formatted.mousedown(function() {
-                input_focus = false;
-              });
-              formatted.mouseover(function() {
-                element = $(this);
-                resultsList.find('li').removeClass('active');
-                element.addClass('active');
               });
               formatted.data('data', {
                 attributes: data[num],

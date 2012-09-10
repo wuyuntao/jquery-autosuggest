@@ -670,28 +670,29 @@ pluginMethods =
             if !options.searchActive || ((str.indexOf(query) isnt -1 || options.remoteFilter) && !currentSelection.exist(item[options.selectedValuesProp]))
               forward = true
           if forward
-            formatted = $ "<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>"
-            formatted.click ->
-              element = $(@)
-              raw_data = element.data 'data'
-              number = raw_data.num
-              if selectionsContainer.find("#as-selection-#{number}").length <= 0 && !lastKeyWasTab
-                data = raw_data.attributes
-                input.val('').focus()
-                prev = ''
-                addSelection data, number
-                if $.isFunction(options.onResultItemClick) then options.onResultItemClick.call @, raw_data
-                resultsContainer.hide()
-              lastKeyWasTab = false
-              return
-            formatted.mousedown ->
-              input_focus = false
-              return
-            formatted.mouseover ->
-              element = $(@)
-              resultsList.find('li').removeClass 'active'
-              element.addClass 'active'
-              return
+            formatted = $("<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>")
+            formatted.on
+              click : ->
+                element = $(@)
+                raw_data = element.data 'data'
+                number = raw_data.num
+                if selectionsContainer.find("#as-selection-#{number}").length <= 0 && !lastKeyWasTab
+                  data = raw_data.attributes
+                  input.val('').focus()
+                  prev = ''
+                  addSelection data, number
+                  if $.isFunction(options.onResultItemClick) then options.onResultItemClick.call @, raw_data
+                  resultsContainer.hide()
+                lastKeyWasTab = false
+                return
+              mousedown : ->
+                input_focus = false
+                return
+              mouseover : ->
+                element = $(@)
+                resultsList.find('li').removeClass 'active'
+                element.addClass 'active'
+                return
             formatted.data 'data',
               attributes : data[num]
               num : num_count
