@@ -26,7 +26,7 @@ class Utils
   @escapeHtml : (text) -> $('<span/>').text(text).html()
   
   # Move inputs' placeholder attribute to disabled-placeholder and vice versa
-  @switchPlaceholder : (input, enable) ->
+  @setPlaceholderEnabled : (input, enable) ->
     targets = ['placeholder', 'disabled-placeholder']
     if enable
       from = targets[1]
@@ -121,7 +121,7 @@ class Events
   @onSelectionAdd : (scope, containerElement, detachedElement, options, item, selections) ->
     element = options.onSelectionAdd.call scope, containerElement, detachedElement, options
     
-    Utils.switchPlaceholder scope, selections.length is 0
+    Utils.setPlaceholderEnabled scope, selections.length is 0
     
     if $.isFunction options.afterSelectionAdd
       options.afterSelectionAdd.call scope, element, item, selections
@@ -130,7 +130,7 @@ class Events
     if $.isFunction options.onSelectionRemove
       options.onSelectionRemove.call scope, element, options
     
-    Utils.switchPlaceholder scope, selections.length is 0
+    Utils.setPlaceholderEnabled scope, selections.length is 0
     
     if $.isFunction options.afterSelectionRemove
       options.afterSelectionRemove.call scope, element, item, selections
@@ -139,7 +139,7 @@ class Events
     if $.isFunction options.afterSelectionClick
       options.afterSelectionClick.call scope, element, item, selections
 
-    Utils.switchPlaceholder scope, selections.length is 0
+    Utils.setPlaceholderEnabled scope, selections.length is 0
 
 
 ###*
@@ -602,7 +602,7 @@ pluginMethods =
       if prefilledValue isnt ''
         input.val ''
         selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
-        Utils.switchPlaceholder input, false
+        Utils.setPlaceholderEnabled input, false
       # Append input to DOM.
       input.after hiddenInput
       selectionsContainer.on
@@ -789,7 +789,7 @@ pluginMethods =
             selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
             resultsContainer.hide()
           if interval then clearInterval interval
-          Utils.switchPlaceholder element, currentSelection.isEmpty()
+          Utils.setPlaceholderEnabled element, currentSelection.isEmpty()
           return
           
         keydown : (event) -> # On input keydown
@@ -871,7 +871,7 @@ pluginMethods =
               abortRequest()
               resultsContainer.hide()
           
-          Utils.switchPlaceholder input, currentSelection.isEmpty()
+          Utils.setPlaceholderEnabled input, currentSelection.isEmpty()
           return
 
   # plugin method to add an item
