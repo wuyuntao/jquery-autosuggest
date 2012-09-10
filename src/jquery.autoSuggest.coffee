@@ -475,7 +475,7 @@ pluginMethods =
       # TODO: intention of input_focus?
       input_focus = false
       # TODO: should this be checked if it is really an input?
-      input = $ @
+      input = $(@)
 
       # TODO: needs definition
       element = null
@@ -549,7 +549,7 @@ pluginMethods =
         item = $ "<li class=\"as-selection-item\" id=\"as-selection-#{num}\" data-value=\"#{Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))}\"></li>"
         item.on
           'click' : ->
-            element = $ @
+            element = $(@)
             Events.onSelectionClick input, element, options, data[options.selectedValuesProp], currentSelection.getAll()
             selectionsContainer.children().removeClass 'selected'
             element.addClass 'selected'
@@ -670,7 +670,7 @@ pluginMethods =
           if forward
             formatted = $ "<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>"
             formatted.click ->
-              element = $ @
+              element = $(@)
               raw_data = element.data 'data'
               number = raw_data.num
               if selectionsContainer.find("#as-selection-#{number}").length <= 0 && !lastKeyWasTab
@@ -686,7 +686,7 @@ pluginMethods =
               input_focus = false
               return
             formatted.mouseover ->
-              element = $ @
+              element = $(@)
               resultsList.find('li').removeClass 'active'
               element.addClass 'active'
               return
@@ -758,7 +758,7 @@ pluginMethods =
 
       input.on
         focus : -> # On input focus
-          element = $ @
+          element = $(@)
           if !options.usePlaceholder && element.val() is options.startText && currentSelection.isEmpty()
             element.val ''
           else if input_focus
@@ -782,7 +782,7 @@ pluginMethods =
           return true
 
         blur : -> # On input blur
-          element = $ @
+          element = $(@)
           if !options.usePlaceholder && element.val() is '' && currentSelection.isEmpty() && prefilledValue is '' && options.minChars > 0
             element.val options.startText
           else if input_focus
@@ -876,14 +876,14 @@ pluginMethods =
 
   # plugin method to add an item
   add : (items...) ->
-    element = $ @
+    element = $(@)
     for item in items
       element.trigger 'addSelection', item
     return
 
   # plugin method to remove an item
   remove : (values...) ->
-    element = $ @
+    element = $(@)
     for value in values
       element.trigger 'removeSelection', value
     return
