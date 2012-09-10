@@ -718,7 +718,8 @@ pluginMethods =
                 workingData[options.selectedItemProp] = workingData[options.selectedItemProp].replace(regex, '<em>$1</em>')
             else
               # $ object
-              workingData[options.selectedItemProp].html workingData[options.selectedItemProp].html().replace(regex, '<em>$1</em>')
+              if options.resultsHighlight && query.length > 0
+                workingData[options.selectedItemProp].html workingData[options.selectedItemProp].html().replace(regex, '<em>$1</em>')
             unless options.formatList
               formatted = formatted.html workingData[options.selectedItemProp]
             else

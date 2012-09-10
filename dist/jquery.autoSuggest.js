@@ -837,7 +837,9 @@ Based on the 1.6er release dated in July, 2012
                   workingData[options.selectedItemProp] = workingData[options.selectedItemProp].replace(regex, '<em>$1</em>');
                 }
               } else {
-                workingData[options.selectedItemProp].html(workingData[options.selectedItemProp].html().replace(regex, '<em>$1</em>'));
+                if (options.resultsHighlight && query.length > 0) {
+                  workingData[options.selectedItemProp].html(workingData[options.selectedItemProp].html().replace(regex, '<em>$1</em>'));
+                }
               }
               if (!options.formatList) {
                 formatted = formatted.html(workingData[options.selectedItemProp]);
