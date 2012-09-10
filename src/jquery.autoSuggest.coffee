@@ -696,27 +696,26 @@ pluginMethods =
             formatted.data 'data',
               attributes : data[num]
               num : num_count
-            this_data = $.extend {}, data[num]
+            # copy the data object to work with it
+            workingData = $.extend {}, data[num]
             query = query.replace /"/g, '\\"'
-            regx =  unless options.matchCase
+            regex =  unless options.matchCase
               new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + Utils.escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "gi")
             else
               new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + Utils.escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g")
             ### When this is a string, escape the value and process a regular replacement for highlighting.###
-            if typeof this_data[options.selectedItemProp] is 'string'
-              this_data[options.selectedItemProp] = Utils.escapeHtml(this_data[options.selectedItemProp])
+            if typeof workingData[options.selectedItemProp] is 'string'
+              workingData[options.selectedItemProp] = Utils.escapeHtml(workingData[options.selectedItemProp])
               if options.resultsHighlight && query.length > 0
-                this_data[options.selectedItemProp] = this_data[options.selectedItemProp].replace regx, '<em>$1</em>'
+                workingData[options.selectedItemProp] = workingData[options.selectedItemProp].replace(regex, '<em>$1</em>')
             else
               # $ object
-              this_data[options.selectedItemProp].html this_data[options.selectedItemProp].html().replace(regx, '<em>$1</em>')
+              workingData[options.selectedItemProp].html workingData[options.selectedItemProp].html().replace(regex, '<em>$1</em>')
             unless options.formatList
-              formatted = formatted.html(this_data[options.selectedItemProp])
+              formatted = formatted.html workingData[options.selectedItemProp]
             else
-              formatted = options.formatList.call @, this_data, formatted
+              formatted = options.formatList.call @, workingData, formatted
             resultsList.append formatted
-            # GC: free memory
-            this_data = null
             matchCount++
             if options.retrieveLimit && options.retrieveLimit is matchCount
               break
