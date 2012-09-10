@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.0.0 - 2012-09-10
+/*! jQuery AutoSuggest - v2.0.0 - 2012-09-11
 * http://hlsolutions.github.com/jquery-autosuggest
 * Copyright (c) 2012 Jan Philipp; Licensed MIT, GPL */
 
@@ -18,6 +18,7 @@ Based on the 1.6er release dated in July, 2012
 
 (function() {
   var $, ConfigResolver, Events, SelectionHolder, Utils, defaults, pluginMethods,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice;
 
   $ = jQuery;
@@ -556,7 +557,7 @@ Based on the 1.6er release dated in July, 2012
       */
 
       return this.each(function(element) {
-        var abortRequest, addSelection, clonePublicApi, currentSelection, elementId, hiddenInput, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
+        var abortRequest, addSelection, clonePublicApi, currentSelection, elementId, hiddenInputField, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
         options.inputAttrs = $.extend(options.inputAttrs, {});
         input_focus = false;
         input = $(this);
@@ -583,8 +584,8 @@ Based on the 1.6er release dated in July, 2012
         inputWrapper = $("#as-original-" + element);
         resultsContainer = $("<div class=\"as-results\" id=\"as-results-" + element + "\"></div>");
         resultsList = $("<ul class=\"as-list\"></ul>");
-        hiddenInput = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_" + element + "\" id=\"as-values-" + element + "\" />");
-        currentSelection = new SelectionHolder(hiddenInput);
+        hiddenInputField = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_" + element + "\" id=\"as-values-" + element + "\" />");
+        currentSelection = new SelectionHolder(hiddenInputField);
         prefilledValue = '';
         interval = null;
         timeout = null;
@@ -703,7 +704,7 @@ Based on the 1.6er release dated in July, 2012
           selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected');
           Utils.setPlaceholderEnabled(input, false);
         }
-        input.after(hiddenInput);
+        input.after(hiddenInputField);
         selectionsContainer.on({
           'click': function() {
             input_focus = true;
@@ -723,8 +724,12 @@ Based on the 1.6er release dated in July, 2012
                   ignore if the following keys are pressed: [del] [shift] [capslock]
           */
 
-          var string;
-          if (lastKeyPressCode === 46 || (lastKeyPressCode > 8 && lastKeyPressCode < 32)) {
+          var string, _k, _results;
+          if (lastKeyPressCode === 46 || __indexOf.call((function() {
+            _results = [];
+            for (_k = 9; _k < 31; _k++){ _results.push(_k); }
+            return _results;
+          }).apply(this), lastKeyPressCode) >= 0) {
             resultsContainer.hide();
             return;
           }

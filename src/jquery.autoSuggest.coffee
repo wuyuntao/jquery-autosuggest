@@ -507,9 +507,9 @@ pluginMethods =
       inputWrapper = $("#as-original-#{element}")
       resultsContainer = $("<div class=\"as-results\" id=\"as-results-#{element}\"></div>")
       resultsList =  $("<ul class=\"as-list\"></ul>")
-      hiddenInput = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{element}\" id=\"as-values-#{element}\" />")
+      hiddenInputField = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{element}\" id=\"as-values-#{element}\" />")
 
-      currentSelection = new SelectionHolder(hiddenInput)
+      currentSelection = new SelectionHolder(hiddenInputField)
       prefilledValue = ''
       interval = null
       timeout = null
@@ -606,7 +606,7 @@ pluginMethods =
         selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
         Utils.setPlaceholderEnabled input, false
       # Append input to DOM.
-      input.after hiddenInput
+      input.after hiddenInputField
       selectionsContainer.on
         'click' : ->
           input_focus = true
@@ -626,7 +626,7 @@ pluginMethods =
         This might cause problem so we move the line to key events section;
         ignore if the following keys are pressed: [del] [shift] [capslock]
         ###
-        if lastKeyPressCode is 46 || (lastKeyPressCode > 8 && lastKeyPressCode < 32)
+        if lastKeyPressCode is 46 || lastKeyPressCode in [9...31]
           resultsContainer.hide()
           return
         string = input.val().replace /[\\]+|[\/]+/g, ''
