@@ -569,7 +569,7 @@ Based on the 1.6er release dated in July, 2012
       */
 
       return this.each(function(element) {
-        var abortRequest, addSelection, clonePublicApi, currentSelection, elementId, hiddenInputField, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
+        var abortRequest, addSelection, clonePublicApi, currentSelection, elementId, hiddenInputField, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
         options.inputAttrs = $.extend(options.inputAttrs, {});
         input_focus = false;
         input = $(this);
@@ -598,7 +598,6 @@ Based on the 1.6er release dated in July, 2012
         resultsList = $("<ul class=\"as-list\"></ul>");
         hiddenInputField = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_" + element + "\" id=\"as-values-" + element + "\" />");
         currentSelection = new SelectionHolder(hiddenInputField);
-        prefilledValue = '';
         interval = null;
         timeout = null;
         prev = '';
@@ -689,10 +688,8 @@ Based on the 1.6er release dated in July, 2012
                 addSelection(item, "000" + i);
               }
             }
-            prefilledValue = options.preFill;
             break;
           case 'array':
-            prefilledValue = '';
             if (options.preFill.length) {
               if ($.isFunction(options.afterRequest)) {
                 options.preFill = options.afterRequest.call(this, options.preFill);
@@ -704,14 +701,13 @@ Based on the 1.6er release dated in July, 2012
                 if (typeof new_value === 'undefined') {
                   new_value = '';
                 }
-                prefilledValue += new_value + ',';
                 if (new_value !== '') {
                   addSelection(item, "000" + i);
                 }
               }
             }
         }
-        if (prefilledValue !== '') {
+        if (!currentSelection.isEmpty()) {
           input.val('');
           selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected');
           Utils.setPlaceholderEnabled(input, false);
@@ -942,7 +938,7 @@ Based on the 1.6er release dated in July, 2012
           },
           blur: function() {
             element = $(this);
-            if (!options.usePlaceholder && element.val() === '' && currentSelection.isEmpty() && prefilledValue === '' && options.minChars > 0) {
+            if (!options.usePlaceholder && element.val() === '' && currentSelection.isEmpty() && options.minChars > 0) {
               element.val(options.startText);
             } else if (input_focus) {
               selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected');

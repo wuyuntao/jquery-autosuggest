@@ -522,7 +522,6 @@ pluginMethods =
       hiddenInputField = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{element}\" id=\"as-values-#{element}\" />")
 
       currentSelection = new SelectionHolder(hiddenInputField)
-      prefilledValue = ''
       interval = null
       timeout = null
       prev = ''
@@ -598,9 +597,7 @@ pluginMethods =
             item["#{options.selectedValuesProp}"] = value
             if value isnt ''
               addSelection item, "000#{i}"
-          prefilledValue = options.preFill
         when 'array'
-          prefilledValue = ''
           if options.preFill.length
             # Call the afterRequest interceptor if required.
             if $.isFunction options.afterRequest
@@ -609,11 +606,10 @@ pluginMethods =
               new_value = item[options.selectedValuesProp]
               if typeof new_value is 'undefined'
                 new_value = ''
-              prefilledValue += new_value + ','
               if new_value isnt ''
                 addSelection item, "000#{i}"
 
-      if prefilledValue isnt ''
+      unless currentSelection.isEmpty()
         input.val ''
         selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
         Utils.setPlaceholderEnabled input, false
@@ -797,7 +793,7 @@ pluginMethods =
 
         blur : -> # On input blur
           element = $(@)
-          if !options.usePlaceholder && element.val() is '' && currentSelection.isEmpty() && prefilledValue is '' && options.minChars > 0
+          if !options.usePlaceholder && element.val() is '' && currentSelection.isEmpty() && options.minChars > 0
             element.val options.startText
           else if input_focus
             selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
