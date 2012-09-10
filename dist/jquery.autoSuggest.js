@@ -556,7 +556,7 @@ Based on the 1.6er release dated in July, 2012
       */
 
       return this.each(function(element) {
-        var abortRequest, actualInputWrapper, addSelection, currentSelection, elementId, hiddenInput, i, input, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
+        var abortRequest, addSelection, currentSelection, elementId, hiddenInput, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
         options.inputAttrs = $.extend(options.inputAttrs, {});
         input_focus = false;
         input = $(this);
@@ -580,7 +580,7 @@ Based on the 1.6er release dated in July, 2012
         }
         input.wrap("<ul class=\"as-selections\" id=\"as-selections-" + element + "\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-" + element + "\"></li>");
         selectionsContainer = $("#as-selections-" + element);
-        actualInputWrapper = $("#as-original-" + element);
+        inputWrapper = $("#as-original-" + element);
         resultsContainer = $("<div class=\"as-results\" id=\"as-results-" + element + "\"></div>");
         resultsList = $("<ul class=\"as-list\"></ul>");
         hiddenInput = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_" + element + "\" id=\"as-values-" + element + "\" />");
@@ -646,11 +646,11 @@ Based on the 1.6er release dated in July, 2012
             return false;
           });
           if (typeof data[options.selectedItemProp] !== 'string') {
-            Events.onSelectionAdd(input, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll());
+            Events.onSelectionAdd(input, inputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll());
           } else {
-            Events.onSelectionAdd(input, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll());
+            Events.onSelectionAdd(input, inputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll());
           }
-          return actualInputWrapper.prev();
+          return inputWrapper.prev();
         };
         /*
                 DO START
@@ -963,13 +963,13 @@ Based on the 1.6er release dated in July, 2012
                   } else {
                     _selection = null;
                   }
-                  selectionsContainer.children().not(actualInputWrapper.prev()).removeClass('selected');
-                  if (actualInputWrapper.prev().hasClass('selected')) {
+                  selectionsContainer.children().not(inputWrapper.prev()).removeClass('selected');
+                  if (inputWrapper.prev().hasClass('selected')) {
                     currentSelection.remove(_selection);
-                    Events.onSelectionRemove(input, actualInputWrapper.prev(), options, null, currentSelection.getAll());
+                    Events.onSelectionRemove(input, inputWrapper.prev(), options, null, currentSelection.getAll());
                   } else {
-                    Events.onSelectionClick(input, actualInputWrapper.prev(), options, null, currentSelection.getAll());
-                    actualInputWrapper.prev().addClass('selected');
+                    Events.onSelectionClick(input, inputWrapper.prev(), options, null, currentSelection.getAll());
+                    inputWrapper.prev().addClass('selected');
                   }
                 }
                 if (input.val().length === 1) {

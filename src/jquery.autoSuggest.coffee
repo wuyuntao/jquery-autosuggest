@@ -504,7 +504,7 @@ pluginMethods =
       # Setup basic elements and render them to the DOM
       input.wrap("<ul class=\"as-selections\" id=\"as-selections-#{element}\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-#{element}\"></li>")
       selectionsContainer = $("#as-selections-#{element}")
-      actualInputWrapper = $("#as-original-#{element}")
+      inputWrapper = $("#as-original-#{element}")
       resultsContainer = $("<div class=\"as-results\" id=\"as-results-#{element}\"></div>")
       resultsList =  $("<ul class=\"as-list\"></ul>")
       hiddenInput = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{element}\" id=\"as-values-#{element}\" />")
@@ -564,11 +564,11 @@ pluginMethods =
           input.focus()
           return false
         if typeof data[options.selectedItemProp] isnt 'string'
-          Events.onSelectionAdd input, actualInputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll()
+          Events.onSelectionAdd input, inputWrapper, item.append(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll()
         else
-          Events.onSelectionAdd input, actualInputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll()
+          Events.onSelectionAdd input, inputWrapper, item.text(data[options.selectedItemProp]).prepend(closeElement), options, data, currentSelection.getAll()
 
-        return actualInputWrapper.prev()
+        return inputWrapper.prev()
 
       ###
         DO START
@@ -817,13 +817,13 @@ pluginMethods =
                   _selection = _selections[_selections.length - 1]
                 else
                   _selection = null
-                selectionsContainer.children().not(actualInputWrapper.prev()).removeClass 'selected'
-                if actualInputWrapper.prev().hasClass 'selected'
+                selectionsContainer.children().not(inputWrapper.prev()).removeClass 'selected'
+                if inputWrapper.prev().hasClass 'selected'
                   currentSelection.remove _selection
-                  Events.onSelectionRemove input, actualInputWrapper.prev(), options, null, currentSelection.getAll()
+                  Events.onSelectionRemove input, inputWrapper.prev(), options, null, currentSelection.getAll()
                 else
-                  Events.onSelectionClick input, actualInputWrapper.prev(), options, null, currentSelection.getAll()
-                  actualInputWrapper.prev().addClass 'selected'
+                  Events.onSelectionClick input, inputWrapper.prev(), options, null, currentSelection.getAll()
+                  inputWrapper.prev().addClass 'selected'
               if input.val().length is 1
                 resultsContainer.hide()
                 prev = ''
