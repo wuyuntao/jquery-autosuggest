@@ -503,11 +503,11 @@ pluginMethods =
 
       # Setup basic elements and render them to the DOM
       input.wrap("<ul class=\"as-selections\" id=\"as-selections-#{element}\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-#{element}\"></li>")
-      selectionsContainer = $ "#as-selections-#{element}"
-      actualInputWrapper = $ "#as-original-#{element}"
-      resultsContainer = $ "<div class=\"as-results\" id=\"as-results-#{element}\"></div>"
-      resultsList =  $ "<ul class=\"as-list\"></ul>"
-      hiddenInput = $ "<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{element}\" id=\"as-values-#{element}\" />"
+      selectionsContainer = $("#as-selections-#{element}")
+      actualInputWrapper = $("#as-original-#{element}")
+      resultsContainer = $("<div class=\"as-results\" id=\"as-results-#{element}\"></div>")
+      resultsList =  $("<ul class=\"as-list\"></ul>")
+      hiddenInput = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{element}\" id=\"as-values-#{element}\" />")
 
       currentSelection = new SelectionHolder(hiddenInput)
       prefilledValue = ''
