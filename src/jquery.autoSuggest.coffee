@@ -416,7 +416,7 @@ pluginMethods =
     # global reference to the plugin's ajax request object
     ajaxRequest = null
 
-    # Private Option: Indicates whether a server is responsible for a result list or not.
+    # PRIVATE API: Indicates whether a server is responsible for a result list or not.
     if options.remoteFilter is 'auto'
       options.remoteFilter = ($.type data) is 'string'
 
