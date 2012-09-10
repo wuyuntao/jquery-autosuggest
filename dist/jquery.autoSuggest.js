@@ -556,7 +556,7 @@ Based on the 1.6er release dated in July, 2012
       */
 
       return this.each(function(element) {
-        var abortRequest, addSelection, currentSelection, elementId, hiddenInput, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
+        var abortRequest, addSelection, clonePublicApi, currentSelection, elementId, hiddenInput, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prefilledValue, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
         options.inputAttrs = $.extend(options.inputAttrs, {});
         input_focus = false;
         input = $(this);
@@ -610,6 +610,12 @@ Based on the 1.6er release dated in July, 2012
             selectionsContainer.find("li[data-value=\"" + (Utils.escapeHtml(value)) + "\"]").remove();
           }
         };
+        clonePublicApi = function() {
+          return {
+            add: publicApi.add,
+            remove: publicApi.remove
+          };
+        };
         input.bind('addSelection', function(event, data) {
           return publicApi.add(data);
         });
@@ -657,7 +663,7 @@ Based on the 1.6er release dated in July, 2012
         */
 
         if ($.isFunction(options.start)) {
-          options.start.call(this, publicApi);
+          options.start.call(this, clonePublicApi());
         }
         switch ($.type(options.preFill)) {
           case 'string':

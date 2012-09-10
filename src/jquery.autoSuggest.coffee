@@ -531,6 +531,9 @@ pluginMethods =
           currentSelection.remove value
           selectionsContainer.find("li[data-value=\"#{Utils.escapeHtml(value)}\"]").remove()
           return
+      clonePublicApi = ->
+        add : publicApi.add
+        remove : publicApi.remove
 
       # Register an add event.
       input.bind 'addSelection', (event, data) ->
@@ -574,7 +577,7 @@ pluginMethods =
         DO START
       ###
       if $.isFunction options.start
-        options.start.call @, publicApi
+        options.start.call @, clonePublicApi()
 
       switch $.type options.preFill
         when 'string'
