@@ -862,6 +862,8 @@ pluginMethods =
                   input.val ''
                   ### Cancel previous ajaxRequest when new tag is added ###
                   abortRequest()
+              else
+                input.val('')
               if active.length
                 lastKeyWasTab = false
                 active.click()
