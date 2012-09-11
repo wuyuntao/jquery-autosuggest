@@ -1010,7 +1010,7 @@ Based on the 1.6er release dated in July, 2012
                 break;
               case 9:
               case 188:
-                active = resultsContainer.find('li.active:first');
+                active = resultsContainer.find('li.active:visible:first');
                 if (options.canGenerateNewSelections) {
                   lastKeyWasTab = true;
                   i_input = input.val().replace(/(,)/g, '');
@@ -1029,6 +1029,8 @@ Based on the 1.6er release dated in July, 2012
 
                     abortRequest();
                   }
+                } else {
+                  input.val('');
                 }
                 if (active.length) {
                   lastKeyWasTab = false;

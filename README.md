@@ -502,6 +502,11 @@ echo json_encode($data);
 
 ## Release History
 
+## 2012-09-11 Version 2.0.1
+
+* Fix: Leaving the input field does not work when `selectionLimit` is greater than 1 using the tab key.
+* Fix: Using `canGenerateNewSelections = false` does not cleared the input field using tab or enter key.
+
 ## 2012-09-11 Version 2.0.0
 
 The plugin project now uses **CoffeeScript** and **SASS** for source building. The unit tests run still with **QUnit**. **grunt** is used to manage dependencies, tasks and tests. In addition, **Travis CI** is now checking every commit.
