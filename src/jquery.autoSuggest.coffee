@@ -847,7 +847,7 @@ pluginMethods =
                   return
                 ), options.keyDelay
             when 9, 188 # tab, comma
-              active = resultsContainer.find('li.active:first')
+              active = resultsContainer.find('li.active:visible:first')
               if options.canGenerateNewSelections
                 lastKeyWasTab = true
                 # remove all comma
