@@ -5,7 +5,7 @@ ruby:
   - 1.8
 sass:
   - 3.1
-script: bundle exec rake spec_travis
+script: bundle exec
 gemfile: .travis.gemfile
 before_install:
   - "sudo gem install sass"
