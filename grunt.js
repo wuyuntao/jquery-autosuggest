@@ -111,6 +111,9 @@ module.exports = function (grunt) {
     }
   });
 
+  // https://github.com/kahlil/grunt-compass
+  grunt.loadNpmTasks('grunt-compass');
+
   grunt.loadTasks('tasks');
 
   // Default task: Complete testing and building.
