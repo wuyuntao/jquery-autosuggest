@@ -480,7 +480,7 @@ pluginMethods =
     For each selected item, we will create an own scope.
     All variables above are "instance" locale!
     ###
-    return @each (element) ->
+    return @each ->
 
       # prevent null pointer exceptions
       options.inputAttrs = $.extend options.inputAttrs, {}

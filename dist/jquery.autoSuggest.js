@@ -569,8 +569,8 @@ Based on the 1.6er release dated in July, 2012
           All variables above are "instance" locale!
       */
 
-      return this.each(function(element) {
-        var abortRequest, addSelection, clonePublicApi, currentSelection, elementId, hiddenInputField, hiddenInputFieldId, hiddenInputFieldName, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
+      return this.each(function() {
+        var abortRequest, addSelection, clonePublicApi, currentSelection, element, elementId, hiddenInputField, hiddenInputFieldId, hiddenInputFieldName, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
         options.inputAttrs = $.extend(options.inputAttrs, {});
         input_focus = false;
         input = $(this);
