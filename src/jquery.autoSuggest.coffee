@@ -56,7 +56,7 @@ class ConfigResolver
   @getExtraParams = (options) ->
     result = options.extraParams
     if $.isFunction result
-      result = result(@)
+      result = result(this)
 
     ###*
      * AutoSuggest <= 1.7 supported only a string of params. Since 2, the extra params will be used as a standard
@@ -459,14 +459,14 @@ pluginMethods =
 
           onDone = (data) ->
             if $.isFunction options.afterRequest
-              data = options.afterRequest.apply @, [data]
+              data = options.afterRequest.apply this, [data]
             callback(data, query)
           ajaxRequest = $.ajax(ajaxRequestConfig).done(onDone)
 
           # Apply jQuery Deferred Callbacks.
-          Events.onAjaxRequestDone @, ajaxRequest, options
-          Events.onAjaxRequestFail @, ajaxRequest, options
-          Events.onAjaxRequestAlways @, ajaxRequest, options
+          Events.onAjaxRequestDone this, ajaxRequest, options
+          Events.onAjaxRequestFail this, ajaxRequest, options
+          Events.onAjaxRequestAlways this, ajaxRequest, options
 
           return # return nothing
 
@@ -488,7 +488,7 @@ pluginMethods =
       # TODO: intention of input_focus?
       input_focus = false
       # TODO: should this be checked if it is really an input?
-      input = $(@)
+      input = $(this)
 
       # TODO: needs definition
       element = null
@@ -581,7 +581,7 @@ pluginMethods =
         item = $ "<li class=\"as-selection-item\" id=\"as-selection-#{num}\" data-value=\"#{Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))}\"></li>"
         item.on
           'click' : ->
-            element = $(@)
+            element = $(this)
             Events.onSelectionClick input, element, options, data[options.selectedValuesProp], currentSelection.getAll()
             selectionsContainer.children().removeClass 'selected'
             element.addClass 'selected'
@@ -607,7 +607,7 @@ pluginMethods =
         DO START
       ###
       if $.isFunction options.start
-        options.start.call @, clonePublicApi()
+        options.start.call this, clonePublicApi()
 
       switch $.type options.preFill
         when 'string'
@@ -620,7 +620,7 @@ pluginMethods =
           if options.preFill.length
             # Call the afterRequest interceptor if required.
             if $.isFunction options.afterRequest
-              options.preFill = options.afterRequest.call @, options.preFill
+              options.preFill = options.afterRequest.call this, options.preFill
             for item, i in options.preFill
               new_value = item[options.selectedValuesProp]
               if typeof new_value is 'undefined'
@@ -671,7 +671,7 @@ pluginMethods =
       processRequest = (string) ->
         # Call hook "before-request"
         if $.isFunction options.beforeRequest
-          string = options.beforeRequest.apply @, [string, options]
+          string = options.beforeRequest.apply this, [string, options]
         abortRequest()
         fetcher string, processData
 
@@ -700,7 +700,7 @@ pluginMethods =
             formatted = $("<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>")
             formatted.on
               click : ->
-                element = $(@)
+                element = $(this)
                 raw_data = element.data 'data'
                 number = raw_data.num
                 if selectionsContainer.find("#as-selection-#{number}").length <= 0 && !lastKeyWasTab
@@ -708,7 +708,7 @@ pluginMethods =
                   input.val('').focus()
                   prev = ''
                   addSelection data, number
-                  if $.isFunction(options.onResultItemClick) then options.onResultItemClick.call @, raw_data
+                  if $.isFunction(options.onResultItemClick) then options.onResultItemClick.call this, raw_data
                   resultsContainer.hide()
                 lastKeyWasTab = false
                 return
@@ -716,7 +716,7 @@ pluginMethods =
                 input_focus = false
                 return
               mouseover : ->
-                element = $(@)
+                element = $(this)
                 resultsList.find('li').removeClass 'active'
                 element.addClass 'active'
                 return
@@ -742,7 +742,7 @@ pluginMethods =
             unless options.formatList
               formatted = formatted.html workingData[options.selectedItemProp]
             else
-              formatted = options.formatList.call @, workingData, formatted
+              formatted = options.formatList.call this, workingData, formatted
             resultsList.append formatted
             matchCount++
             if options.retrieveLimit && options.retrieveLimit is matchCount
@@ -758,7 +758,7 @@ pluginMethods =
         resultsContainerVisible = matchCount > 0 || options.showResultListWhenNoMatch
         if resultsContainerVisible
           resultsContainer.show()
-        if $.isFunction(options.afterResultListShow) then options.afterResultListShow.call @, resultsContainerVisible
+        if $.isFunction(options.afterResultListShow) then options.afterResultListShow.call this, resultsContainerVisible
         return
 
       moveResultSelection = (direction) ->
@@ -788,7 +788,7 @@ pluginMethods =
 
       input.on
         focus : -> # On input focus
-          element = $(@)
+          element = $(this)
           if !options.usePlaceholder && element.val() is options.startText && currentSelection.isEmpty()
             element.val ''
           else if input_focus
@@ -812,7 +812,7 @@ pluginMethods =
           return true
 
         blur : -> # On input blur
-          element = $(@)
+          element = $(this)
           if !options.usePlaceholder && element.val() is '' && currentSelection.isEmpty() && options.minChars > 0
             element.val options.startText
           else if input_focus
@@ -908,14 +908,14 @@ pluginMethods =
 
   # plugin method to add an item
   add : (items...) ->
-    element = $(@)
+    element = $(this)
     for item in items
       element.trigger 'addSelection', item
     return
 
   # plugin method to remove an item
   remove : (values...) ->
-    element = $(@)
+    element = $(this)
     for value in values
       element.trigger 'removeSelection', value
     return
@@ -924,6 +924,6 @@ pluginMethods =
 # Define the actual jQuery plugin constructor.
 $.fn.autoSuggest = (method) ->
   if pluginMethods[method]
-    pluginMethods[method].apply @, (Array.prototype.slice.call arguments, 1)
+    pluginMethods[method].apply this, (Array.prototype.slice.call arguments, 1)
   else
-    pluginMethods.init.apply @, arguments
+    pluginMethods.init.apply this, arguments
