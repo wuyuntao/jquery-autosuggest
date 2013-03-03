@@ -99,6 +99,12 @@ This is also applies to the hidden input filed that holds all of the selected va
 ```
 I.e., the id of the hidden input input will be now `as-values-CUSTOM_ID`.
 
+#### useOriginalInputName (boolean)
+Ensures that the name of the hidden field is exactly the name of the `input` field on which the plugin was executed.
+This means also that the original `input` field will be renamed (a prefix `old_` will be prepended).
+
+The default for this option is `false`.
+
 #### inputAttrs (object)
 Specify additional attributes which will be applied to each input on setup.
 
@@ -507,6 +513,7 @@ echo json_encode($data);
 * Fix: Travis builds weren't be possible. Instead of using hooks in `travis.yml` this will be now managed by a `Gemfile` and `bundler`.
 * Fix: Some dependencies were not fixed correctly (i.e. CoffeeScript wents automatically up to 1.5). Until this is tests, this isn't not be supported.
 * Fix: Exclude the Grunt task for `compass`.
+* Add: New option `useOriginalInputName` which ensures that the hidden field's name will be set to the `input` ones.
 
 ## 2012-09-11 Version 2.0.1
 

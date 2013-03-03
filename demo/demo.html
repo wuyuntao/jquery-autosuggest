@@ -117,6 +117,37 @@
                     output.text('Selected: ' + input.parent('.as-original').find(':hidden').val());
                 });
             }());
+            (function () {
+                var container = builder('Demo with static data, native Placeholder, showResultListWhenNoMatch and useOriginalHtmlId=true.', 'name', 'Name');
+                var form = container.find('form');
+                var input = container.find('input[type=text]');
+                var output = container.find('pre');
+
+                var data = [
+                    {value : "21", name : "Mick Jagger"},
+                    {value : "43", name : "Johnny Storm"},
+                    {value : "46", name : "Richard Hatch"},
+                    {value : "54", name : "Kelly Slater"},
+                    {value : "55", name : "Rudy Hamilton"},
+                    {value : "79", name : "Michael Jordan"}
+                ];
+                var options = {
+                    selectedItemProp : "name",
+                    searchObjProps : "name",
+                    fadeOut : 'slow',
+                    usePlaceholder : true,
+                    startText : '',
+                    emptyText : 'No results for >>{0}<< found.',
+                    showResultListWhenNoMatch : true,
+                    useOriginalInputName : true
+                };
+                input.autoSuggest(data, options);
+
+                form.submit(function (event) {
+                    event.preventDefault();
+                    output.text('Selected: ' + input.parent('.as-original').find(':hidden').val());
+                });
+            }());
 
             (function () {
                 var container = builder('Demo with static data + renderer + fake placeholder.', 'name', 'Name');

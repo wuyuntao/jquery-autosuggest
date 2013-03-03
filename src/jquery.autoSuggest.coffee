@@ -160,6 +160,8 @@ defaults =
 
   asHtmlID : false
 
+  useOriginalInputName : false
+
   ###*
    * Defines whether the HTML5 placeholder attribute should used.
   ###
@@ -491,15 +493,30 @@ pluginMethods =
       # TODO: needs definition
       element = null
       elementId = null
+      hiddenInputField = null
+      hiddenInputFieldId = null
+      hiddenInputFieldName = null
 
       # Configure local IDs.
-      unless options.asHtmlID
+      if options.asHtmlID
+        element = options.asHtmlID
+        elementId = element
+        hiddenInputFieldId = "as-values-#{element}"
+        if options.useOriginalInputName
+          hiddenInputFieldName = input.attr('name')
+          input.attr name: "old_#{input.attr('name')}"
+        else
+          hiddenInputFieldName = "as_values_#{element}"
+      else
         # ensures there will be unique IDs on the page if autoSuggest() is called multiple times
         element = "#{element || ''}#{Math.floor(Math.random() * 100)}"
         elementId = "as-input-#{element}"
-      else
-        element = options.asHtmlID
-        elementId = element
+        hiddenInputFieldId = "as-values-#{element}"
+        if options.useOriginalInputName
+          hiddenInputFieldName = input.attr('name')
+          input.attr name: "old_#{input.attr('name')}"
+        else
+          hiddenInputFieldName = "as_values_#{element}"
 
       # override always the id
       options.inputAttrs.id = elementId
@@ -519,7 +536,9 @@ pluginMethods =
       inputWrapper = $("#as-original-#{element}")
       resultsContainer = $("<div class=\"as-results\" id=\"as-results-#{element}\"></div>")
       resultsList =  $("<ul class=\"as-list\"></ul>")
-      hiddenInputField = $("<input type=\"hidden\" class=\"as-values\" name=\"as_values_#{element}\" id=\"as-values-#{element}\" />")
+
+      # Try to find an already existing input field with this id. Otherwise construct a new one.
+      hiddenInputField = $("<input type=\"hidden\" class=\"as-values\" name=\"#{hiddenInputFieldName}\" id=\"#{hiddenInputFieldId}\" />")
 
       currentSelection = new SelectionHolder(hiddenInputField)
       interval = null
