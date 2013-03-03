@@ -537,7 +537,7 @@ pluginMethods =
       resultsContainer = $("<div class=\"as-results\" id=\"as-results-#{element}\"></div>")
       resultsList =  $("<ul class=\"as-list\"></ul>")
 
-      # Try to find an already existing input field with this id. Otherwise construct a new one.
+      # Create the hidden field which contains all selections (see also SelectionHolder).
       hiddenInputField = $("<input type=\"hidden\" class=\"as-values\" name=\"#{hiddenInputFieldName}\" id=\"#{hiddenInputFieldId}\" />")
 
       currentSelection = new SelectionHolder(hiddenInputField)
