@@ -3,13 +3,8 @@ node_js:
   - 0.8
 ruby:
   - 1.8
-sass:
-  - 3.1
 script: bundle exec
 gemfile: .travis.gemfile
-before_install:
-  - "sudo gem install sass"
-  - "sudo gem install compass"
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
