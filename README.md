@@ -502,6 +502,12 @@ echo json_encode($data);
 
 ## Release History
 
+## 2013-03-03 Version 2.1.0
+
+* Fix: Travis builds weren't be possible. Instead of using hooks in `travis.yml` this will be now managed by a `Gemfile` and `bundler`.
+* Fix: Some dependencies were not fixed correctly (i.e. CoffeeScript wents automatically up to 1.5). Until this is tests, this isn't not be supported.
+* Fix: Exclude the Grunt task for `compass`.
+
 ## 2012-09-11 Version 2.0.1
 
 * Fix: Leaving the input field does not work when `selectionLimit` is greater than 1 using the tab key.
