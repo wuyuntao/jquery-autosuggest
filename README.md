@@ -401,6 +401,16 @@ Example 2:
 $('input').autoSuggest('remove', 4711, 4722)
 ```
 
+#### defaults
+Arguments: `options` an object, `replace` an optional way to replace the defaults instead of merging only
+
+Example: Set `neverSubmit` being always `true`.
+```javascript
+$.fn.autoSuggest('defaults', {neverSubmit: true})
+```
+
+Basically, the command will perform a simple `$.extend(defaults, yourOptions)`. If you do not want to merge, but replace, then you can use `replace = true`. Please note you will be override the plugins defaults! Be careful!
+
 ## Examples
 
 ### Multiple elements on one page
