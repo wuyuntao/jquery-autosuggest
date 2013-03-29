@@ -44,7 +44,7 @@
   },
   "dependencies": {},
   "scripts": {
-    "test": "node_modules/.bin/grunt travis --verbose"
+    "test": "grunt travis --verbose"
   },
   "keywords": [
     "jquery",
