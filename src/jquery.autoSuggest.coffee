@@ -920,6 +920,11 @@ pluginMethods =
       element.trigger 'removeSelection', value
     return
 
+  # plugin method to reset the defaults (optionally reset)
+  defaults : (options, replace = false) ->
+    defaults = {} if replace
+    $.extend defaults, options
+    return
 
 # Define the actual jQuery plugin constructor.
 $.fn.autoSuggest = (method) ->

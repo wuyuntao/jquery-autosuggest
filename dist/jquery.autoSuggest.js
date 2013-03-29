@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.2.0 - 2013-03-29
+/*! jQuery AutoSuggest - v2.3.0 - 2013-03-29
  * URL: http://hlsolutions.github.com/jquery-autosuggest
  * Copyright (c) 2013 Jan Philipp
  * Licensed MIT, GPL */
@@ -1115,6 +1115,15 @@ Based on the 1.6er release dated in July, 2012
         value = values[_i];
         element.trigger('removeSelection', value);
       }
+    },
+    defaults: function(options, replace) {
+      if (replace == null) {
+        replace = false;
+      }
+      if (replace) {
+        defaults = {};
+      }
+      $.extend(defaults, options);
     }
   };
 

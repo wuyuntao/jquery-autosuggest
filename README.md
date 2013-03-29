@@ -508,6 +508,14 @@ echo json_encode($data);
 
 ## Release History
 
+## 2013-03-29 Version 2.3.0
+
+* Add method `defaults` allowing extending or overriding the defaults: i.e. `$.fn.autoSuggest('defaults', {searchObjProps: 'title'});`
+
+## 2013-03-29 Version 2.2.0
+
+* Change: Switch to Grunt 0.4
+
 ## 2013-03-03 Version 2.1.0
 
 * Fix: Travis builds weren't be possible. Instead of using hooks in `travis.yml` this will be now managed by a `Gemfile` and `bundler`.
