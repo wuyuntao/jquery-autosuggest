@@ -1,41 +1,53 @@
 {
-    "name" : "jquery.autoSuggest",
-    "title" : "jQuery AutoSuggest",
-    "description" : "An autosuggest and autocomplete plugin for jQuery. With CoffeeScript and SASS flavour.",
-    "version" : "2.1.0",
-    "homepage" : "http://hlsolutions.github.com/jquery-autosuggest",
-    "author" : {
-        "name" : "Jan Philipp",
-        "email" : "knallisworld@googlemail.com",
-        "url" : "https://github.com/knalli"
+  "name": "jquery.autoSuggest",
+  "title": "jQuery AutoSuggest",
+  "description": "An autosuggest and autocomplete plugin for jQuery. With CoffeeScript and SASS flavour.",
+  "version": "2.2.0",
+  "homepage": "http://hlsolutions.github.com/jquery-autosuggest",
+  "author": {
+    "name": "Jan Philipp",
+    "email": "knallisworld@googlemail.com",
+    "url": "https://github.com/knalli"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hlsolutions/jquery-autosuggest.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hlsolutions/jquery-autosuggest/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/hlsolutions/jquery-autosuggest/blob/master/LICENSE-MIT"
     },
-    "repository" : {
-        "type" : "git",
-        "url" : "https://github.com/hlsolutions/jquery-autosuggest.git"
-    },
-    "bugs" : {
-        "url" : "https://github.com/hlsolutions/jquery-autosuggest/issues"
-    },
-    "licenses" : [
-        {
-            "type" : "MIT",
-            "url" : "https://github.com/hlsolutions/jquery-autosuggest/blob/master/LICENSE-MIT"
-        },
-        {
-            "type" : "GPL",
-            "url" : "https://github.com/hlsolutions/jquery-autosuggest/blob/master/LICENSE-GPL"
-        }
-    ],
-    "engine" : "node >= 0.8",
-    "devDependencies" : {
-        "grunt" : "~0.3.9",
-        "sqwish" : "0.2.0",
-        "coffee-script" : "~1.3.1",
-        "grunt-compass" : "0.3.8"
-    },
-    "dependencies" : {},
-    "scripts" : {
-        "test" : "grunt travis --verbose"
-    },
-    "keywords" : ["jquery", "autosuggest"]
+    {
+      "type": "GPL",
+      "url": "https://github.com/hlsolutions/jquery-autosuggest/blob/master/LICENSE-GPL"
+    }
+  ],
+  "engine": "node >= 0.8",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "sqwish": "0.2.0",
+    "grunt-contrib-compass": "~0.1.3",
+    "grunt-contrib-watch": "~0.3.1",
+    "grunt-contrib-clean": "~0.4.0",
+    "grunt-contrib-concat": "~0.1.3",
+    "grunt-contrib-coffee": "~0.6.4",
+    "grunt-contrib-qunit": "~0.2.0",
+    "grunt-contrib-jshint": "~0.3.0",
+    "grunt-contrib-connect": "~0.2.0",
+    "grunt-coffeelint": "0.0.6",
+    "grunt-contrib-cssmin": "~0.5.0",
+    "grunt-contrib-uglify": "~0.2.0"
+  },
+  "dependencies": {},
+  "scripts": {
+    "test": "grunt travis --verbose"
+  },
+  "keywords": [
+    "jquery",
+    "autosuggest"
+  ]
 }
