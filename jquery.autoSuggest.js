@@ -116,8 +116,11 @@
 
                 // Setup basic elements and render them to the DOM
                 input.wrap('<ul class="as-selections" id="as-selections-'+x+'"></ul>').wrap('<li class="as-original" id="as-original-'+x+'"></li>');
-                var selections_holder = $("#as-selections-"+x);
-                var org_li = $("#as-original-"+x);
+ 			            
+                var input_parent = input.parent().parent().parent();				
+                var selections_holder = $("#as-selections-"+x, input_parent);				
+                var org_li = $("#as-original-"+x, input_parent);
+                
                 var results_holder = $('<div class="as-results" id="as-results-'+x+'"></div>').hide();
                 var results_ul =  $('<ul class="as-list"></ul>');
                 var values_input = $('<input type="hidden" class="as-values" name="as_values_'+x+'" id="as-values-'+x+'" />');
