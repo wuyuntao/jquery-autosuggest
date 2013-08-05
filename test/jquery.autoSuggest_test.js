@@ -115,7 +115,7 @@
 
     test('Type "Yao Ming" and select it by COMMA', 3, function () {
       el = create();
-      // Type "Yap Ming" and ","
+      // Type "Yao Ming" and ","
       el.focus();
       el.val("Yao Ming");
       el.simulate("keydown", {"keyCode" : keyCode.COMMA});
@@ -129,7 +129,7 @@
 
     test('Type "Yao Ming" and select it by TAB', 3, function () {
       el = create();
-      // Type "Yap Ming" and "\t"
+      // Type "Yao Ming" and "\t"
       el.focus();
       el.val("Yao Ming");
       el.simulate("keydown", {"keyCode" : keyCode.TAB});
@@ -143,7 +143,7 @@
 
     asyncTest('Select two values and remove both of them.', 5, function () {
       el = create();
-      // Type "Yap Ming" and ","
+      // Type "Yao Ming" and ","
       el.focus();
       el.val("Yao Ming");
       el.simulate("keydown", {"keyCode" : keyCode.COMMA});
@@ -361,7 +361,7 @@
 
     test('Type "Yao Ming" but press than ESC. No value should be selected.', 1, function () {
       el = create();
-      // Type "Yap Ming" and ","
+      // Type "Yao Ming" and ","
       el.focus();
       el.val("Yao Ming");
       el.simulate("keydown", {"keyCode" : keyCode.ESC});
@@ -489,7 +489,7 @@
       el = create(null, $.extend({}, options, {
         neverSubmit : true
       }));
-      // Type "Yap Ming" and "\t"
+      // Type "Yao Ming" and "\t"
       el.focus();
       el.val("Yao Ming");
       el.simulate("keydown", {"keyCode" : keyCode.ENTER});
