@@ -865,14 +865,14 @@ pluginMethods =
                   keyChange()
                   return
                 ), options.keyDelay
-            when 9, 188 # tab, comma
+            when 9, 188, 13 # tab, comma, return
               active = resultsContainer.find('li.active:visible:first')
               if options.canGenerateNewSelections
                 lastKeyWasTab = true
                 # remove all comma
                 i_input = input.val().replace /(,)/g, ''
                 ### Generate a new bubble with text when no suggestion selected ###
-                if i_input isnt '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length is 0
+                if i_input isnt '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length is 0 && (options.neverSubmit || event.keyCode != 13)
                   event.preventDefault()
                   n_data = {}
                   n_data["#{options.selectedItemProp}"] = i_input

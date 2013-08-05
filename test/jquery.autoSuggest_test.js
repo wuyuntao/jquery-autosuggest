@@ -115,7 +115,7 @@
 
     test('Type "Yao Ming" and select it by COMMA', 3, function () {
       el = create();
-      // Type "Yap Ming" and ","
+      // Type "Yao Ming" and ","
       el.focus();
       el.val("Yao Ming");
       el.simulate("keydown", {"keyCode" : keyCode.COMMA});
@@ -129,7 +129,7 @@
 
     test('Type "Yao Ming" and select it by TAB', 3, function () {
       el = create();
-      // Type "Yap Ming" and "\t"
+      // Type "Yao Ming" and "\t"
       el.focus();
       el.val("Yao Ming");
       el.simulate("keydown", {"keyCode" : keyCode.TAB});
@@ -143,7 +143,7 @@
 
     asyncTest('Select two values and remove both of them.', 5, function () {
       el = create();
-      // Type "Yap Ming" and ","
+      // Type "Yao Ming" and ","
       el.focus();
       el.val("Yao Ming");
       el.simulate("keydown", {"keyCode" : keyCode.COMMA});
@@ -361,7 +361,7 @@
 
     test('Type "Yao Ming" but press than ESC. No value should be selected.', 1, function () {
       el = create();
-      // Type "Yap Ming" and ","
+      // Type "Yao Ming" and ","
       el.focus();
       el.val("Yao Ming");
       el.simulate("keydown", {"keyCode" : keyCode.ESC});
@@ -477,6 +477,28 @@
 
       callbacks.remove(data[0].value);
       equal(selections().length, 0, "Should remove using a callback.");
+    });
+
+    module('Configuration: "options.neverSubmit"', {
+      teardown : function () {
+        remove();
+      }
+    });
+
+    test('Type "Yao Ming" and select it by ENTER', 3, function () {
+      el = create(null, $.extend({}, options, {
+        neverSubmit : true
+      }));
+      // Type "Yao Ming" and "\t"
+      el.focus();
+      el.val("Yao Ming");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+
+      sel = selections();
+      equal(sel.length, 1, "Should have one name");
+      equal($(sel[0]).text(), "×Yao Ming", "Should be Yao Ming");
+      equal(value().val(), ",Yao Ming,", "Should be Yao Ming");
+      remove();
     });
 
     module('Configuration: "onAjaxRequestAlways"', {
