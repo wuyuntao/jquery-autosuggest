@@ -145,6 +145,11 @@ If set to `true` this option will prevent the plugin filters the retrieved data 
 
 Default: `false`
 
+#### canGenerateNewSelections (boolean)
+If set to 'false' this option will prevent users from creating new selections which aren't part of the suggestion.
+
+Default: `true`
+
 #### remoteFilter (boolean/string)
 If set to `false` this option will prevent the plugin filters the retrieved data again. If set to `'auto'` the plugin will resolve this setting regarding the datasource is a server or not. The idea is that in case of a server side response the data are already filtered.
 
