@@ -27,7 +27,7 @@ ul.as-selections li.as-selection-item {
   color: #2b3840;
   font-size: 13px;
   font-family: "Lucida Grande", arial, sans-serif;
-  text-shadow: 0 1px 1px white;
+  text-shadow: 0 1px 1px #fff;
   background-color: #d4eaf6;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #d4eaf6), color-stop(100%, #bfe0f1));
   background: -webkit-linear-gradient(top, #d4eaf6, #bfe0f1);
@@ -62,7 +62,7 @@ ul.as-selections li.as-selection-item a.as-close {
   font-size: 14px;
   font-weight: bold;
   text-shadow: 0 1px 1px white;
-  -webkit-transition: color 0.1s ease-in;
+  -webkit-transition: color .1s ease-in;
 }
 ul.as-selections li.as-selection-item.blur {
   color: #666666;
