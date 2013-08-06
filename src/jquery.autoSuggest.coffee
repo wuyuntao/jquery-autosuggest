@@ -684,7 +684,10 @@ pluginMethods =
         matchCount = 0
         resultsContainer.hide().html(resultsList.html(''))
         num = 0
-        if options.canGenerateNewSelections && options.creationText && $.grep(data, (item) -> item[options.selectedItemProp].toLowerCase() == query ).length is 0 && !currentSelection.exist(query)
+        if options.canGenerateNewSelections and 
+           options.creationText and
+           $.grep(data, (item) -> item[options.selectedItemProp].toLowerCase() is query ).length is 0 and
+           not currentSelection.exist(query)
           formatted = $("<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>")
           formatted.on
             click : ->

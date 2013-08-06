@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.3.0 - 2013-08-05
+/*! jQuery AutoSuggest - v2.3.0 - 2013-08-06
  * URL: http://hlsolutions.github.com/jquery-autosuggest
  * Copyright (c) 2013 Jan Philipp
  * Licensed MIT, GPL */
@@ -22,7 +22,8 @@ Based on the 1.6er release dated in July, 2012
 
   $ = jQuery;
 
-  /* A collection of utility functions.*/
+  /* A collection of utility functions.
+  */
 
 
   Utils = (function() {
@@ -42,6 +43,7 @@ Based on the 1.6er release dated in July, 2012
 
     Utils.setPlaceholderEnabled = function(input, enable) {
       var from, targets, to;
+
       targets = ['placeholder', 'disabled-placeholder'];
       if (enable) {
         from = targets[1];
@@ -63,7 +65,8 @@ Based on the 1.6er release dated in July, 2012
 
   })();
 
-  /* A collection of configuration resolvers.*/
+  /* A collection of configuration resolvers.
+  */
 
 
   ConfigResolver = (function() {
@@ -79,6 +82,7 @@ Based on the 1.6er release dated in July, 2012
 
     ConfigResolver.getExtraParams = function(options) {
       var obj, pair, parts, result, _i, _len, _ref;
+
       result = options.extraParams;
       if ($.isFunction(result)) {
         result = result(this);
@@ -110,7 +114,8 @@ Based on the 1.6er release dated in July, 2012
 
   })();
 
-  /* The SelectionControl maintains and manage any selections.*/
+  /* The SelectionControl maintains and manage any selections.
+  */
 
 
   SelectionHolder = (function() {
@@ -127,6 +132,7 @@ Based on the 1.6er release dated in July, 2012
 
     SelectionHolder.prototype.syncToHiddenField = function() {
       var item, value, _i, _len, _ref;
+
       if (!this.hiddenField) {
         return;
       }
@@ -182,6 +188,7 @@ Based on the 1.6er release dated in July, 2012
 
     Events.onSelectionAdd = function(scope, containerElement, detachedElement, options, item, selections) {
       var element;
+
       element = options.onSelectionAdd.call(scope, containerElement, detachedElement, options);
       Utils.setPlaceholderEnabled(scope, selections.length === 0);
       if ($.isFunction(options.afterSelectionAdd)) {
@@ -507,6 +514,7 @@ Based on the 1.6er release dated in July, 2012
   pluginMethods = {
     init: function(dataSource, options) {
       var ajaxRequest, fetcher;
+
       options = $.extend({}, defaults, options);
       ajaxRequest = null;
       if (options.remoteFilter === 'auto') {
@@ -519,8 +527,10 @@ Based on the 1.6er release dated in July, 2012
           case 'string':
             return function(query, callback) {
               var ajaxRequestConfig, extraParams, onDone, params;
+
               params = {};
-              /* ensures query is encoded*/
+              /* ensures query is encoded
+              */
 
               params["" + options.queryParam] = encodeURIComponent(decodeURIComponent(query));
               if (options.retrieveLimit) {
@@ -562,6 +572,7 @@ Based on the 1.6er release dated in July, 2012
 
       return this.each(function() {
         var abortRequest, addSelection, clonePublicApi, currentSelection, element, elementId, hiddenInputField, hiddenInputFieldId, hiddenInputFieldName, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
+
         options.inputAttrs = $.extend(options.inputAttrs, {});
         input_focus = false;
         input = $(this);
@@ -624,6 +635,7 @@ Based on the 1.6er release dated in July, 2012
         publicApi = {
           add: function(data) {
             var counted, item;
+
             counted = $(selectionsContainer).find('li').length;
             item = addSelection(data, "u" + counted);
             if (item != null) {
@@ -655,6 +667,7 @@ Based on the 1.6er release dated in July, 2012
 
         addSelection = function(data, num) {
           var closeElement, item;
+
           currentSelection.add(data[options.selectedValuesProp]);
           item = $("<li class=\"as-selection-item\" id=\"as-selection-" + num + "\" data-value=\"" + (Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))) + "\"></li>");
           item.on({
@@ -746,6 +759,7 @@ Based on the 1.6er release dated in July, 2012
           */
 
           var string, _k, _results;
+
           if (lastKeyPressCode === 46 || __indexOf.call((function() {
             _results = [];
             for (_k = 9; _k < 31; _k++){ _results.push(_k); }
@@ -776,6 +790,7 @@ Based on the 1.6er release dated in July, 2012
         };
         processData = function(data, query) {
           var creation_hint, formatted, forward, matchCount, name, num, original_query, regex, resultsContainerVisible, str, text, workingData, _k, _l, _len2, _len3, _ref2;
+
           creation_hint = false;
           original_query = query;
           if (!options.matchCase) {
@@ -785,13 +800,14 @@ Based on the 1.6er release dated in July, 2012
           matchCount = 0;
           resultsContainer.hide().html(resultsList.html(''));
           num = 0;
-          if (options.creationText && $.grep(data, function(item) {
+          if (options.canGenerateNewSelections && options.creationText && $.grep(data, function(item) {
             return item[options.selectedItemProp].toLowerCase() === query;
           }).length === 0 && !currentSelection.exist(query)) {
             formatted = $("<li class=\"as-result-item\" id=\"as-result-item-" + num + "\"></li>");
             formatted.on({
               click: function() {
                 var n_data;
+
                 n_data = {};
                 n_data["" + options.selectedItemProp] = original_query;
                 n_data["" + options.selectedValuesProp] = original_query;
@@ -844,6 +860,7 @@ Based on the 1.6er release dated in July, 2012
               formatted.on({
                 click: function() {
                   var number, raw_data;
+
                   element = $(this);
                   raw_data = element.data('data');
                   number = raw_data.num;
@@ -875,7 +892,8 @@ Based on the 1.6er release dated in July, 2012
               workingData = $.extend({}, data[num]);
               query = query.replace(/"/g, '\\"');
               regex = !options.matchCase ? new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + Utils.escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "gi") : new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + Utils.escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g");
-              /* When this is a string, escape the value and process a regular replacement for highlighting.*/
+              /* When this is a string, escape the value and process a regular replacement for highlighting.
+              */
 
               if (typeof workingData[options.selectedItemProp] === 'string') {
                 workingData[options.selectedItemProp] = Utils.escapeHtml(workingData[options.selectedItemProp]);
@@ -921,6 +939,7 @@ Based on the 1.6er release dated in July, 2012
         };
         moveResultSelection = function(direction) {
           var active, lis, start;
+
           if (resultsContainer.find(':visible').length) {
             lis = resultsContainer.find('li');
             switch (direction) {
@@ -998,9 +1017,11 @@ Based on the 1.6er release dated in July, 2012
             Utils.setPlaceholderEnabled(element, currentSelection.isEmpty());
           },
           keydown: function(event) {
-            /* track the last key pressed*/
+            /* track the last key pressed
+            */
 
             var active, first_focus, i_input, n_data, _selection, _selections;
+
             lastKeyPressCode = event.keyCode;
             first_focus = false;
             switch (event.keyCode) {
@@ -1060,7 +1081,8 @@ Based on the 1.6er release dated in July, 2012
                 if (options.canGenerateNewSelections) {
                   lastKeyWasTab = true;
                   i_input = input.val().replace(/(,)/g, '');
-                  /* Generate a new bubble with text when no suggestion selected*/
+                  /* Generate a new bubble with text when no suggestion selected
+                  */
 
                   if (i_input !== '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length === 0 && (options.neverSubmit || event.keyCode !== 13)) {
                     event.preventDefault();
@@ -1069,7 +1091,8 @@ Based on the 1.6er release dated in July, 2012
                     n_data["" + options.selectedValuesProp] = i_input;
                     addSelection(n_data, "00" + (selectionsContainer.find('li').length + 1));
                     input.val('');
-                    /* Cancel previous ajaxRequest when new tag is added*/
+                    /* Cancel previous ajaxRequest when new tag is added
+                    */
 
                     abortRequest();
                   }
@@ -1111,6 +1134,7 @@ Based on the 1.6er release dated in July, 2012
     },
     add: function() {
       var element, item, items, _i, _len;
+
       items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       element = $(this);
       for (_i = 0, _len = items.length; _i < _len; _i++) {
@@ -1120,6 +1144,7 @@ Based on the 1.6er release dated in July, 2012
     },
     remove: function() {
       var element, value, values, _i, _len;
+
       values = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       element = $(this);
       for (_i = 0, _len = values.length; _i < _len; _i++) {
