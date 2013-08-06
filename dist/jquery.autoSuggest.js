@@ -775,7 +775,9 @@ Based on the 1.6er release dated in July, 2012
           return fetcher(string, processData);
         };
         processData = function(data, query) {
-          var formatted, forward, matchCount, name, num, regex, resultsContainerVisible, str, text, workingData, _k, _l, _len2, _len3, _ref2;
+          var creation_hint, formatted, forward, matchCount, name, num, original_query, regex, resultsContainerVisible, str, text, workingData, _k, _l, _len2, _len3, _ref2;
+          creation_hint = false;
+          original_query = query;
           if (!options.matchCase) {
             query = query.toLowerCase();
           }
@@ -783,6 +785,38 @@ Based on the 1.6er release dated in July, 2012
           matchCount = 0;
           resultsContainer.hide().html(resultsList.html(''));
           num = 0;
+          if (options.creationText && $.grep(data, function(item) {
+            return item[options.selectedItemProp].toLowerCase() === query;
+          }).length === 0 && !currentSelection.exist(query)) {
+            formatted = $("<li class=\"as-result-item\" id=\"as-result-item-" + num + "\"></li>");
+            formatted.on({
+              click: function() {
+                var n_data;
+                n_data = {};
+                n_data["" + options.selectedItemProp] = original_query;
+                n_data["" + options.selectedValuesProp] = original_query;
+                input.val('').focus();
+                prev = '';
+                addSelection(n_data, "00" + (selectionsContainer.find('li').length + 1));
+                resultsContainer.hide();
+              },
+              mousedown: function() {
+                input_focus = false;
+              },
+              mouseover: function() {
+                element = $(this);
+                resultsList.find('li').removeClass('active');
+                element.addClass('active');
+              }
+            });
+            formatted.data('data', {
+              attributes: data[num],
+              num: num_count
+            });
+            formatted = formatted.html('<em>' + original_query + '</em>' + options.creationText);
+            resultsList.append(formatted);
+            creation_hint = true;
+          }
           for (_k = 0, _len2 = data.length; _k < _len2; _k++) {
             item = data[_k];
             num_count++;
@@ -867,7 +901,7 @@ Based on the 1.6er release dated in July, 2012
             num += 1;
           }
           selectionsContainer.removeClass('loading');
-          if (matchCount <= 0) {
+          if (matchCount <= 0 && !creation_hint) {
             text = options.emptyText;
             if ($.type(options.emptyTextPlaceholder) === 'regexp') {
               text = text.replace(options.emptyTextPlaceholder, query);
@@ -877,7 +911,7 @@ Based on the 1.6er release dated in July, 2012
           resultsList.css({
             width: selectionsContainer.outerWidth()
           });
-          resultsContainerVisible = matchCount > 0 || options.showResultListWhenNoMatch;
+          resultsContainerVisible = matchCount > 0 || options.showResultListWhenNoMatch || options.creationText;
           if (resultsContainerVisible) {
             resultsContainer.show();
           }

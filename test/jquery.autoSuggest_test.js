@@ -501,6 +501,52 @@
       remove();
     });
 
+    module('Configuration: "options.creationText"', {
+      teardown : function () {
+        remove();
+      }
+    });
+
+    asyncTest('Type Bobby and see the creation message next to it in the list', 4, function () {
+      el = create(null, $.extend({}, options, {
+        creationText : ' - Add this keyword'
+      }));
+      $.simulate2.triggerKeyEventsForString(el, 'Bobby', 0, true);
+
+      setTimeout(function () {
+        // Here goes three suggestions
+        res = results();
+        equal(res.length, 1, "Should suggest 1 names");
+        equal($(res[0]).text(), "Bobby - Add this keyword", "Should be Bobby - Add this keyword");
+
+        // Select Bobby
+        $(res[0]).simulate("click");
+        sel = selections();
+        equal(sel.length, 1, "Should have one name");
+        equal($(sel[0]).text(), "×Bobby", "Should be Bobby");
+
+        start();
+        remove();
+      }, 500);
+    });
+
+    asyncTest('Type mick jagger and see that the creation bubble is not displayed', 2, function () {
+      el = create(null, $.extend({}, options, {
+        creationText : ' - Add this keyword'
+      }));
+      $.simulate2.triggerKeyEventsForString(el, 'mick jagger', 0, true);
+
+      setTimeout(function () {
+        // Here goes three suggestions
+        res = results();
+        equal(res.length, 1, "Should suggest 1 names");
+        equal($(res[0]).text(), "Mick Jagger", "Should be Mick Jagger");
+
+        start();
+        remove();
+      }, 500);
+    });
+
     module('Configuration: "onAjaxRequestAlways"', {
       teardown : function () {
         remove();

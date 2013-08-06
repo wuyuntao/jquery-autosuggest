@@ -676,12 +676,40 @@ pluginMethods =
         fetcher string, processData
 
       processData = (data, query) ->
+        creation_hint = false
+        original_query = query
         if !options.matchCase
           query = query.toLowerCase()
         query = query.replace('(', '\(', 'g').replace(')', '\)', 'g')
         matchCount = 0
         resultsContainer.hide().html(resultsList.html(''))
         num = 0
+        if options.canGenerateNewSelections && options.creationText && $.grep(data, (item) -> item[options.selectedItemProp].toLowerCase() == query ).length is 0 && !currentSelection.exist(query)
+          formatted = $("<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>")
+          formatted.on
+            click : ->
+              n_data = {}
+              n_data["#{options.selectedItemProp}"] = original_query
+              n_data["#{options.selectedValuesProp}"] = original_query
+              input.val('').focus()
+              prev = ''
+              addSelection n_data, "00#{selectionsContainer.find('li').length + 1}"
+              resultsContainer.hide()
+              return
+            mousedown : ->
+              input_focus = false
+              return
+            mouseover : ->
+              element = $(this)
+              resultsList.find('li').removeClass 'active'
+              element.addClass 'active'
+              return
+          formatted.data 'data',
+            attributes : data[num]
+            num : num_count
+          formatted = formatted.html '<em>' + original_query + '</em>' + options.creationText
+          resultsList.append formatted
+          creation_hint = true
         for item in data
           num_count++
           forward = false
@@ -749,13 +777,13 @@ pluginMethods =
               break
           num += 1
         selectionsContainer.removeClass 'loading'
-        if matchCount <= 0
+        if matchCount <= 0 && !creation_hint
           text = options.emptyText
           if $.type(options.emptyTextPlaceholder) is 'regexp'
             text = text.replace options.emptyTextPlaceholder, query
           resultsList.html "<li class=\"as-message\">#{text}</li>"
         resultsList.css width : selectionsContainer.outerWidth()
-        resultsContainerVisible = matchCount > 0 || options.showResultListWhenNoMatch
+        resultsContainerVisible = matchCount > 0 || options.showResultListWhenNoMatch || options.creationText
         if resultsContainerVisible
           resultsContainer.show()
         if $.isFunction(options.afterResultListShow) then options.afterResultListShow.call this, resultsContainerVisible
