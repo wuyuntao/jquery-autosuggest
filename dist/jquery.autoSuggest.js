@@ -1079,7 +1079,6 @@ Based on the 1.6er release dated in July, 2012
               case 188:
                 lastKeyWasTab = event.keyCode === 9;
                 active = resultsContainer.find('li.active:visible:first');
-                console.info(options.canGenerateNewSelections);
                 if (event.keyCode === 13 && resultsContainer.find('li.active:first').length) {
                   active.click();
                   resultsContainer.hide();
