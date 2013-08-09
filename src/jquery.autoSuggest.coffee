@@ -896,14 +896,23 @@ pluginMethods =
                   keyChange()
                   return
                 ), options.keyDelay
-            when 9, 188, 13 # tab, comma, return
+            when 9, 13, 188 # tab, return, comma
+              lastKeyWasTab = event.keyCode is 9
               active = resultsContainer.find('li.active:visible:first')
-              if options.canGenerateNewSelections
-                lastKeyWasTab = true
+              if event.keyCode is 13 and resultsContainer.find('li.active:first').length
+                active.click()
+                resultsContainer.hide()
+                event.preventDefault() if options.neverSubmit
+                active = resultsContainer.find('li.active:first')
+              else if options.canGenerateNewSelections
                 # remove all comma
                 i_input = input.val().replace /(,)/g, ''
                 ### Generate a new bubble with text when no suggestion selected ###
-                if i_input isnt '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length is 0 && (options.neverSubmit || event.keyCode != 13)
+                if i_input isnt '' and 
+                   not currentSelection.exist(i_input) and 
+                   i_input.length >= options.minChars and 
+                   active.length is 0
+                  # TODO optimize condition
                   event.preventDefault()
                   n_data = {}
                   n_data["#{options.selectedItemProp}"] = i_input
@@ -918,15 +927,7 @@ pluginMethods =
                 lastKeyWasTab = false
                 active.click()
                 resultsContainer.hide()
-                event.preventDefault()
-            when 13 # return
-              lastKeyWasTab = false
-              active = resultsContainer.find('li.active:first')
-              if active.length
-                active.click()
-                resultsContainer.hide()
-              if options.neverSubmit || active.length
-                event.preventDefault()
+                event.preventDefault() if options.neverSubmit
             when 27 # esc
               if options.preventPropagationOnEscape && resultsContainer.find(':visible').length
                 event.stopPropagation()

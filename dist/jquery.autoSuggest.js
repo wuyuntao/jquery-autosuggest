@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.3.0 - 2013-08-06
+/*! jQuery AutoSuggest - v2.3.0 - 2013-08-09
  * URL: http://hlsolutions.github.com/jquery-autosuggest
  * Copyright (c) 2013 Jan Philipp
  * Licensed MIT, GPL */
@@ -1075,16 +1075,24 @@ Based on the 1.6er release dated in July, 2012
                 }
                 break;
               case 9:
-              case 188:
               case 13:
+              case 188:
+                lastKeyWasTab = event.keyCode === 9;
                 active = resultsContainer.find('li.active:visible:first');
-                if (options.canGenerateNewSelections) {
-                  lastKeyWasTab = true;
+                console.info(options.canGenerateNewSelections);
+                if (event.keyCode === 13 && resultsContainer.find('li.active:first').length) {
+                  active.click();
+                  resultsContainer.hide();
+                  if (options.neverSubmit) {
+                    event.preventDefault();
+                  }
+                  active = resultsContainer.find('li.active:first');
+                } else if (options.canGenerateNewSelections) {
                   i_input = input.val().replace(/(,)/g, '');
                   /* Generate a new bubble with text when no suggestion selected
                   */
 
-                  if (i_input !== '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length === 0 && (options.neverSubmit || event.keyCode !== 13)) {
+                  if (i_input !== '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length === 0) {
                     event.preventDefault();
                     n_data = {};
                     n_data["" + options.selectedItemProp] = i_input;
@@ -1103,18 +1111,9 @@ Based on the 1.6er release dated in July, 2012
                   lastKeyWasTab = false;
                   active.click();
                   resultsContainer.hide();
-                  event.preventDefault();
-                }
-                break;
-              case 13:
-                lastKeyWasTab = false;
-                active = resultsContainer.find('li.active:first');
-                if (active.length) {
-                  active.click();
-                  resultsContainer.hide();
-                }
-                if (options.neverSubmit || active.length) {
-                  event.preventDefault();
+                  if (options.neverSubmit) {
+                    event.preventDefault();
+                  }
                 }
                 break;
               case 27:
