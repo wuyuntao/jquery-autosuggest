@@ -119,18 +119,7 @@ module.exports = (grunt) ->
         files : '<config:jshint.files>'
         tasks : 'jshint qunit'
 
-  grunt.loadNpmTasks 'grunt-contrib-clean'
-  grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks 'grunt-contrib-compass'
-  grunt.loadNpmTasks 'grunt-contrib-concat'
-  grunt.loadNpmTasks 'grunt-contrib-connect'
-  grunt.loadNpmTasks 'grunt-contrib-cssmin'
-  grunt.loadNpmTasks 'grunt-contrib-jshint'
-  grunt.loadNpmTasks 'grunt-contrib-qunit'
-  grunt.loadNpmTasks 'grunt-contrib-uglify'
-  grunt.loadNpmTasks 'grunt-contrib-watch'
-
-  grunt.loadNpmTasks 'grunt-coffeelint'
+  require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks)
 
   # Default task: Complete testing and building.
   grunt.registerTask 'default', ['compass', 'jshint', 'coffee', 'concat', 'cssmin', 'qunit', 'uglify']
