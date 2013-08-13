@@ -78,6 +78,10 @@
       return $("#as-values-autosuggest");
     }
 
+    function validationError() {
+      return $("#as-validation-error-autosuggest");
+    }
+
     function remove() {
       $("#as-results-autosuggest, #as-selections-autosuggest").remove();
     }
@@ -498,6 +502,121 @@
       equal(sel.length, 1, "Should have one name");
       equal($(sel[0]).text(), "×Yao Ming", "Should be Yao Ming");
       equal(value().val(), ",Yao Ming,", "Should be Yao Ming");
+      remove();
+    });
+
+    module('Configuration: "options.minChars"', {
+      teardown : function () {
+        remove();
+      }
+    });
+
+    test('Type a sufficient number of characters', 1, function () {
+      el = create(null, $.extend({}, options, {
+        minChars : 3
+      }));
+      el.focus();
+      el.val("AAA");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+      equal(validationError().text(), "", "Should not display validation for `minChars`");
+      remove();
+    });
+
+    test('Type a zero characters', 1, function () {
+      el = create(null, $.extend({}, options, {
+        minChars : 3
+      }));
+      el.focus();
+      el.val("");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+      equal(validationError().text(), "", "Should not display validation for `minChars`");
+      remove();
+    });
+
+    test('Type fewer characters than allowed, then type sufficient characters', 2, function () {
+      el = create(null, $.extend({}, options, {
+        minChars : 3
+      }));
+      el.focus();
+      el.val("AA");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+      equal(validationError().text(), "must be at least 3 characters", "Should display validation for `minChars`");
+
+      el.focus();
+      el.val("AAA");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+      equal(validationError().text(), "", "Should not display validation for `minChars`");
+      remove();
+    });
+
+    test('Type fewer characters than allowed, then clear input', 2, function () {
+      el = create(null, $.extend({}, options, {
+        minChars : 3
+      }));
+
+      el.focus();
+      el.val("A");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+      equal(validationError().text(), "must be at least 3 characters", "Should display validation for `minChars`");
+
+      el.simulate("keydown", {"keyCode" : keyCode.DEL});
+      equal(validationError().text(), "", "Should clear validation for `minChars`");
+      remove();
+    });
+
+
+    module('Configuration: "options.maxChars"', {
+      teardown : function () {
+        remove();
+      }
+    });
+
+    test('Type a valid number of characters', 1, function () {
+      el = create(null, $.extend({}, options, {
+        maxChars : 5
+      }));
+      el.focus();
+      el.val("AAAAA");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+      equal(validationError().text(), "", "Should not display validation for `maxChars`");
+      remove();
+    });
+
+    test('Type more characters than allowed, then type fewer characters', 2, function () {
+      el = create(null, $.extend({}, options, {
+        maxChars : 5
+      }));
+      el.focus();
+      el.val("123456");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+      equal(validationError().text(), "must be 5 characters or fewer", "Should display validation for `maxChars`");
+
+      el.focus();
+      el.val("12345");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+      equal(validationError().text(), "", "Should not display validation for `minChars`");
+      remove();
+    });
+
+
+
+    module('Configuration: "options.onRenderErrorMessage"', {
+      teardown : function () {
+        remove();
+      }
+    });
+
+    test('Overriding the onRenderErrorMessage hook', 1, function () {
+      el = create(null, $.extend({}, options, {
+        minChars : 3,
+        onRenderErrorMessage: function(validationData, element, options) {
+          element.closest('ul').after("<span id="+ validationData.id +">Please type "+ validationData.limit +" characters</span>");
+        }
+      }));
+      el.focus();
+      el.val("A");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+      equal(validationError().text(), "Please type 3 characters", "Should display custom validation message");
       remove();
     });
 

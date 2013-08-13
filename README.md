@@ -121,9 +121,14 @@ Specify whether the search/highlight should be case sensitive.
 Default: `false`
 
 #### minChars (number)
-Minimum number of characters that must be entered into the input field before the search begins.
+Minimum number of characters that must be entered into the input field before a tag will be considered valid. Tags containing fewer than the `minChars` will not be added and a validation will display.
 
 Default: `1`
+
+#### maxChars (number)
+Maximum number of characters that must be entered into the input field before a tag will be considered valid. Tags containing more than the `maxChars` will not be added and a validation will display.
+
+Default: `100`
 
 #### neverSubmit (boolean)
 If set to `true` this option will never allow the _return key_ to submit the form that AutoSuggest is a part of.
@@ -316,12 +321,22 @@ afterSelectionAdd: function(element, item, currentSelections){
 ```
 
 #### selectionRemove (element, item, selections)
-A callback hat is run when a selection removed from the AutoSuggest by using the delete key or by clicking the "x" inside the selection. The selection item is passed into this callback function as `element`.
+A callback that is run when a selection removed from the AutoSuggest by using the delete key or by clicking the "x" inside the selection. The selection item is passed into this callback function as `element`.
 
 Example:
 ```javascript
 afterSelectionRemove: function(element, item, currentSelections){
   MyApp.removeSelection(item);
+}
+```
+
+#### onRenderErrorMessage (validationData, element, options)
+A callback that is run when a validation message is about to be rendered. `validationData` is an object which contains details about the error which can be helpful when customizing validations. Most commonly, you would override this callback in order to customize a validation behavior.
+
+Example:
+```javascript
+onRenderErrorMessage: function(validationData, element, options){
+  element.after("<span id="+ validationData.id +">Too few characters</span>");
 }
 ```
 
@@ -522,6 +537,12 @@ echo json_encode($data);
 ```
 
 ## Release History
+
+## 2013-03-29 Version 2.4.0
+
+* Added validation message for `minChars`.
+* Added new configuration option `maxChars`, which includes corresponding validation message.
+* Added `onRenderErrorMessage` hook which is responsible for rendering all vaidation messages. This function can be overridden via a configuration option.
 
 ## 2013-03-29 Version 2.3.0
 

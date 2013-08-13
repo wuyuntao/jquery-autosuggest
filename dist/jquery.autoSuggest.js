@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.3.0 - 2013-08-09
+/*! jQuery AutoSuggest - v2.4.0 - 2013-08-13
  * URL: http://hlsolutions.github.com/jquery-autosuggest
  * Copyright (c) 2013 Jan Philipp
  * Licensed MIT, GPL */
@@ -22,8 +22,7 @@ Based on the 1.6er release dated in July, 2012
 
   $ = jQuery;
 
-  /* A collection of utility functions.
-  */
+  /* A collection of utility functions.*/
 
 
   Utils = (function() {
@@ -43,7 +42,6 @@ Based on the 1.6er release dated in July, 2012
 
     Utils.setPlaceholderEnabled = function(input, enable) {
       var from, targets, to;
-
       targets = ['placeholder', 'disabled-placeholder'];
       if (enable) {
         from = targets[1];
@@ -65,8 +63,7 @@ Based on the 1.6er release dated in July, 2012
 
   })();
 
-  /* A collection of configuration resolvers.
-  */
+  /* A collection of configuration resolvers.*/
 
 
   ConfigResolver = (function() {
@@ -82,7 +79,6 @@ Based on the 1.6er release dated in July, 2012
 
     ConfigResolver.getExtraParams = function(options) {
       var obj, pair, parts, result, _i, _len, _ref;
-
       result = options.extraParams;
       if ($.isFunction(result)) {
         result = result(this);
@@ -114,8 +110,7 @@ Based on the 1.6er release dated in July, 2012
 
   })();
 
-  /* The SelectionControl maintains and manage any selections.
-  */
+  /* The SelectionControl maintains and manage any selections.*/
 
 
   SelectionHolder = (function() {
@@ -132,7 +127,6 @@ Based on the 1.6er release dated in July, 2012
 
     SelectionHolder.prototype.syncToHiddenField = function() {
       var item, value, _i, _len, _ref;
-
       if (!this.hiddenField) {
         return;
       }
@@ -188,7 +182,6 @@ Based on the 1.6er release dated in July, 2012
 
     Events.onSelectionAdd = function(scope, containerElement, detachedElement, options, item, selections) {
       var element;
-
       element = options.onSelectionAdd.call(scope, containerElement, detachedElement, options);
       Utils.setPlaceholderEnabled(scope, selections.length === 0);
       if ($.isFunction(options.afterSelectionAdd)) {
@@ -228,6 +221,12 @@ Based on the 1.6er release dated in July, 2012
     Events.onAjaxRequestAlways = function(scope, ajaxRequest, options) {
       if ($.isFunction(options.onAjaxRequestAlways)) {
         ajaxRequest.always(options.onAjaxRequestAlways);
+      }
+    };
+
+    Events.onRenderErrorMessage = function(scope, validationData, element, options) {
+      if ($.isFunction(options.onRenderErrorMessage)) {
+        options.onRenderErrorMessage.call(scope, validationData, element, options);
       }
     };
 
@@ -340,11 +339,17 @@ Based on the 1.6er release dated in July, 2012
 
     matchCase: false,
     /**
-     * Defines the minimum of characters before the input will be a query against the defined fetcher (i.e. Ajax).
+     * Defines the minimum number of characters allowed for a tag to be valid.
      * @type number default 1
     */
 
     minChars: 1,
+    /**
+     * Defines the maximum number of characters allowed for a tag to be valid.
+     * @type number default 100
+    */
+
+    maxChars: 100,
     /**
      * Defines the key delay. This is a recommended way when using an asynchronous fetcher (Ajax).
      * @type number default 400
@@ -427,6 +432,23 @@ Based on the 1.6er release dated in July, 2012
       } else {
         return element.remove();
       }
+    },
+    /**
+     * Defines a callback for rendering a validation error.
+     * @type function with arguments: validationData, element
+    */
+
+    onRenderErrorMessage: function(validationData, element, options) {
+      var error;
+      error = $("#" + validationData.id);
+      if (!error.length) {
+        element.closest('ul').after("<span id='" + validationData.id + "' class='error'></span>");
+        error = $("#" + validationData.id);
+      }
+      error.text(validationData.errorMessage);
+      return setTimeout((function() {
+        return element.focus();
+      }), 10);
     },
     /**
      * Defines a callback called for every item that will be rendered.
@@ -514,7 +536,6 @@ Based on the 1.6er release dated in July, 2012
   pluginMethods = {
     init: function(dataSource, options) {
       var ajaxRequest, fetcher;
-
       options = $.extend({}, defaults, options);
       ajaxRequest = null;
       if (options.remoteFilter === 'auto') {
@@ -527,10 +548,8 @@ Based on the 1.6er release dated in July, 2012
           case 'string':
             return function(query, callback) {
               var ajaxRequestConfig, extraParams, onDone, params;
-
               params = {};
-              /* ensures query is encoded
-              */
+              /* ensures query is encoded*/
 
               params["" + options.queryParam] = encodeURIComponent(decodeURIComponent(query));
               if (options.retrieveLimit) {
@@ -571,8 +590,7 @@ Based on the 1.6er release dated in July, 2012
       */
 
       return this.each(function() {
-        var abortRequest, addSelection, clonePublicApi, currentSelection, element, elementId, hiddenInputField, hiddenInputFieldId, hiddenInputFieldName, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, value, _i, _j, _len, _len1, _ref, _ref1;
-
+        var abortRequest, addSelection, clonePublicApi, currentSelection, element, elementId, hiddenInputField, hiddenInputFieldId, hiddenInputFieldName, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, validationErrorId, validations, value, _i, _j, _len, _len1, _ref, _ref1;
         options.inputAttrs = $.extend(options.inputAttrs, {});
         input_focus = false;
         input = $(this);
@@ -581,10 +599,12 @@ Based on the 1.6er release dated in July, 2012
         hiddenInputField = null;
         hiddenInputFieldId = null;
         hiddenInputFieldName = null;
+        validationErrorId = null;
         if (options.asHtmlID) {
           element = options.asHtmlID;
           elementId = element;
           hiddenInputFieldId = "as-values-" + element;
+          validationErrorId = "as-validation-error-" + element;
           if (options.useOriginalInputName) {
             hiddenInputFieldName = input.attr('name');
             input.attr({
@@ -597,6 +617,7 @@ Based on the 1.6er release dated in July, 2012
           element = "" + (element || '') + (Math.floor(Math.random() * 100));
           elementId = "as-input-" + element;
           hiddenInputFieldId = "as-values-" + element;
+          validationErrorId = "as-validation-error-" + element;
           if (options.useOriginalInputName) {
             hiddenInputFieldName = input.attr('name');
             input.attr({
@@ -635,7 +656,6 @@ Based on the 1.6er release dated in July, 2012
         publicApi = {
           add: function(data) {
             var counted, item;
-
             counted = $(selectionsContainer).find('li').length;
             item = addSelection(data, "u" + counted);
             if (item != null) {
@@ -667,7 +687,6 @@ Based on the 1.6er release dated in July, 2012
 
         addSelection = function(data, num) {
           var closeElement, item;
-
           currentSelection.add(data[options.selectedValuesProp]);
           item = $("<li class=\"as-selection-item\" id=\"as-selection-" + num + "\" data-value=\"" + (Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))) + "\"></li>");
           item.on({
@@ -759,7 +778,6 @@ Based on the 1.6er release dated in July, 2012
           */
 
           var string, _k, _results;
-
           if (lastKeyPressCode === 46 || __indexOf.call((function() {
             _results = [];
             for (_k = 9; _k < 31; _k++){ _results.push(_k); }
@@ -773,7 +791,7 @@ Based on the 1.6er release dated in July, 2012
             return;
           }
           prev = string;
-          if ((string.length >= options.minChars) || (options.minChars === 0 && string.length === 0)) {
+          if (validations.allValid(string.length) || (options.minChars === 0 && string.length === 0)) {
             selectionsContainer.addClass('loading');
             return processRequest(string);
           } else {
@@ -790,7 +808,6 @@ Based on the 1.6er release dated in July, 2012
         };
         processData = function(data, query) {
           var creation_hint, formatted, forward, matchCount, name, num, original_query, regex, resultsContainerVisible, str, text, workingData, _k, _l, _len2, _len3, _ref2;
-
           creation_hint = false;
           original_query = query;
           if (!options.matchCase) {
@@ -807,7 +824,6 @@ Based on the 1.6er release dated in July, 2012
             formatted.on({
               click: function() {
                 var n_data;
-
                 n_data = {};
                 n_data["" + options.selectedItemProp] = original_query;
                 n_data["" + options.selectedValuesProp] = original_query;
@@ -860,7 +876,6 @@ Based on the 1.6er release dated in July, 2012
               formatted.on({
                 click: function() {
                   var number, raw_data;
-
                   element = $(this);
                   raw_data = element.data('data');
                   number = raw_data.num;
@@ -892,8 +907,7 @@ Based on the 1.6er release dated in July, 2012
               workingData = $.extend({}, data[num]);
               query = query.replace(/"/g, '\\"');
               regex = !options.matchCase ? new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + Utils.escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "gi") : new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + Utils.escapeHtml(query) + ")(?![^<>]*>)(?![^&;]+;)", "g");
-              /* When this is a string, escape the value and process a regular replacement for highlighting.
-              */
+              /* When this is a string, escape the value and process a regular replacement for highlighting.*/
 
               if (typeof workingData[options.selectedItemProp] === 'string') {
                 workingData[options.selectedItemProp] = Utils.escapeHtml(workingData[options.selectedItemProp]);
@@ -939,7 +953,6 @@ Based on the 1.6er release dated in July, 2012
         };
         moveResultSelection = function(direction) {
           var active, lis, start;
-
           if (resultsContainer.find(':visible').length) {
             lis = resultsContainer.find('li');
             switch (direction) {
@@ -969,6 +982,34 @@ Based on the 1.6er release dated in July, 2012
           }
           ajaxRequest.abort();
           ajaxRequest = null;
+        };
+        validations = {
+          clear: function() {
+            return $("#" + validationErrorId).remove();
+          },
+          allValid: function(charLength) {
+            return charLength >= options.minChars && charLength <= options.maxChars;
+          },
+          renderMinChars: function() {
+            var data;
+            data = {
+              id: validationErrorId,
+              errorMessage: "must be at least " + options.minChars + " characters",
+              type: 'minChars',
+              limit: options.minChars
+            };
+            return Events.onRenderErrorMessage(input, data, input, options);
+          },
+          renderMaxChars: function() {
+            var data;
+            data = {
+              id: validationErrorId,
+              errorMessage: "must be " + options.maxChars + " characters or fewer",
+              type: 'maxChars',
+              limit: options.maxChars
+            };
+            return Events.onRenderErrorMessage(input, data, input, options);
+          }
         };
         return input.on({
           focus: function() {
@@ -1016,14 +1057,23 @@ Based on the 1.6er release dated in July, 2012
             }
             Utils.setPlaceholderEnabled(element, currentSelection.isEmpty());
           },
+          keyup: function() {
+            var charLength;
+            charLength = (input.val().replace(/(,)/g, '')).length;
+            if (charLength > options.maxChars) {
+              validations.renderMaxChars();
+            }
+            if (validations.allValid(charLength) || charLength === 0) {
+              return validations.clear();
+            }
+          },
           keydown: function(event) {
-            /* track the last key pressed
-            */
+            /* track the last key pressed*/
 
             var active, first_focus, i_input, n_data, _selection, _selections;
-
             lastKeyPressCode = event.keyCode;
             first_focus = false;
+            i_input = input.val().replace(/(,)/g, '');
             switch (event.keyCode) {
               case 38:
                 event.preventDefault();
@@ -1064,6 +1114,7 @@ Based on the 1.6er release dated in July, 2012
                   resultsContainer.hide();
                   prev = '';
                   abortRequest();
+                  validations.clear();
                 }
                 if (resultsContainer.find(':visible').length) {
                   if (timeout) {
@@ -1087,19 +1138,21 @@ Based on the 1.6er release dated in July, 2012
                   }
                   active = resultsContainer.find('li.active:first');
                 } else if (options.canGenerateNewSelections) {
-                  i_input = input.val().replace(/(,)/g, '');
-                  /* Generate a new bubble with text when no suggestion selected
-                  */
+                  /* Generate a new bubble with text when no suggestion selected*/
 
-                  if (i_input !== '' && !currentSelection.exist(i_input) && i_input.length >= options.minChars && active.length === 0) {
+                  if (i_input.length > options.maxChars) {
+                    validations.renderMaxChars();
+                  } else if (i_input.length !== 0 && i_input.length < options.minChars) {
+                    validations.renderMinChars();
+                  } else if (i_input !== '' && !currentSelection.exist(i_input) && active.length === 0) {
                     event.preventDefault();
                     n_data = {};
                     n_data["" + options.selectedItemProp] = i_input;
                     n_data["" + options.selectedValuesProp] = i_input;
                     addSelection(n_data, "00" + (selectionsContainer.find('li').length + 1));
                     input.val('');
-                    /* Cancel previous ajaxRequest when new tag is added
-                    */
+                    validations.clear();
+                    /* Cancel previous ajaxRequest when new tag is added*/
 
                     abortRequest();
                   }
@@ -1132,7 +1185,6 @@ Based on the 1.6er release dated in July, 2012
     },
     add: function() {
       var element, item, items, _i, _len;
-
       items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       element = $(this);
       for (_i = 0, _len = items.length; _i < _len; _i++) {
@@ -1142,7 +1194,6 @@ Based on the 1.6er release dated in July, 2012
     },
     remove: function() {
       var element, value, values, _i, _len;
-
       values = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       element = $(this);
       for (_i = 0, _len = values.length; _i < _len; _i++) {

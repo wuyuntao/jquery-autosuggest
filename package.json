@@ -2,7 +2,7 @@
   "name": "jquery.autoSuggest",
   "title": "jQuery AutoSuggest",
   "description": "An autosuggest and autocomplete plugin for jQuery. With CoffeeScript and SASS flavour.",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "homepage": "http://hlsolutions.github.com/jquery-autosuggest",
   "author": {
     "name": "Jan Philipp",
