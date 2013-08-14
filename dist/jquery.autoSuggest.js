@@ -1040,7 +1040,9 @@ Based on the 1.6er release dated in July, 2012
                 resultsList.css({
                   width: selectionsContainer.outerWidth()
                 });
-                resultsContainer.show();
+                if (validations.allValid()) {
+                  resultsContainer.show();
+                }
               }
             }
             if (interval) {
@@ -1050,7 +1052,9 @@ Based on the 1.6er release dated in July, 2012
               if (options.showResultList) {
                 if (options.selectionLimit && selectionsContainer.find('li.as-selection-item').length >= options.selectionLimit) {
                   resultsList.html("<li class=\"as-message\">" + options.limitText + "</li>");
-                  resultsContainer.show();
+                  if (validations.allValid()) {
+                    resultsContainer.show();
+                  }
                 } else {
                   keyChange();
                 }

@@ -878,7 +878,6 @@ pluginMethods =
             limit: options.maxChars
           Events.onRenderErrorMessage input, data, input, options
 
-
       input.on
         focus : -> # On input focus
           element = $(this)
@@ -888,13 +887,13 @@ pluginMethods =
             selectionsContainer.find('li.as-selections-item').removeClass('blur')
             unless element.val() is ''
               resultsList.css width : selectionsContainer.outerWidth()
-              resultsContainer.show()
+              resultsContainer.show() if validations.allValid()
           if interval then clearInterval interval
           interval = setInterval (->
             if options.showResultList
               if options.selectionLimit && selectionsContainer.find('li.as-selection-item').length >= options.selectionLimit
                 resultsList.html "<li class=\"as-message\">#{options.limitText}</li>"
-                resultsContainer.show()
+                resultsContainer.show() if validations.allValid()
               else
                 keyChange()
             return
