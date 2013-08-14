@@ -157,6 +157,11 @@ class Events
       options.onRenderErrorMessage.call scope, validationData, element, options
     return
 
+  @onRemoveErrorMessage : (scope, validationData, element, options) ->
+    if $.isFunction options.onRenderErrorMessage
+      options.onRemoveErrorMessage.call scope, validationData, element, options
+    return
+
 
 ###*
  * plugin's default options
@@ -364,6 +369,13 @@ defaults =
     error.text validationData.errorMessage
     # Brief timeout to ensure focus even when user presses tab.
     setTimeout (-> element.focus()), 10
+
+  ###*
+   * Defines a callback for removing a validation error.
+   * @type function with arguments: validationData, element
+  ###
+  onRemoveErrorMessage : (validationData, element, options) ->
+    $("##{validationData.id}").remove()
 
   ###*
    * Defines a callback called for every item that will be rendered.
@@ -846,7 +858,9 @@ pluginMethods =
         return
 
       validations =
-        clear: -> $("##{validationErrorId}").remove()
+        clear: ->
+          data = { id: validationErrorId }
+          Events.onRemoveErrorMessage input, data, input, options
         allValid: (charLength) ->
           charLength >= options.minChars && charLength <= options.maxChars
         renderMinChars: ->

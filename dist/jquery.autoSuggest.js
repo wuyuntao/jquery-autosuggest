@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.4.0 - 2013-08-13
+/*! jQuery AutoSuggest - v2.4.0 - 2013-08-14
  * URL: http://hlsolutions.github.com/jquery-autosuggest
  * Copyright (c) 2013 Jan Philipp
  * Licensed MIT, GPL */
@@ -230,6 +230,12 @@ Based on the 1.6er release dated in July, 2012
       }
     };
 
+    Events.onRemoveErrorMessage = function(scope, validationData, element, options) {
+      if ($.isFunction(options.onRenderErrorMessage)) {
+        options.onRemoveErrorMessage.call(scope, validationData, element, options);
+      }
+    };
+
     return Events;
 
   })();
@@ -449,6 +455,14 @@ Based on the 1.6er release dated in July, 2012
       return setTimeout((function() {
         return element.focus();
       }), 10);
+    },
+    /**
+     * Defines a callback for removing a validation error.
+     * @type function with arguments: validationData, element
+    */
+
+    onRemoveErrorMessage: function(validationData, element, options) {
+      return $("#" + validationData.id).remove();
     },
     /**
      * Defines a callback called for every item that will be rendered.
@@ -985,7 +999,11 @@ Based on the 1.6er release dated in July, 2012
         };
         validations = {
           clear: function() {
-            return $("#" + validationErrorId).remove();
+            var data;
+            data = {
+              id: validationErrorId
+            };
+            return Events.onRemoveErrorMessage(input, data, input, options);
           },
           allValid: function(charLength) {
             return charLength >= options.minChars && charLength <= options.maxChars;

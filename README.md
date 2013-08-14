@@ -340,6 +340,16 @@ onRenderErrorMessage: function(validationData, element, options){
 }
 ```
 
+#### onRemoveErrorMessage (validationData, element, options)
+A callback that is run when a validation message is about to be removed. `validationData` is an object which contains details about the error which can be helpful when customizing validation behavior.
+
+Example:
+```javascript
+onRemoveErrorMessage: function(validationData, element, options){
+  element.next().remove()
+}
+```
+
 #### beforeRequest (query, options)
 A callback that is run right before the Ajax request is made or before the local objected is searched. This is used to modify the search string before it is processed. So if a user entered `'jim'` into the AutoSuggest box, you can call this function to prepend their query with `'guy_'`. Making the final query `= 'guy_jim'`. The search query is passed into this function.
 
@@ -538,11 +548,12 @@ echo json_encode($data);
 
 ## Release History
 
-## 2013-03-29 Version 2.4.0
+## 2013-08-14 Version 2.4.0
 
 * Added validation message for `minChars`.
 * Added new configuration option `maxChars`, which includes corresponding validation message.
 * Added `onRenderErrorMessage` hook which is responsible for rendering all vaidation messages. This function can be overridden via a configuration option.
+* Added `onRemoveErrorMessage` hook which is responsible for removing all vaidation messages. This function can be overridden via a configuration option.
 
 ## 2013-03-29 Version 2.3.0
 

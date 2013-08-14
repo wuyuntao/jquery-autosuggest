@@ -598,8 +598,6 @@
       remove();
     });
 
-
-
     module('Configuration: "options.onRenderErrorMessage"', {
       teardown : function () {
         remove();
@@ -617,6 +615,30 @@
       el.val("A");
       el.simulate("keydown", {"keyCode" : keyCode.ENTER});
       equal(validationError().text(), "Please type 3 characters", "Should display custom validation message");
+      remove();
+    });
+
+    module('Configuration: "options.onRemoveErrorMessage"', {
+      teardown : function () {
+        remove();
+      }
+    });
+
+    test('Overriding the onRenderErrorMessage hook', 2, function () {
+      el = create(null, $.extend({}, options, {
+        minChars : 3,
+        onRemoveErrorMessage: function(validationData, element, options) {
+          $('#' + validationData.id).text("All Good!");
+        }
+      }));
+      el.focus();
+      el.val("AA");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+      equal(validationError().text(), "must be at least 3 characters", "Should display custom validation message");
+
+      el.val("AAA");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+      equal(validationError().text(), "All Good!", "Should display a custom success message");
       remove();
     });
 
