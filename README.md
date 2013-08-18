@@ -548,12 +548,14 @@ echo json_encode($data);
 
 ## Release History
 
-## 2013-08-14 Version 2.4.0
+## 2013-08-18 Version 2.4.0
 
-* Added validation message for `minChars`.
-* Added new configuration option `maxChars`, which includes corresponding validation message.
-* Added `onRenderErrorMessage` hook which is responsible for rendering all vaidation messages. This function can be overridden via a configuration option.
-* Added `onRemoveErrorMessage` hook which is responsible for removing all vaidation messages. This function can be overridden via a configuration option.
+* Add: New option `creationText` indicating a token will be created when using `canGenerateNewSelections` (643215d0be3f1066b8239dfd072e8485bd648c75).
+* Improvement: Validation message for `minChars`.
+* Add: New configuration option `maxChars`, which includes corresponding validation message.
+* Add: `onRenderErrorMessage` hook which is responsible for rendering all validation messages. This function can be overridden via a configuration option.
+* Add: `onRemoveErrorMessage` hook which is responsible for removing all validation messages. This function can be overridden via a configuration option.
+* Improvement: If the option `neverSubmit` is used, a token could be created using `ENTER` (c7a79fe7623d097f28a6b76f793d4bc1e12c78aa).
 
 ## 2013-03-29 Version 2.3.0
 
