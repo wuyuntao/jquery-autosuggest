@@ -24,7 +24,7 @@ class Utils
 
   # Returns a string where the html special chars are escaped correctly.
   @escapeHtml : (text) -> $('<span/>').text(text).html()
-  
+
   # Move inputs' placeholder attribute to disabled-placeholder and vice versa
   @setPlaceholderEnabled : (input, enable) ->
     targets = ['placeholder', 'disabled-placeholder']
@@ -34,13 +34,13 @@ class Utils
     else
       from = targets[0]
       to = targets[1]
-    
+
     return if input.attr(to) or not input.attr(from)
-      
+
     input.attr to, -> input.attr from
     input.removeAttr(from)
     return
-  
+
 
 
 ### A collection of configuration resolvers. ###
@@ -152,6 +152,16 @@ class Events
     if $.isFunction(options.onAjaxRequestAlways) then ajaxRequest.always options.onAjaxRequestAlways
     return
 
+  @onRenderErrorMessage : (scope, validationData, element, options) ->
+    if $.isFunction options.onRenderErrorMessage
+      options.onRenderErrorMessage.call scope, validationData, element, options
+    return
+
+  @onRemoveErrorMessage : (scope, validationData, element, options) ->
+    if $.isFunction options.onRenderErrorMessage
+      options.onRemoveErrorMessage.call scope, validationData, element, options
+    return
+
 
 ###*
  * plugin's default options
@@ -184,7 +194,7 @@ defaults =
    * @type string
   ###
   emptyText : 'No Results Found'
-  
+
   ###*
    * RegEx to replace values in emptyText values with query text
    * @type regex
@@ -258,10 +268,16 @@ defaults =
   matchCase : false
 
   ###*
-   * Defines the minimum of characters before the input will be a query against the defined fetcher (i.e. Ajax).
+   * Defines the minimum number of characters allowed for a tag to be valid.
    * @type number default 1
   ###
   minChars : 1
+
+  ###*
+   * Defines the maximum number of characters allowed for a tag to be valid.
+   * @type number default 100
+  ###
+  maxChars : 100
 
   ###*
    * Defines the key delay. This is a recommended way when using an asynchronous fetcher (Ajax).
@@ -340,6 +356,26 @@ defaults =
       element.fadeOut options.fadeOut, -> element.remove()
     else
       element.remove()
+
+  ###*
+   * Defines a callback for rendering a validation error.
+   * @type function with arguments: validationData, element
+  ###
+  onRenderErrorMessage : (validationData, element, options) ->
+    error = $("##{validationData.id}")
+    unless error.length
+      element.closest('ul').after "<span id='#{validationData.id}' class='error'></span>"
+      error = $("##{validationData.id}")
+    error.text validationData.errorMessage
+    # Brief timeout to ensure focus even when user presses tab.
+    setTimeout (-> element.focus()), 10
+
+  ###*
+   * Defines a callback for removing a validation error.
+   * @type function with arguments: validationData, element
+  ###
+  onRemoveErrorMessage : (validationData, element, options) ->
+    $("##{validationData.id}").remove()
 
   ###*
    * Defines a callback called for every item that will be rendered.
@@ -496,12 +532,14 @@ pluginMethods =
       hiddenInputField = null
       hiddenInputFieldId = null
       hiddenInputFieldName = null
+      validationErrorId = null
 
       # Configure local IDs.
       if options.asHtmlID
         element = options.asHtmlID
         elementId = element
         hiddenInputFieldId = "as-values-#{element}"
+        validationErrorId = "as-validation-error-#{element}"
         if options.useOriginalInputName
           hiddenInputFieldName = input.attr('name')
           input.attr name: "old_#{input.attr('name')}"
@@ -512,6 +550,7 @@ pluginMethods =
         element = "#{element || ''}#{Math.floor(Math.random() * 100)}"
         elementId = "as-input-#{element}"
         hiddenInputFieldId = "as-values-#{element}"
+        validationErrorId = "as-validation-error-#{element}"
         if options.useOriginalInputName
           hiddenInputFieldName = input.attr('name')
           input.attr name: "old_#{input.attr('name')}"
@@ -547,7 +586,7 @@ pluginMethods =
       lastKeyWasTab = false
       lastKeyPressCode = null
       num_count = 0
-      
+
       ###
         This api will be exposed to the "start" callback.
       ###
@@ -661,7 +700,8 @@ pluginMethods =
         return if string isnt '' && string is prev
 
         prev = string
-        if (string.length >= options.minChars) || (options.minChars is 0 && string.length is 0)
+
+        if validations.allValid(string.length) || (options.minChars is 0 && string.length is 0)
           selectionsContainer.addClass 'loading'
           processRequest string
         else
@@ -684,7 +724,7 @@ pluginMethods =
         matchCount = 0
         resultsContainer.hide().html(resultsList.html(''))
         num = 0
-        if options.canGenerateNewSelections and 
+        if options.canGenerateNewSelections and
            options.creationText and
            $.grep(data, (item) -> item[options.selectedItemProp].toLowerCase() is query ).length is 0 and
            not currentSelection.exist(query)
@@ -817,6 +857,27 @@ pluginMethods =
         ajaxRequest = null
         return
 
+      validations =
+        clear: ->
+          data = { id: validationErrorId }
+          Events.onRemoveErrorMessage input, data, input, options
+        allValid: (charLength) ->
+          charLength >= options.minChars && charLength <= options.maxChars
+        renderMinChars: ->
+          data =
+            id: validationErrorId
+            errorMessage: "must be at least #{options.minChars} characters"
+            type: 'minChars'
+            limit: options.minChars
+          Events.onRenderErrorMessage input, data, input, options
+        renderMaxChars: ->
+          data =
+            id: validationErrorId
+            errorMessage: "must be #{options.maxChars} characters or fewer"
+            type: 'maxChars'
+            limit: options.maxChars
+          Events.onRenderErrorMessage input, data, input, options
+
       input.on
         focus : -> # On input focus
           element = $(this)
@@ -826,13 +887,13 @@ pluginMethods =
             selectionsContainer.find('li.as-selections-item').removeClass('blur')
             unless element.val() is ''
               resultsList.css width : selectionsContainer.outerWidth()
-              resultsContainer.show()
+              resultsContainer.show() if validations.allValid()
           if interval then clearInterval interval
           interval = setInterval (->
             if options.showResultList
               if options.selectionLimit && selectionsContainer.find('li.as-selection-item').length >= options.selectionLimit
                 resultsList.html "<li class=\"as-message\">#{options.limitText}</li>"
-                resultsContainer.show()
+                resultsContainer.show() if validations.allValid()
               else
                 keyChange()
             return
@@ -852,11 +913,21 @@ pluginMethods =
           if interval then clearInterval interval
           Utils.setPlaceholderEnabled element, currentSelection.isEmpty()
           return
-          
+
+        keyup: () ->
+          charLength = (input.val().replace /(,)/g, '').length
+          if charLength > options.maxChars
+            validations.renderMaxChars()
+          if validations.allValid(charLength) || charLength == 0
+            validations.clear()
+
         keydown : (event) -> # On input keydown
           ### track the last key pressed ###
           lastKeyPressCode = event.keyCode
           first_focus = false
+          # remove all comma
+          i_input = input.val().replace /(,)/g, ''
+
           switch event.keyCode
             when 38 # up key
               event.preventDefault()
@@ -890,6 +961,7 @@ pluginMethods =
                 resultsContainer.hide()
                 prev = ''
                 abortRequest()
+                validations.clear()
               if resultsContainer.find(':visible').length
                 if timeout then clearTimeout timeout
                 timeout = setTimeout (->
@@ -905,20 +977,19 @@ pluginMethods =
                 event.preventDefault() if options.neverSubmit
                 active = resultsContainer.find('li.active:first')
               else if options.canGenerateNewSelections
-                # remove all comma
-                i_input = input.val().replace /(,)/g, ''
                 ### Generate a new bubble with text when no suggestion selected ###
-                if i_input isnt '' and 
-                   not currentSelection.exist(i_input) and 
-                   i_input.length >= options.minChars and 
-                   active.length is 0
-                  # TODO optimize condition
+                if i_input.length > options.maxChars
+                  validations.renderMaxChars()
+                else if i_input.length != 0 && i_input.length < options.minChars
+                  validations.renderMinChars()
+                else if i_input isnt '' and not currentSelection.exist(i_input) and active.length is 0
                   event.preventDefault()
                   n_data = {}
                   n_data["#{options.selectedItemProp}"] = i_input
                   n_data["#{options.selectedValuesProp}"] = i_input
                   addSelection n_data, "00#{selectionsContainer.find('li').length + 1}"
                   input.val ''
+                  validations.clear()
                   ### Cancel previous ajaxRequest when new tag is added ###
                   abortRequest()
               else
@@ -934,7 +1005,7 @@ pluginMethods =
             when 16, 20 # shift, capslock
               abortRequest()
               resultsContainer.hide()
-          
+
           Utils.setPlaceholderEnabled input, currentSelection.isEmpty()
           return
 

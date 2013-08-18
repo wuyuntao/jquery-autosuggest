@@ -147,6 +147,9 @@ ul {
         }
       }
     }
+    + .error {
+      color: red;
+    }
   }
   &.as-list {
     position: absolute;

@@ -117,6 +117,35 @@
                     output.text('Selected: ' + input.parent('.as-original').find(':hidden').val());
                 });
             }());
+
+            (function () {
+                var container = builder('Demo with static data, validations, tags must be between 3 and 10 characters.', 'name', 'Name');
+                var form = container.find('form');
+                var input = container.find('input[type=text]');
+                var output = container.find('pre');
+
+                var data = [
+                    {value : "21", name : "Mick"},
+                    {value : "43", name : "Johnny"},
+                    {value : "46", name : "Richard"},
+                    {value : "54", name : "Kelly"},
+                    {value : "55", name : "Rudy"},
+                    {value : "79", name : "Michael"}
+                ];
+                var options = {
+                    selectedItemProp : "name",
+                    searchObjProps : "name",
+                    minChars : 3,
+                    maxChars : 10
+                };
+                input.autoSuggest(data, options);
+
+                form.submit(function (event) {
+                    event.preventDefault();
+                    output.text('Selected: ' + input.parent('.as-original').find(':hidden').val());
+                });
+            }());
+
             (function () {
                 var container = builder('Demo with static data, native Placeholder, showResultListWhenNoMatch and useOriginalHtmlId=true.', 'name', 'Name');
                 var form = container.find('form');
