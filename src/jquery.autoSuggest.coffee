@@ -364,7 +364,7 @@ defaults =
   onRenderErrorMessage : (validationData, element, options) ->
     error = $("##{validationData.id}")
     unless error.length
-      element.closest('ul').after "<span id='#{validationData.id}' class='error'></span>"
+      element.closest('ul').after "<span id='#{validationData.id}' class='as-error'></span>"
       error = $("##{validationData.id}")
     error.text validationData.errorMessage
     # Brief timeout to ensure focus even when user presses tab.

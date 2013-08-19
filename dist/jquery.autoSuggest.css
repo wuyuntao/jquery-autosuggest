@@ -115,7 +115,7 @@ ul.as-selections li.as-original input {
   height: 18px;
   padding-top: 3px;
 }
-ul.as-selections + .error {
+ul.as-selections + .as-error {
   color: red;
 }
 ul.as-list {
