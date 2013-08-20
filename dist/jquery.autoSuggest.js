@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.4.0 - 2013-08-14
+/*! jQuery AutoSuggest - v2.4.0 - 2013-08-19
  * URL: http://hlsolutions.github.com/jquery-autosuggest
  * Copyright (c) 2013 Jan Philipp
  * Licensed MIT, GPL */
@@ -448,7 +448,7 @@ Based on the 1.6er release dated in July, 2012
       var error;
       error = $("#" + validationData.id);
       if (!error.length) {
-        element.closest('ul').after("<span id='" + validationData.id + "' class='error'></span>");
+        element.closest('ul').after("<span id='" + validationData.id + "' class='as-error'></span>");
         error = $("#" + validationData.id);
       }
       error.text(validationData.errorMessage);
