@@ -168,6 +168,8 @@ class Events
 ###
 defaults =
 
+  prefix : 'as'
+
   asHtmlID : false
 
   useOriginalInputName : false
@@ -364,7 +366,7 @@ defaults =
   onRenderErrorMessage : (validationData, element, options) ->
     error = $("##{validationData.id}")
     unless error.length
-      element.closest('ul').after "<span id='#{validationData.id}' class='as-error'></span>"
+      element.closest('ul').after "<span id='#{validationData.id}' class='#{options.prefix}-error'></span>"
       error = $("##{validationData.id}")
     error.text validationData.errorMessage
     # Brief timeout to ensure focus even when user presses tab.
@@ -538,24 +540,24 @@ pluginMethods =
       if options.asHtmlID
         element = options.asHtmlID
         elementId = element
-        hiddenInputFieldId = "as-values-#{element}"
-        validationErrorId = "as-validation-error-#{element}"
+        hiddenInputFieldId = "#{options.prefix}-values-#{element}"
+        validationErrorId = "#{options.prefix}-validation-error-#{element}"
         if options.useOriginalInputName
           hiddenInputFieldName = input.attr('name')
           input.attr name: "old_#{input.attr('name')}"
         else
-          hiddenInputFieldName = "as_values_#{element}"
+          hiddenInputFieldName = "#{options.prefix}_values_#{element}"
       else
         # ensures there will be unique IDs on the page if autoSuggest() is called multiple times
         element = "#{element || ''}#{Math.floor(Math.random() * 100)}"
-        elementId = "as-input-#{element}"
-        hiddenInputFieldId = "as-values-#{element}"
-        validationErrorId = "as-validation-error-#{element}"
+        elementId = "#{options.prefix}-input-#{element}"
+        hiddenInputFieldId = "#{options.prefix}-values-#{element}"
+        validationErrorId = "#{options.prefix}-validation-error-#{element}"
         if options.useOriginalInputName
           hiddenInputFieldName = input.attr('name')
           input.attr name: "old_#{input.attr('name')}"
         else
-          hiddenInputFieldName = "as_values_#{element}"
+          hiddenInputFieldName = "#{options.prefix}_values_#{element}"
 
       # override always the id
       options.inputAttrs.id = elementId
@@ -565,19 +567,19 @@ pluginMethods =
         options.inputAttrs.placeholder = options.startText
 
       input.attr options.inputAttrs
-      input.addClass 'as-input'
+      input.addClass "#{options.prefix}-input"
       unless options.usePlaceholder
         input.val options.startText
 
       # Setup basic elements and render them to the DOM
-      input.wrap("<ul class=\"as-selections\" id=\"as-selections-#{element}\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-#{element}\"></li>")
-      selectionsContainer = $("#as-selections-#{element}")
-      inputWrapper = $("#as-original-#{element}")
-      resultsContainer = $("<div class=\"as-results\" id=\"as-results-#{element}\"></div>")
-      resultsList =  $("<ul class=\"as-list\"></ul>")
+      input.wrap("<ul class=\"#{options.prefix}-selections\" id=\"#{options.prefix}-selections-#{element}\"></ul>").wrap("<li class=\"#{options.prefix}-original\" id=\"#{options.prefix}-original-#{element}\"></li>")
+      selectionsContainer = $("##{options.prefix}-selections-#{element}")
+      inputWrapper = $("##{options.prefix}-original-#{element}")
+      resultsContainer = $("<div class=\"#{options.prefix}-results\" id=\"#{options.prefix}-results-#{element}\"></div>")
+      resultsList =  $("<ul class=\"#{options.prefix}-list\"></ul>")
 
       # Create the hidden field which contains all selections (see also SelectionHolder).
-      hiddenInputField = $("<input type=\"hidden\" class=\"as-values\" name=\"#{hiddenInputFieldName}\" id=\"#{hiddenInputFieldId}\" />")
+      hiddenInputField = $("<input type=\"hidden\" class=\"#{options.prefix}-values\" name=\"#{hiddenInputFieldName}\" id=\"#{hiddenInputFieldId}\" />")
 
       currentSelection = new SelectionHolder(hiddenInputField)
       interval = null
@@ -617,7 +619,7 @@ pluginMethods =
       ###
       addSelection = (data, num) ->
         currentSelection.add data[options.selectedValuesProp]
-        item = $ "<li class=\"as-selection-item\" id=\"as-selection-#{num}\" data-value=\"#{Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))}\"></li>"
+        item = $ "<li class=\"#{options.prefix}-selection-item\" id=\"#{options.prefix}-selection-#{num}\" data-value=\"#{Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))}\"></li>"
         item.on
           'click' : ->
             element = $(this)
@@ -628,7 +630,7 @@ pluginMethods =
           'mousedown' : ->
             input_focus = false
             return
-        closeElement = $ "<a class=\"as-close\">&times;</a>"
+        closeElement = $ "<a class=\"#{options.prefix}-close\">&times;</a>"
         closeElement.click ->
           currentSelection.remove data[options.selectedValuesProp]
           Events.onSelectionRemove input, item, options, null, currentSelection.getAll()
@@ -669,7 +671,7 @@ pluginMethods =
 
       unless currentSelection.isEmpty()
         input.val ''
-        selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
+        selectionsContainer.find("li.#{options.prefix}-selection-item").addClass('blur').removeClass('selected')
         Utils.setPlaceholderEnabled input, false
       # Append input to DOM.
       input.after hiddenInputField
@@ -728,7 +730,7 @@ pluginMethods =
            options.creationText and
            $.grep(data, (item) -> item[options.selectedItemProp].toLowerCase() is query ).length is 0 and
            not currentSelection.exist(query)
-          formatted = $("<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>")
+          formatted = $("<li class=\"#{options.prefix}-result-item\" id=\"#{options.prefix}-result-item-#{num}\"></li>")
           formatted.on
             click : ->
               n_data = {}
@@ -768,13 +770,13 @@ pluginMethods =
             if !options.searchActive || ((str.indexOf(query) isnt -1 || options.remoteFilter) && !currentSelection.exist(item[options.selectedValuesProp]))
               forward = true
           if forward
-            formatted = $("<li class=\"as-result-item\" id=\"as-result-item-#{num}\"></li>")
+            formatted = $("<li class=\"#{options.prefix}-result-item\" id=\"a#{options.prefix}-result-item-#{num}\"></li>")
             formatted.on
               click : ->
                 element = $(this)
                 raw_data = element.data 'data'
                 number = raw_data.num
-                if selectionsContainer.find("#as-selection-#{number}").length <= 0 && !lastKeyWasTab
+                if selectionsContainer.find("##{options.prefix}-selection-#{number}").length <= 0 && !lastKeyWasTab
                   data = raw_data.attributes
                   input.val('').focus()
                   prev = ''
@@ -824,7 +826,7 @@ pluginMethods =
           text = options.emptyText
           if $.type(options.emptyTextPlaceholder) is 'regexp'
             text = text.replace options.emptyTextPlaceholder, query
-          resultsList.html "<li class=\"as-message\">#{text}</li>"
+          resultsList.html "<li class=\"#{options.prefix}-message\">#{text}</li>"
         resultsList.css width : selectionsContainer.outerWidth()
         resultsContainerVisible = matchCount > 0 || options.showResultListWhenNoMatch || options.creationText
         if resultsContainerVisible
@@ -884,15 +886,15 @@ pluginMethods =
           if !options.usePlaceholder && element.val() is options.startText && currentSelection.isEmpty()
             element.val ''
           else if input_focus
-            selectionsContainer.find('li.as-selections-item').removeClass('blur')
+            selectionsContainer.find("li.#{options.prefix}-selections-item").removeClass('blur')
             unless element.val() is ''
               resultsList.css width : selectionsContainer.outerWidth()
               resultsContainer.show() if validations.allValid()
           if interval then clearInterval interval
           interval = setInterval (->
             if options.showResultList
-              if options.selectionLimit && selectionsContainer.find('li.as-selection-item').length >= options.selectionLimit
-                resultsList.html "<li class=\"as-message\">#{options.limitText}</li>"
+              if options.selectionLimit && selectionsContainer.find("li.#{options.prefix}-selection-item").length >= options.selectionLimit
+                resultsList.html "<li class=\"#{options.prefix}-message\">#{options.limitText}</li>"
                 resultsContainer.show() if validations.allValid()
               else
                 keyChange()
@@ -908,7 +910,7 @@ pluginMethods =
           if !options.usePlaceholder && element.val() is '' && currentSelection.isEmpty() && options.minChars > 0
             element.val options.startText
           else if input_focus
-            selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected')
+            selectionsContainer.find("li.#{options.prefix}-selection-item").addClass('blur').removeClass('selected')
             resultsContainer.hide()
           if interval then clearInterval interval
           Utils.setPlaceholderEnabled element, currentSelection.isEmpty()

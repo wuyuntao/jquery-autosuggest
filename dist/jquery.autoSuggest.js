@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.4.1 - 2013-08-20
+/*! jQuery AutoSuggest - v2.5.0 - 2013-08-20
  * URL: http://hlsolutions.github.com/jquery-autosuggest
  * Copyright (c) 2013 Jan Philipp
  * Licensed MIT, GPL */
@@ -253,6 +253,7 @@ Based on the 1.6er release dated in July, 2012
 
 
   defaults = {
+    prefix: 'as',
     asHtmlID: false,
     useOriginalInputName: false,
     /**
@@ -456,7 +457,7 @@ Based on the 1.6er release dated in July, 2012
 
       error = $("#" + validationData.id);
       if (!error.length) {
-        element.closest('ul').after("<span id='" + validationData.id + "' class='as-error'></span>");
+        element.closest('ul').after("<span id='" + validationData.id + "' class='" + options.prefix + "-error'></span>");
         error = $("#" + validationData.id);
       }
       error.text(validationData.errorMessage);
@@ -629,28 +630,28 @@ Based on the 1.6er release dated in July, 2012
         if (options.asHtmlID) {
           element = options.asHtmlID;
           elementId = element;
-          hiddenInputFieldId = "as-values-" + element;
-          validationErrorId = "as-validation-error-" + element;
+          hiddenInputFieldId = "" + options.prefix + "-values-" + element;
+          validationErrorId = "" + options.prefix + "-validation-error-" + element;
           if (options.useOriginalInputName) {
             hiddenInputFieldName = input.attr('name');
             input.attr({
               name: "old_" + (input.attr('name'))
             });
           } else {
-            hiddenInputFieldName = "as_values_" + element;
+            hiddenInputFieldName = "" + options.prefix + "_values_" + element;
           }
         } else {
           element = "" + (element || '') + (Math.floor(Math.random() * 100));
-          elementId = "as-input-" + element;
-          hiddenInputFieldId = "as-values-" + element;
-          validationErrorId = "as-validation-error-" + element;
+          elementId = "" + options.prefix + "-input-" + element;
+          hiddenInputFieldId = "" + options.prefix + "-values-" + element;
+          validationErrorId = "" + options.prefix + "-validation-error-" + element;
           if (options.useOriginalInputName) {
             hiddenInputFieldName = input.attr('name');
             input.attr({
               name: "old_" + (input.attr('name'))
             });
           } else {
-            hiddenInputFieldName = "as_values_" + element;
+            hiddenInputFieldName = "" + options.prefix + "_values_" + element;
           }
         }
         options.inputAttrs.id = elementId;
@@ -658,16 +659,16 @@ Based on the 1.6er release dated in July, 2012
           options.inputAttrs.placeholder = options.startText;
         }
         input.attr(options.inputAttrs);
-        input.addClass('as-input');
+        input.addClass("" + options.prefix + "-input");
         if (!options.usePlaceholder) {
           input.val(options.startText);
         }
-        input.wrap("<ul class=\"as-selections\" id=\"as-selections-" + element + "\"></ul>").wrap("<li class=\"as-original\" id=\"as-original-" + element + "\"></li>");
-        selectionsContainer = $("#as-selections-" + element);
-        inputWrapper = $("#as-original-" + element);
-        resultsContainer = $("<div class=\"as-results\" id=\"as-results-" + element + "\"></div>");
-        resultsList = $("<ul class=\"as-list\"></ul>");
-        hiddenInputField = $("<input type=\"hidden\" class=\"as-values\" name=\"" + hiddenInputFieldName + "\" id=\"" + hiddenInputFieldId + "\" />");
+        input.wrap("<ul class=\"" + options.prefix + "-selections\" id=\"" + options.prefix + "-selections-" + element + "\"></ul>").wrap("<li class=\"" + options.prefix + "-original\" id=\"" + options.prefix + "-original-" + element + "\"></li>");
+        selectionsContainer = $("#" + options.prefix + "-selections-" + element);
+        inputWrapper = $("#" + options.prefix + "-original-" + element);
+        resultsContainer = $("<div class=\"" + options.prefix + "-results\" id=\"" + options.prefix + "-results-" + element + "\"></div>");
+        resultsList = $("<ul class=\"" + options.prefix + "-list\"></ul>");
+        hiddenInputField = $("<input type=\"hidden\" class=\"" + options.prefix + "-values\" name=\"" + hiddenInputFieldName + "\" id=\"" + hiddenInputFieldId + "\" />");
         currentSelection = new SelectionHolder(hiddenInputField);
         interval = null;
         timeout = null;
@@ -716,7 +717,7 @@ Based on the 1.6er release dated in July, 2012
           var closeElement, item;
 
           currentSelection.add(data[options.selectedValuesProp]);
-          item = $("<li class=\"as-selection-item\" id=\"as-selection-" + num + "\" data-value=\"" + (Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))) + "\"></li>");
+          item = $("<li class=\"" + options.prefix + "-selection-item\" id=\"" + options.prefix + "-selection-" + num + "\" data-value=\"" + (Utils.escapeQuotes(Utils.escapeHtml(data[options.selectedValuesProp]))) + "\"></li>");
           item.on({
             'click': function() {
               element = $(this);
@@ -728,7 +729,7 @@ Based on the 1.6er release dated in July, 2012
               input_focus = false;
             }
           });
-          closeElement = $("<a class=\"as-close\">&times;</a>");
+          closeElement = $("<a class=\"" + options.prefix + "-close\">&times;</a>");
           closeElement.click(function() {
             currentSelection.remove(data[options.selectedValuesProp]);
             Events.onSelectionRemove(input, item, options, null, currentSelection.getAll());
@@ -782,7 +783,7 @@ Based on the 1.6er release dated in July, 2012
         }
         if (!currentSelection.isEmpty()) {
           input.val('');
-          selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected');
+          selectionsContainer.find("li." + options.prefix + "-selection-item").addClass('blur').removeClass('selected');
           Utils.setPlaceholderEnabled(input, false);
         }
         input.after(hiddenInputField);
@@ -850,7 +851,7 @@ Based on the 1.6er release dated in July, 2012
           if (options.canGenerateNewSelections && options.creationText && $.grep(data, function(item) {
             return item[options.selectedItemProp].toLowerCase() === query;
           }).length === 0 && !currentSelection.exist(query)) {
-            formatted = $("<li class=\"as-result-item\" id=\"as-result-item-" + num + "\"></li>");
+            formatted = $("<li class=\"" + options.prefix + "-result-item\" id=\"" + options.prefix + "-result-item-" + num + "\"></li>");
             formatted.on({
               click: function() {
                 var n_data;
@@ -903,7 +904,7 @@ Based on the 1.6er release dated in July, 2012
               }
             }
             if (forward) {
-              formatted = $("<li class=\"as-result-item\" id=\"as-result-item-" + num + "\"></li>");
+              formatted = $("<li class=\"" + options.prefix + "-result-item\" id=\"a" + options.prefix + "-result-item-" + num + "\"></li>");
               formatted.on({
                 click: function() {
                   var number, raw_data;
@@ -911,7 +912,7 @@ Based on the 1.6er release dated in July, 2012
                   element = $(this);
                   raw_data = element.data('data');
                   number = raw_data.num;
-                  if (selectionsContainer.find("#as-selection-" + number).length <= 0 && !lastKeyWasTab) {
+                  if (selectionsContainer.find("#" + options.prefix + "-selection-" + number).length <= 0 && !lastKeyWasTab) {
                     data = raw_data.attributes;
                     input.val('').focus();
                     prev = '';
@@ -971,7 +972,7 @@ Based on the 1.6er release dated in July, 2012
             if ($.type(options.emptyTextPlaceholder) === 'regexp') {
               text = text.replace(options.emptyTextPlaceholder, query);
             }
-            resultsList.html("<li class=\"as-message\">" + text + "</li>");
+            resultsList.html("<li class=\"" + options.prefix + "-message\">" + text + "</li>");
           }
           resultsList.css({
             width: selectionsContainer.outerWidth()
@@ -1058,7 +1059,7 @@ Based on the 1.6er release dated in July, 2012
             if (!options.usePlaceholder && element.val() === options.startText && currentSelection.isEmpty()) {
               element.val('');
             } else if (input_focus) {
-              selectionsContainer.find('li.as-selections-item').removeClass('blur');
+              selectionsContainer.find("li." + options.prefix + "-selections-item").removeClass('blur');
               if (element.val() !== '') {
                 resultsList.css({
                   width: selectionsContainer.outerWidth()
@@ -1073,8 +1074,8 @@ Based on the 1.6er release dated in July, 2012
             }
             interval = setInterval((function() {
               if (options.showResultList) {
-                if (options.selectionLimit && selectionsContainer.find('li.as-selection-item').length >= options.selectionLimit) {
-                  resultsList.html("<li class=\"as-message\">" + options.limitText + "</li>");
+                if (options.selectionLimit && selectionsContainer.find("li." + options.prefix + "-selection-item").length >= options.selectionLimit) {
+                  resultsList.html("<li class=\"" + options.prefix + "-message\">" + options.limitText + "</li>");
                   if (validations.allValid()) {
                     resultsContainer.show();
                   }
@@ -1094,7 +1095,7 @@ Based on the 1.6er release dated in July, 2012
             if (!options.usePlaceholder && element.val() === '' && currentSelection.isEmpty() && options.minChars > 0) {
               element.val(options.startText);
             } else if (input_focus) {
-              selectionsContainer.find('li.as-selection-item').addClass('blur').removeClass('selected');
+              selectionsContainer.find("li." + options.prefix + "-selection-item").addClass('blur').removeClass('selected');
               resultsContainer.hide();
             }
             if (interval) {
