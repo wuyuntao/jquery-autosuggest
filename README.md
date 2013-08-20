@@ -548,6 +548,10 @@ echo json_encode($data);
 
 ## Release History
 
+## 2013-08-20 Version 2.4.1
+
+* Fix: Use proper prefixed classes (thanks @scholastica #26).
+
 ## 2013-08-18 Version 2.4.0
 
 * Add: New option `creationText` indicating a token will be created when using `canGenerateNewSelections` (643215d0be3f1066b8239dfd072e8485bd648c75).
