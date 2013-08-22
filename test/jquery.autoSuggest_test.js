@@ -489,6 +489,16 @@
       }
     });
 
+    test('Add a tag consisting of only empty whitespace', 1, function () {
+      el = create(null, options);
+
+      el.focus();
+      el.val("     ");
+      el.simulate("keydown", {"keyCode" : keyCode.TAB});
+      equal(selections().length, 0, "Should not add a tag consisting of only whitespace");
+      remove();
+    });
+
     test('Type "Yao Ming" and select it by ENTER', 3, function () {
       el = create(null, $.extend({}, options, {
         neverSubmit : true
@@ -533,6 +543,22 @@
       remove();
     });
 
+    test('Attempt to workaround validation by adding whitespace', 2, function () {
+      el = create(null, $.extend({}, options, {
+        minChars : 3
+      }));
+
+      el.focus();
+      el.val("    a");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+      equal(validationError().text(), "must be at least 3 characters", "Should display validation for `minChars`");
+
+      el.val("a     ");
+      el.simulate("keydown", {"keyCode" : keyCode.ENTER});
+      equal(validationError().text(), "must be at least 3 characters", "Should display validation for `minChars`");
+      remove();
+    });
+
     test('Type fewer characters than allowed, then type sufficient characters', 2, function () {
       el = create(null, $.extend({}, options, {
         minChars : 3
@@ -563,7 +589,6 @@
       equal(validationError().text(), "", "Should clear validation for `minChars`");
       remove();
     });
-
 
     module('Configuration: "options.maxChars"', {
       teardown : function () {
