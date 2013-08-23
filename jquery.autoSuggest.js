@@ -7,6 +7,8 @@
  * Forked by Wu Yuntao
  * github.com/wuyuntao/jquery-autosuggest
  *
+ * Forked by Rodrigo di Lorenzo Lopes
+ * github.com/rdllopes/jquery-autosuggest
  * Version 1.6.2
  *
  * This Plug-In will auto-complete or auto-suggest completed search queries

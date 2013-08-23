@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Teste page</title>
+	<link rel="stylesheet" type="text/css" href="jquery.autoSuggest.css">
+	 <script src="removeAccents.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+</head>
+<body>
+	Make a choice here:<input type="text" id="choice"></input>
+	<script type='text/javascript' src="jquery.autoSuggest.js"></script>
+	<script type='text/javascript'>
+
+    $(function(){
+    	UnicodeUtils.init();
+		function mateSearch(target, query){
+		  var regexp = query.replace(/(.)/gi, "$1.*");
+		  return UnicodeUtils.removeDiacritics(target).search(regexp);
+		}
+		function highlight(target, query, caseOpt){
+		  comp = target;
+		  if (!caseOpt) comp = comp.toLowerCase();
+		  result = ""
+		  j = 0
+		  normalized = UnicodeUtils.removeDiacritics(comp);
+		  for (var i=0; i < target.length; i++){
+		    if (normalized[i]==query[j]){
+		      result += "<em>"+ target[i] + "</em>";
+		      j++;
+		    } else {
+		      result += target[i]
+		    }
+		  }
+		  result = result.replace(/<\/em><em>/g, "");
+		  return result;  
+		}    	
+	    var data = {items: [
+	        {value: "21", name: "Mick Jagger"},
+	        {value: "43", name: "Johnny Storm"},
+	        {value: "46", name: "João Angelo Hatch"},
+	        {value: "54", name: "Ópera do coração"},
+	        {value: "55", name: "Rudy Hamilton"},
+	        {value: "79", name: "Michael Jordan"}
+	    ]};	    	
+        $("#choice").autoSuggest(data.items, {selectedItemProp: "name", searchObjProps: "name", searchFunction: mateSearch, highlightFunction: highlight});
+    });
+
+
+	</script>
+
+</body>
+</html>
