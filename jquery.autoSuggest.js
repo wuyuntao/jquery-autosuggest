@@ -7,6 +7,8 @@
  * Forked by Wu Yuntao
  * github.com/wuyuntao/jquery-autosuggest
  *
+ * Forked by Rodrigo di Lorenzo Lopes
+ * github.com/rdllopes/jquery-autosuggest
  * Version 1.6.2
  *
  * This Plug-In will auto-complete or auto-suggest completed search queries
@@ -34,6 +36,14 @@
             selectedItemProp: "value", //name of object property
             selectedValuesProp: "value", //name of object property
             searchObjProps: "value", //comma separated list of object property names
+            searchFunction: function(target, value){target.search(value)},
+            highlightFunction: function(target, query, matchCase){
+              if (!matchCase){
+                  var regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "gi");
+              } else {
+                  var regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "g");
+              }
+              return target.replace(regx,"<em>$1</em>")},            
             queryParam: "q",
             retrieveLimit: false, //number for 'limit' param on ajax request
             extraParams: "",
@@ -325,7 +335,7 @@
                         }
                         if(str){
                             if (!opts.matchCase){ str = str.toLowerCase(); }
-                            if(str.search(query) != -1 && values_input.val().search(","+data[num][opts.selectedValuesProp]+",") == -1){
+                            if(opts.searchFunction(str, query) != -1 && values_input.val().search(","+data[num][opts.selectedValuesProp]+",") == -1){
                                 forward = true;
                             }
                         }
@@ -347,14 +357,8 @@
                                     $(this).addClass("active");
                                 }).data("data",{attributes: data[num], num: num_count});
                             var this_data = $.extend({},data[num]);
-                            if (!opts.matchCase){
-                                var regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "gi");
-                            } else {
-                                var regx = new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "g");
-                            }
-
                             if(opts.resultsHighlight && query.length > 0){
-                                this_data[opts.selectedItemProp] = this_data[opts.selectedItemProp].replace(regx,"<em>$1</em>");
+															this_data[opts.selectedItemProp] =  opts.highlightFunction(this_data[opts.selectedItemProp], query, opts.matchCase )	
                             }
                             if(!opts.formatList){
                                 formatted = formatted.html(this_data[opts.selectedItemProp]);
