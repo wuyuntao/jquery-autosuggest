@@ -1,4 +1,4 @@
-/*! jQuery AutoSuggest - v2.5.0 - 2013-08-22
+/*! jQuery AutoSuggest - v2.5.0 - 2013-08-24
  * URL: http://hlsolutions.github.com/jquery-autosuggest
  * Copyright (c) 2013 Jan Philipp
  * Licensed MIT, GPL */
@@ -605,7 +605,7 @@ Based on the 1.6er release dated in July, 2012
       */
 
       return this.each(function() {
-        var abortRequest, addSelection, clonePublicApi, currentSelection, element, elementId, hiddenInputField, hiddenInputFieldId, hiddenInputFieldName, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, timmedInput, validationErrorId, validations, value, _i, _j, _len, _len1, _ref, _ref1;
+        var abortRequest, addSelection, clonePublicApi, currentSelection, element, elementId, hiddenInputField, hiddenInputFieldId, hiddenInputFieldName, i, input, inputWrapper, input_focus, interval, item, keyChange, lastKeyPressCode, lastKeyWasTab, moveResultSelection, new_value, num_count, prev, processData, processRequest, publicApi, resultsContainer, resultsList, selectionsContainer, timeout, trimInput, validationErrorId, validations, value, _i, _j, _len, _len1, _ref, _ref1;
         options.inputAttrs = $.extend(options.inputAttrs, {});
         input_focus = false;
         input = $(this);
@@ -998,7 +998,7 @@ Based on the 1.6er release dated in July, 2012
           ajaxRequest.abort();
           ajaxRequest = null;
         };
-        timmedInput = function(rawInput) {
+        trimInput = function(rawInput) {
           return $.trim(rawInput.replace(/(,)/g, ''));
         };
         validations = {
@@ -1085,7 +1085,7 @@ Based on the 1.6er release dated in July, 2012
           },
           keyup: function() {
             var charLength;
-            charLength = timmedInput(input.val()).length;
+            charLength = trimInput(input.val()).length;
             if (charLength > options.maxChars) {
               validations.renderMaxChars();
             }
@@ -1099,7 +1099,7 @@ Based on the 1.6er release dated in July, 2012
             var active, first_focus, i_input, n_data, _selection, _selections;
             lastKeyPressCode = event.keyCode;
             first_focus = false;
-            i_input = timmedInput(input.val());
+            i_input = trimInput(input.val());
             switch (event.keyCode) {
               case 38:
                 event.preventDefault();

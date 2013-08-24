@@ -859,7 +859,7 @@ pluginMethods =
         ajaxRequest = null
         return
 
-      timmedInput = (rawInput) ->
+      trimInput = (rawInput) ->
         $.trim(rawInput.replace(/(,)/g, ''))
 
       validations =
@@ -920,7 +920,7 @@ pluginMethods =
           return
 
         keyup: () ->
-          charLength = timmedInput(input.val()).length
+          charLength = trimInput(input.val()).length
           if charLength > options.maxChars
             validations.renderMaxChars()
           if validations.allValid(charLength) || charLength == 0
@@ -930,7 +930,7 @@ pluginMethods =
           ### track the last key pressed ###
           lastKeyPressCode = event.keyCode
           first_focus = false
-          i_input = timmedInput(input.val())
+          i_input = trimInput(input.val())
 
           switch event.keyCode
             when 38 # up key
