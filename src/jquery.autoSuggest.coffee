@@ -859,6 +859,9 @@ pluginMethods =
         ajaxRequest = null
         return
 
+      trimInput = (rawInput) ->
+        $.trim(rawInput.replace(/(,)/g, ''))
+
       validations =
         clear: ->
           data = { id: validationErrorId }
@@ -917,7 +920,7 @@ pluginMethods =
           return
 
         keyup: () ->
-          charLength = (input.val().replace /(,)/g, '').length
+          charLength = trimInput(input.val()).length
           if charLength > options.maxChars
             validations.renderMaxChars()
           if validations.allValid(charLength) || charLength == 0
@@ -927,8 +930,7 @@ pluginMethods =
           ### track the last key pressed ###
           lastKeyPressCode = event.keyCode
           first_focus = false
-          # remove all comma
-          i_input = input.val().replace /(,)/g, ''
+          i_input = trimInput(input.val())
 
           switch event.keyCode
             when 38 # up key
