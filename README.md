@@ -548,9 +548,13 @@ echo json_encode($data);
 
 ## Release History
 
+## 2013-??-?? Version 2.5.0
+
+* Improvement: Trim all whitepaces of input (thanks @coryschires #27).
+
 ## 2013-08-20 Version 2.4.1
 
-* Fix: Use proper prefixed classes (thanks @scholastica #26).
+* Fix: Use proper prefixed classes (thanks @coryschires #26).
 
 ## 2013-08-18 Version 2.4.0
 
