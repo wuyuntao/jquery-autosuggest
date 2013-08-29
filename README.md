@@ -320,7 +320,7 @@ afterSelectionAdd: function(element, item, currentSelections){
 }
 ```
 
-#### selectionRemove (element, item, selections)
+#### afterSelectionRemove (element, item, selections)
 A callback that is run when a selection removed from the AutoSuggest by using the delete key or by clicking the "x" inside the selection. The selection item is passed into this callback function as `element`.
 
 Example:
