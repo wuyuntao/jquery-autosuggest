@@ -661,3 +661,7 @@ Following modules are required:
 This project was a fork of **jQuery AutoSuggest** (1.6) by [Wu Yuntao](https://github.com/wuyuntao) at [https://github.com/wuyuntao/jquery-autosuggest](https://github.com/wuyuntao/jquery-autosuggest).
 
 Originally, **jQuery AutoSuggest** (1.4) was developed by [Drew Wilson](http://drewwilson.com/) at [http://code.drewwilson.com/entry/autosuggest-jquery-plugin/](http://code.drewwilson.com/entry/autosuggest-jquery-plugin/)
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/hlsolutions/jquery-autosuggest/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
