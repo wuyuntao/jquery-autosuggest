@@ -90,8 +90,12 @@
         if(d_fetcher) {
             return this.each(function(x){
                 if(!opts.asHtmlID){
-                    x = x+""+Math.floor(Math.random()*100); //this ensures there will be unique IDs on the page if autoSuggest() is called multiple times
-                    var x_id = "as-input-"+x;
+					// this ensures there will be unique IDs on the page if autoSuggest() is called multiple times
+					var x_id = false;
+					while ($("#" + x_id).length > 0 || x_id === false) {
+						x = x + "" + Math.floor(Math.random() * 100); 
+						x_id = "as-input-"+x;
+					}
                 } else {
                     x = opts.asHtmlID;
                     var x_id = x;
