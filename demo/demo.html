@@ -179,6 +179,48 @@
             }());
 
             (function () {
+                var container = builder('Demo with dynamic adding/removing values via a button', 'name', 'Name');
+                var form = container.find('form');
+                var input = container.find('input[type=text]');
+                var output = container.find('pre');
+
+                var data = [
+                    {value : "21", name : "Mick Jagger"}
+                ];
+                var options = {
+                    selectedItemProp : "name",
+                    searchObjProps : "name",
+                    fadeOut : 'slow',
+                    emptyText : 'No results for >>{0}<< found.',
+                    preFill : [$.extend(true, {}, data[0])],
+                };
+                input.autoSuggest(data, options);
+
+                form.submit(function (event) {
+                    event.preventDefault();
+                    output.text('Selected: ' + input.parent('.as-original').find(':hidden').val());
+                });
+
+                var btnAdd = $('<button>'), btnRemove = $('<button>');
+
+                form.append(btnAdd.html('Add Rudy').click(function(){
+                    input.autoSuggest('add', {value : "55", name : "Rudy Hamilton"});
+                    setTimeout(function(){
+                        btnAdd.attr('disabled', '');
+                        btnRemove.attr('disabled', null);
+                    }, 0);
+                }));
+
+                form.append(btnRemove.html('Remove Rudy').attr('disabled', '').click(function(){
+                    input.autoSuggest('remove', '55');
+                    setTimeout(function(){
+                        btnRemove.attr('disabled', '');
+                        btnAdd.attr('disabled', null);
+                    }, 0);
+                }));
+            }());
+
+            (function () {
                 var container = builder('Demo with static data, native Placeholder and creationText.', 'name', 'Name');
                 var form = container.find('form');
                 var input = container.find('input[type=text]');
