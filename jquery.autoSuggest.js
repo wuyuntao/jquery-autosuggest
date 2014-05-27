@@ -324,9 +324,10 @@
                             }
                         }
                         if(str){
+                            var allVisualItems = selections_holder.find(".as-selection-item");
                             if (!opts.matchCase){ str = str.toLowerCase(); }
                             if(str.search(query) != -1 && values_input.val().search(","+data[num][opts.selectedValuesProp]+",") == -1){
-                                forward = true;
+                                forward = !(allVisualItems.length > 0 && allVisualItems.html().search(data[num][opts.selectedValuesProp]) !== -1);
                             }
                         }
                         if(forward){
