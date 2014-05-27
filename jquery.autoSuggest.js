@@ -323,13 +323,24 @@
                                 str = str+data[num][name]+" ";
                             }
                         }
-                        if(str){
-                            var allVisualItems = selections_holder.find(".as-selection-item");
-                            if (!opts.matchCase){ str = str.toLowerCase(); }
-                            if(str.search(query) != -1 && values_input.val().search(","+data[num][opts.selectedValuesProp]+",") == -1){
-                                forward = !(allVisualItems.length > 0 && allVisualItems.html().search(data[num][opts.selectedValuesProp]) !== -1);
-                            }
-                        }
+	                    if(str){
+		                    var allVisualItems = selections_holder.find(".as-selection-item");
+		                    if (!opts.matchCase){ str = str.toLowerCase(); }
+		                    if(str.search(query) != -1 && values_input.val().search(","+data[num][opts.selectedValuesProp]+",") == -1){
+			                    if (allVisualItems.length > 0) {
+				                    var repeated = false;
+				                    allVisualItems.each(function (k, v) {
+					                    if ($(v).text().search(data[num][opts.selectedValuesProp]) !== -1) {
+						                    repeated = true;
+						                    return false;
+					                    }
+				                    });
+				                    if (!repeated) forward = true;
+			                    } else {
+				                    forward = true;
+			                    }
+		                    }
+	                    }
                         if(forward){
                             var formatted = $('<li class="as-result-item" id="as-result-item-'+num+'"></li>').click(function(){
                                     var raw_data = $(this).data("data");
